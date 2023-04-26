@@ -11,6 +11,7 @@ import { useDispatch } from "react-redux";
 import { updateInsuranceState } from "../../store/slices/insurance";
 import { updateUserId, updateUserState } from "../../store/slices/user";
 import DateOfBirthField from "../fields/DateOfBirth";
+import { updateVehicleRegNo } from "../../store/slices/vehicle";
 
 export type Inputs = {
   insuranceType: "new" | "renewal";
@@ -30,6 +31,7 @@ const UserRegistrationForm = () => {
     control,
     register,
     handleSubmit,
+    clearErrors,
     watch,
     setValue,
     formState: { errors },
@@ -62,8 +64,10 @@ const UserRegistrationForm = () => {
       mobileNumber,
       postalCode,
       dateOfBirth,
+      vehicleRegNo,
     } = data;
     // update insurance => type, vehicle
+    dispatch(updateVehicleRegNo(vehicleRegNo));
     dispatch(
       updateInsuranceState({ type: insuranceType, vehicle: vehicleType })
     );
@@ -298,16 +302,32 @@ const UserRegistrationForm = () => {
               >
                 ID Type*
               </label>
-              <SelectDropdown
-                id="selectIdType"
-                {...register("idType")}
-                initialValue={watch("idType")}
-                handleOnChange={(val: string) => setValue("idType", val)}
-                optionList={[
-                  { label: "NRIC", value: "nric" },
-                  { label: "Passport", value: "passport" },
-                  { label: "Company", value: "company" },
-                ]}
+              <Controller
+                control={control}
+                name="idType"
+                rules={{
+                  validate: (val) => val !== null || "Select an option",
+                  // validate: {
+                  //   notMa: (fieldValue) => {
+                  //     return fieldValue !== null || "Hell";
+                  //   },
+                  // },
+                }}
+                render={({ field: { value }, fieldState: { error } }) => (
+                  <SelectDropdown
+                    id="selectedIdType"
+                    onChange={(val: string) => (
+                      setValue("idType", val), clearErrors("idType")
+                    )}
+                    selected={value}
+                    error={error}
+                    optionList={[
+                      { label: "NRIC", value: "nric" },
+                      { label: "Passport", value: "passport" },
+                      { label: "Company", value: "company" },
+                    ]}
+                  />
+                )}
               />
             </div>
             <div className="flex items-center flex-[1_1_60%] w-auto">

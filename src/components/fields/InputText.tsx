@@ -4,14 +4,13 @@ import {
   RegisterOptions,
   UseFormRegister,
 } from "react-hook-form";
-import { Inputs } from "../form/UserRegistration";
 
 type InputTextFieldProps = {
   label: string;
-  name: Path<Inputs>;
-  register: UseFormRegister<Inputs>;
+  name: Path<any>;
+  register: UseFormRegister<any>;
   placeholder?: string;
-  options?: RegisterOptions<Inputs> | undefined;
+  options?: RegisterOptions<any> | undefined;
   errors?: FieldError;
   rest?: any;
 };
@@ -31,7 +30,8 @@ const InputTextField = ({
         htmlFor={name}
         className="text-base text-center text-primary-black font-semibold"
       >
-        {`${label}${options?.required && "*"}`}
+        {label}
+        {options?.required && "*"}
       </label>
       <input
         type="text"

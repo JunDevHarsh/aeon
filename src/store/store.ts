@@ -1,11 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import insuranceReducer from "./slices/insurance";
+import vehicleReducer from "./slices/vehicle";
 import userReducer from "./slices/user";
 
 export const store = configureStore({
   reducer: {
-    insurance: insuranceReducer,
     user: userReducer,
+    insurance: insuranceReducer,
+    vehicle: vehicleReducer,
   },
 });
 

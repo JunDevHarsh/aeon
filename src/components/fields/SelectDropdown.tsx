@@ -1,6 +1,4 @@
-import React from "react";
-import { FieldError, RegisterOptions, UseFormRegister } from "react-hook-form";
-import { Inputs } from "../form/UserRegistration";
+import { FieldError } from "react-hook-form";
 import Select from "react-select";
 import { SingleValue } from "react-select";
 
@@ -9,33 +7,36 @@ type OptionType = {
   label: string;
 };
 
-const SelectDropdown = React.forwardRef<
-  HTMLSelectElement,
-  {
-    id: string;
-    optionList: OptionType[];
-    initialValue: string | null;
-    handleOnChange: (val: string) => void;
-    error?: FieldError;
-    options?: RegisterOptions<Inputs>;
-  } & ReturnType<UseFormRegister<Inputs>>
->(({ id, name, optionList, initialValue, handleOnChange, error }, ref) => {
+const SelectDropdown = ({
+  id,
+  optionList,
+  selected,
+  placeholder,
+  onChange,
+  error,
+}: {
+  id: string;
+  optionList: OptionType[];
+  selected: string | null;
+  placeholder?: string;
+  onChange: (val: string) => void;
+  error?: FieldError;
+}) => {
   const selectedOption = optionList.find(
-    (optionItem) => initialValue && optionItem.value === initialValue
+    (optionItem) => selected && optionItem.value === selected
   );
   return (
     <>
       <Select
-        name={name}
         id={id}
         options={optionList}
         components={{ IndicatorSeparator: () => null }}
-        value={initialValue ? selectedOption : null}
+        value={selected ? selectedOption : null}
         isSearchable={false}
         onChange={(singleValue: SingleValue<OptionType>) =>
-          singleValue?.value && handleOnChange(singleValue.value)
+          singleValue?.value && onChange(singleValue.value)
         }
-        placeholder="NRIC"
+        placeholder={placeholder}
         styles={{
           dropdownIndicator: (base) => ({
             ...base,
@@ -103,8 +104,16 @@ const SelectDropdown = React.forwardRef<
           },
         }}
       />
+      {error && (
+        <span
+          role="alert"
+          className="absolute bottom-0 left-0 text-sm text-left font-medium text-[#e57398]"
+        >
+          {error?.message}
+        </span>
+      )}
     </>
   );
-});
+};
 
 export default SelectDropdown;
