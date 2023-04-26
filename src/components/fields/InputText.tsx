@@ -10,6 +10,7 @@ type InputTextFieldProps = {
   label: string;
   name: Path<Inputs>;
   register: UseFormRegister<Inputs>;
+  placeholder?: string;
   options?: RegisterOptions<Inputs> | undefined;
   errors?: FieldError;
   rest?: any;
@@ -19,6 +20,7 @@ const InputTextField = ({
   label,
   name,
   register,
+  placeholder = "Placeholder",
   options,
   errors,
   rest,
@@ -26,15 +28,15 @@ const InputTextField = ({
   return (
     <div className="relative pb-5 flex flex-col items-start gap-y-1 w-full h-auto">
       <label
-        htmlFor="vehicleRegNo"
+        htmlFor={name}
         className="text-base text-center text-primary-black font-semibold"
       >
         {`${label}${options?.required && "*"}`}
       </label>
       <input
         type="text"
-        id="vehicleRegNo"
-        placeholder="Reg No."
+        id={name}
+        placeholder={placeholder}
         {...register(name, {
           ...options,
         })}

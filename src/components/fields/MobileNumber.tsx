@@ -11,6 +11,7 @@ type MobileNumberFieldProps = {
   label: string;
   fixedValue: string;
   name: Path<Inputs>;
+  placeholder?: string;
   register: UseFormRegister<Inputs>;
   options?: RegisterOptions<Inputs> | undefined;
   errors?: FieldError;
@@ -21,6 +22,7 @@ const MobileNumberField = ({
   name,
   label,
   fixedValue,
+  placeholder,
   register,
   errors,
   options,
@@ -42,6 +44,7 @@ const MobileNumberField = ({
         <input
           id={id}
           type="text"
+          placeholder={placeholder}
           {...register(name, {
             ...options,
           })}
