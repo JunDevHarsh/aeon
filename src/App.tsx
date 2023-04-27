@@ -10,12 +10,14 @@ import ErrorPage from "./pages/Error";
 import Root from "./components/layout/Root";
 import { store } from "./store/store";
 import VehicleInfoPage from "./pages/VehicleInfo";
+import InsurancePage from "./pages/Insurance";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<Root />} errorElement={<ErrorPage />}>
       <Route index element={<HomePage />} />
       <Route path="/vehicle-info" element={<VehicleInfoPage />} />
+      <Route path="/insurance" element={<InsurancePage />} />
     </Route>
   )
 );

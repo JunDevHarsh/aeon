@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.selectedOptions {
+  overflow-x: auto;
+}
+
+.selectedOptions::-webkit-scrollbar {
+  display: none;
+}
