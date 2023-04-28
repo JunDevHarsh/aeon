@@ -8,10 +8,16 @@ type ProviderState = {
   price: number;
 };
 
+type CoverageState = {
+  type: "market" | "aggreed";
+  value: number;
+};
+
 type InsuranceState = {
   type: "new" | "renewal";
   vehicle: "car" | "motorcycle";
   provider: ProviderState | null;
+  coverage: CoverageState | null;
   referralCode: string | null;
   currentStep: number;
 };
@@ -19,6 +25,7 @@ type InsuranceState = {
 const initialState: InsuranceState = {
   type: "new",
   vehicle: "car",
+  coverage: null,
   referralCode: null,
   provider: null,
   currentStep: 1,
@@ -49,6 +56,9 @@ export const insuranceSlice = createSlice({
       state.provider = action.payload;
       state.currentStep = state.currentStep + 1;
     },
+    updateInsuranceCoverage: (state, action: PayloadAction<CoverageState>) => {
+      state.coverage = action.payload;
+    },
   },
 });
 
@@ -61,6 +71,7 @@ export const {
   updateReferralCode,
   updateCurrentStep,
   updateInsuranceProvider,
+  updateInsuranceCoverage
 } = insuranceSlice.actions;
 
 export default insuranceSlice.reducer;

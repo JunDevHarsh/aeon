@@ -9,3 +9,15 @@
 .selectedOptions::-webkit-scrollbar {
   display: none;
 }
+
+input[type="range"] {
+  accent-color: #a5308a;
+  /* -webkit-appearance: none; */
+  width: 100%;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  border-radius: 10px;
+  border: none;
+}

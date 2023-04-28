@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Coverage, QuotePlansType } from "../container/QuoteListings";
 import { useDispatch } from "react-redux";
 import { updateInsuranceProvider } from "../../store/slices/insurance";
+import { useNavigate } from "react-router-dom";
 
 type QuoteComparePopupProps = {
   selectedQuotes: QuotePlansType[];
@@ -52,6 +53,7 @@ const QuoteComparePopup = ({
 }: QuoteComparePopupProps) => {
   const [showDifference, setShowDifference] = useState<boolean>(false);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const quoteCoverages: Coverage[] =
     getUniqueCoveragesFromPlans(selectedQuotes);
@@ -69,6 +71,7 @@ const QuoteComparePopup = ({
           price: parseInt(quotePlan.price),
         })
       );
+      navigate("/vehicle-market");
     }
   }
 

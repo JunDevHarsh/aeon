@@ -11,6 +11,7 @@ import Root from "./components/layout/Root";
 import { store } from "./store/store";
 import VehicleInfoPage from "./pages/VehicleInfo";
 import InsurancePage from "./pages/Insurance";
+import PolicyCoveragePage from "./pages/PolicyCoverage";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -18,6 +19,7 @@ const router = createBrowserRouter(
       <Route index element={<HomePage />} />
       <Route path="/vehicle-info" element={<VehicleInfoPage />} />
       <Route path="/insurance" element={<InsurancePage />} />
+      <Route path="/vehicle-market" element={<PolicyCoveragePage />} />
     </Route>
   )
 );

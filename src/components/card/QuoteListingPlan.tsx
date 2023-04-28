@@ -4,6 +4,7 @@ import FileDownloadButton from "../button/FileDownload";
 import CheckboxWithTextField from "../fields/CheckboxWithText";
 import { useDispatch } from "react-redux";
 import { updateInsuranceProvider } from "../../store/slices/insurance";
+import { useNavigate } from "react-router-dom";
 
 type QuoteListingPlanProps = {
   id: string;
@@ -36,6 +37,7 @@ const QuoteListingPlanCard = ({
   ); // limit for displaying list of coverages, default is 4
   const [showDownloadButton, setShowDownloadButton] = useState<boolean>(false);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   function updateListSize(size: number, updatedSize: number): void {
     setShowDownloadButton((prev) => !prev);
@@ -58,6 +60,7 @@ const QuoteListingPlanCard = ({
         price: Number(price),
       })
     );
+    navigate("/vehicle-market");
   }
 
   return (
