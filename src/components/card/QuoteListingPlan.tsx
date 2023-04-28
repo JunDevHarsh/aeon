@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Coverage } from "../container/QuoteListings";
 import FileDownloadButton from "../button/FileDownload";
 import CheckboxWithTextField from "../fields/CheckboxWithText";
+import { useDispatch } from "react-redux";
+import { updateInsuranceProvider } from "../../store/slices/insurance";
 
 type QuoteListingPlanProps = {
   id: string;
@@ -33,6 +35,7 @@ const QuoteListingPlanCard = ({
     coverages.length < MAX_LIST_LIMIT ? coverages.length : MAX_LIST_LIMIT
   ); // limit for displaying list of coverages, default is 4
   const [showDownloadButton, setShowDownloadButton] = useState<boolean>(false);
+  const dispatch = useDispatch();
 
   function updateListSize(size: number, updatedSize: number): void {
     setShowDownloadButton((prev) => !prev);
@@ -45,6 +48,16 @@ const QuoteListingPlanCard = ({
         ? setListSize(coverageSize)
         : setListSize(MAX_LIST_LIMIT);
     }
+  }
+
+  function handleSelectedQuotePlan() {
+    dispatch(
+      updateInsuranceProvider({
+        companyId,
+        companyName,
+        price: Number(price),
+      })
+    );
   }
 
   return (
@@ -148,7 +161,10 @@ const QuoteListingPlanCard = ({
               )} */}
             </div>
             <div className="mt-2 flex items-center justify-start gap-x-4">
-              <button className="relative py-1 px-3.5 w-auto bg-primary-blue rounded-full shadow-[0_1px_2px_0_#C6E4F60D]">
+              <button
+                onClick={handleSelectedQuotePlan}
+                className="relative py-1 px-3.5 w-auto bg-primary-blue rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
+              >
                 <span className="text-base text-center font-medium text-white">
                   Buy Now
                 </span>

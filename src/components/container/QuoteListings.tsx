@@ -3,6 +3,8 @@ import SelectMultiSearch from "../fields/SelectMultiSearch";
 import SelectDropdown from "../fields/SelectDropdown";
 import QuoteListingPlanCard from "../card/QuoteListingPlan";
 import brokers from "../../brokers.json";
+import QuoteComparePopup from "../popup/QuoteCompare";
+import DefaultPopup, { WarningPopupType } from "../popup/Default";
 
 type FilterType = {
   sort: string | null;
@@ -62,7 +64,13 @@ const QuoteListingsContainer = () => {
   // state for managing the list of quote plans
   // fetched from the agiliux backend system
   const [quotePlans, updateQuotePlans] = useState<QuotePlansType[]>([]);
-
+  const [isComparePopupVisible, shouldComparePopupVisible] =
+    useState<boolean>(false);
+  const [warngingPopup, setWarningPopup] = useState<WarningPopupType>({
+    isVisible: false,
+    title: null,
+    description: null,
+  });
   // update the type property of the filter
   const setTypeOfFilter = (updatedFilterTypes: PlanType[]) => {
     updateQuoteFilter((prev) => ({ ...prev, type: updatedFilterTypes }));
@@ -90,6 +98,19 @@ const QuoteListingsContainer = () => {
     }
   }, []);
 
+  function toggleComparePopup() {
+    shouldComparePopupVisible((prev) => !prev);
+  }
+
+  useEffect(() => {
+    if (isComparePopupVisible) {
+      const quotes = quotePlans.filter((quote) => quote.isSelected);
+      if (quotes.length < 2) {
+        shouldComparePopupVisible(false);
+      }
+    }
+  }, [quotePlans]);
+
   // filter quotes based on user search selection i.e.
   // if user has searching for third-party or comprehensive plans
   const filterQuotePlansType = quotePlans.filter((quotePlan) =>
@@ -102,8 +123,47 @@ const QuoteListingsContainer = () => {
   const quotesToDisply =
     filterQuotePlansType.length === 0 ? quotePlans : filterQuotePlansType;
 
+  const filterSelectedQuotes: QuotePlansType[] = quotesToDisply.filter(
+    (quote) => quote.isSelected
+  );
+
+  // function to toggle isCompareBoxVisble's state
+  function handleShouldComparePopup() {
+    // check if the box is not opened and also checks
+    // if length of selected plans are more than 1
+    // then show the comparison box
+    if (!isComparePopupVisible && filterSelectedQuotes.length <= 1) {
+      setWarningPopup({
+        isVisible: true,
+        title: "Warning",
+        description:
+          "User need to select atleast 2 plans or products to compare.",
+      });
+    }
+    if (!isComparePopupVisible && filterSelectedQuotes.length > 1) {
+      return shouldComparePopupVisible(true);
+    }
+    // otherwise hide the comparison box
+    return shouldComparePopupVisible(false);
+  }
+
   return (
     <div className="flex flex-col items-center justify-between w-full h-auto">
+      {warngingPopup.isVisible && (
+        <DefaultPopup
+          title={warngingPopup.title}
+          description={warngingPopup.description}
+          setShowWarningPopup={setWarningPopup}
+        />
+      )}
+      {isComparePopupVisible && (
+        <QuoteComparePopup
+          selectedQuotes={filterSelectedQuotes}
+          isComparePopupVisible={isComparePopupVisible}
+          shouldComparePopupVisible={shouldComparePopupVisible}
+          updateSelectedQuotePlans={updateSelectedQuotePlans}
+        />
+      )}
       <div className="relative px-4 py-3 flex items-center justify-center gap-4 w-full bg-[#F8F8F8] rounded-[10px]">
         <div className="flex flex-col md:flex-row items-center justify-center gap-4 w-auto">
           {/* Plan Type multi search field */}
@@ -149,7 +209,10 @@ const QuoteListingsContainer = () => {
             </div>
           </div>
         </div>
-        <button className="relative px-2 flex items-center justify-center w-auto">
+        <button
+          className="relative px-2 flex items-center justify-center w-auto"
+          onClick={handleShouldComparePopup}
+        >
           {/* <LeftRightArrowIcon /> */}
           <span className="ml-2 text-lg text-center text-primary-blue font-bold">
             Compare
