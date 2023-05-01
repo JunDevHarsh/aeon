@@ -42,7 +42,7 @@ const PaymentPage = () => {
   function makePayment(amount: number) {
     return new Promise((res, _) => {
       setTimeout(() => {
-        res({ transactionId: "KJHKH432" });
+        res({ transactionId: "KJHKH432", amount: amount });
       }, 2000);
     });
   }
@@ -69,10 +69,8 @@ const PaymentPage = () => {
         transactionId={paymentStatus.transactionId}
       />
     );
-  }else if (paymentStatus.status === "failed"){
-    return (
-      <PaymentFailedContainer />
-    )
+  } else if (paymentStatus.status === "failed") {
+    return <PaymentFailedContainer />;
   }
 
   return (

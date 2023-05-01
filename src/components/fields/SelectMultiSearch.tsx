@@ -3,9 +3,7 @@ import { PlanType } from "../container/QuoteListings";
 import Select, {
   ActionMeta,
   components,
-  GroupBase,
   MultiValue,
-  MultiValueProps,
   OptionProps,
 } from "react-select";
 

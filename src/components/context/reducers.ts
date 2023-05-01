@@ -1,14 +1,16 @@
 import {
   AddOnsTypes,
   AddOnsActions,
-  InsuranceState,
   AddDriverActions,
   AddDriverTypes,
   AddOns,
   AdditionalDriverDetails,
 } from "./context";
 
-export const addOnsReducer = (state: AddOns[], action: AddOnsActions | AddDriverActions) => {
+export const addOnsReducer = (
+  state: AddOns[],
+  action: AddOnsActions | AddDriverActions
+) => {
   const { type, payload } = action;
   switch (type) {
     case AddOnsTypes.ToggleAddOnById: {

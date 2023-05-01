@@ -1,4 +1,4 @@
-import React, { ChangeEventHandler, useState } from "react";
+import React, { useState } from "react";
 
 type AddOnProps = {
   title: string;

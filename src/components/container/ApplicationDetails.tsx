@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
-import CheckboxWithTextField from "../fields/CheckboxWithText";
 
 const ApplicationDetailsContainer = () => {
   const { regNo, make, model, yearOfManufacture, engineNo, chasisNo, variant } =

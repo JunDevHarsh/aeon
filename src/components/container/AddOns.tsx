@@ -33,7 +33,7 @@ const AddOnsContainer = () => {
         </div>
       </div>
       <div className="mt-4 flex flex-col items-start justify-start w-full h-auto">
-        {addDriverDetails.map((driverDetails, index) => (
+        {addDriverDetails.map((_, index) => (
           <div className="relative w-full" key={`addDriverDetails-${index}`}>
             <div className="relative pb-5 flex flex-col items-start gap-y-1 w-full h-auto">
               <label

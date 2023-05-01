@@ -98,10 +98,6 @@ const QuoteListingsContainer = () => {
     }
   }, []);
 
-  function toggleComparePopup() {
-    shouldComparePopupVisible((prev) => !prev);
-  }
-
   useEffect(() => {
     if (isComparePopupVisible) {
       const quotes = quotePlans.filter((quote) => quote.isSelected);
