@@ -8,12 +8,20 @@ type UserId = {
 
 type UserState = {
   id: UserId;
+  name: string;
   maritalStatus: "single" | "married";
   gender: "male" | "female";
   mobileNumber: string;
   email: string;
   postalCode: string;
   dateOfBirth: string | null;
+  drivingExp: string;
+  address: {
+    city: string | null;
+    nationality: string | null;
+    state: string | null;
+    residence: string;
+  };
 };
 
 const initialState: UserState = {
@@ -21,12 +29,20 @@ const initialState: UserState = {
     type: null,
     no: "",
   },
+  name: "asdasda",
   maritalStatus: "single",
   gender: "male",
   mobileNumber: "",
   email: "",
   postalCode: "",
   dateOfBirth: null,
+  drivingExp: "",
+  address: {
+    city: null,
+    nationality: null,
+    state: null,
+    residence: "",
+  },
 };
 
 export const userSlice = createSlice({

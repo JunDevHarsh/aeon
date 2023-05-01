@@ -14,6 +14,7 @@ const SelectDropdown = ({
   placeholder,
   onChange,
   error,
+  disabled,
 }: {
   id: string;
   optionList: OptionType[];
@@ -21,6 +22,7 @@ const SelectDropdown = ({
   placeholder?: string;
   onChange: (val: string) => void;
   error?: FieldError;
+  disabled?: boolean;
 }) => {
   const selectedOption = optionList.find(
     (optionItem) => selected && optionItem.value === selected
@@ -31,6 +33,7 @@ const SelectDropdown = ({
         id={id}
         options={optionList}
         components={{ IndicatorSeparator: () => null }}
+        isDisabled={disabled}
         value={selected ? selectedOption : null}
         isSearchable={false}
         onChange={(singleValue: SingleValue<OptionType>) =>

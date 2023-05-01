@@ -4,16 +4,15 @@ import {
   RegisterOptions,
   UseFormRegister,
 } from "react-hook-form";
-import { Inputs } from "../form/UserRegistration";
 
 type MobileNumberFieldProps = {
   id: string;
   label: string;
   fixedValue: string;
-  name: Path<Inputs>;
+  name: Path<any>;
   placeholder?: string;
-  register: UseFormRegister<Inputs>;
-  options?: RegisterOptions<Inputs> | undefined;
+  register: UseFormRegister<any>;
+  options?: RegisterOptions<any> | undefined;
   errors?: FieldError;
 };
 

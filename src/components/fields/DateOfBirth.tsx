@@ -7,9 +7,11 @@ const maxAge = 80;
 function DateOfBirthField({
   selected,
   onChange,
+  disabled,
 }: {
   selected: Date | null;
   onChange: (date: Date | null) => void;
+  disabled?: boolean;
 }) {
   function handleDateChange(dateObj: Date | null) {
     // if (dateObj) {
@@ -42,6 +44,7 @@ function DateOfBirthField({
           onChange={handleDateChange}
           name="dob"
           id="dateOfBirth"
+          disabled={disabled}
           placeholderText={new Date().toISOString().substring(0, 10)}
           dateFormat="yyyy-MM-dd"
           maxDate={minDate}

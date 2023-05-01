@@ -27,8 +27,12 @@ const initialState: InsuranceState = {
   vehicle: "car",
   coverage: null,
   referralCode: null,
-  provider: null,
-  currentStep: 1,
+  provider: {
+    companyId: "1001",
+    companyName: "Allianz",
+    price: 609.35,
+  },
+  currentStep: 2,
 };
 
 export const insuranceSlice = createSlice({
@@ -71,7 +75,7 @@ export const {
   updateReferralCode,
   updateCurrentStep,
   updateInsuranceProvider,
-  updateInsuranceCoverage
+  updateInsuranceCoverage,
 } = insuranceSlice.actions;
 
 export default insuranceSlice.reducer;
