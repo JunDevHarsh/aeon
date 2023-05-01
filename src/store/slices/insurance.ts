@@ -32,7 +32,7 @@ const initialState: InsuranceState = {
     companyName: "Allianz",
     price: 609.35,
   },
-  currentStep: 2,
+  currentStep: 1,
 };
 
 export const insuranceSlice = createSlice({
