@@ -6,10 +6,8 @@ import InputTextField from "../fields/InputText";
 import SelectDropdown from "../fields/SelectDropdown";
 
 const VehicleInfoForm = ({
-  showLoading,
   setShowLoading,
 }: {
-  showLoading: boolean;
   setShowLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const vehicleState: VehicleState = useSelector(
@@ -29,7 +27,7 @@ const VehicleInfoForm = ({
 
   const onSubmit: SubmitHandler<VehicleState> = (val: VehicleState) => {
     dispatch(updateVehicleState(val));
-    setShowLoading(prev => !prev);
+    setShowLoading((prev) => !prev);
   };
 
   return (
