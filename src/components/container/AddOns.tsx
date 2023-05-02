@@ -1,10 +1,12 @@
 import { useContext } from "react";
+import { nanoid } from "@reduxjs/toolkit";
 import AddOnsCard from "../card/AddOns";
 import {
   AddDriverTypes,
   AddOnsTypes,
   InsuranceContext,
 } from "../context/context";
+import SelectDropdown from "../fields/SelectDropdown";
 
 const AddOnsContainer = () => {
   const {
@@ -33,18 +35,128 @@ const AddOnsContainer = () => {
         </div>
       </div>
       <div className="mt-4 flex flex-col items-start justify-start w-full h-auto">
-        {addDriverDetails.map((_, index) => (
-          <div className="relative w-full" key={`addDriverDetails-${index}`}>
+        {addDriverDetails.map((driverDetails, index) => (
+          <div className="relative w-full" key={driverDetails.id}>
+            {/* Remove Driver Details Button */}
+            <div className="mb-2 flex items-center justify-start w-full">
+              <button
+                className="relation h-auto w-auto"
+                onClick={() =>
+                  dispatch({
+                    type: AddDriverTypes.RemoveDriverDetailsById,
+                    payload: { id: driverDetails.id },
+                  })
+                }
+              >
+                <svg
+                  width="28"
+                  height="28"
+                  viewBox="0 0 28 28"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M8.75 20.72L14 15.47L19.25 20.72L20.72 19.25L15.47 14L20.72 8.75L19.25 7.28L14 12.53L8.75 7.28L7.28 8.75L12.53 14L7.28 19.25L8.75 20.72ZM14 28C12.0867 28 10.2783 27.6325 8.575 26.8975C6.87167 26.1625 5.38417 25.1592 4.1125 23.8875C2.84083 22.6158 1.8375 21.1283 1.1025 19.425C0.3675 17.7217 0 15.9133 0 14C0 12.0633 0.3675 10.2433 1.1025 8.54C1.8375 6.83667 2.84083 5.355 4.1125 4.095C5.38417 2.835 6.87167 1.8375 8.575 1.1025C10.2783 0.3675 12.0867 0 14 0C15.9367 0 17.7567 0.3675 19.46 1.1025C21.1633 1.8375 22.645 2.835 23.905 4.095C25.165 5.355 26.1625 6.83667 26.8975 8.54C27.6325 10.2433 28 12.0633 28 14C28 15.9133 27.6325 17.7217 26.8975 19.425C26.1625 21.1283 25.165 22.6158 23.905 23.8875C22.645 25.1592 21.1633 26.1625 19.46 26.8975C17.7567 27.6325 15.9367 28 14 28Z"
+                    fill="#C0392B"
+                  />
+                </svg>
+              </button>
+              <h3 className="ml-2 text-lg text-left text-primary-black font-medium">
+                Additional Driver {index + 1}
+              </h3>
+            </div>
             <div className="relative pb-5 flex flex-col items-start gap-y-1 w-full h-auto">
               <label
-                htmlFor="addDriverDetailsName"
+                htmlFor={`addDriverDetailsName-${driverDetails.id}`}
                 className="text-base text-center text-primary-black font-semibold"
               >
-                Name(As per NRIC)*
+                Name(as per NRIC)*
               </label>
               <input
-                id="addDriverDetailsName"
+                id={`addDriverDetailsName-${driverDetails.id}`}
                 type="text"
+                value={driverDetails.name}
+                placeholder="USerName"
+                onChange={(e) => {
+                  dispatch({
+                    type: AddDriverTypes.UpdateDriverDetails,
+                    payload: {
+                      id: driverDetails.id,
+                      prop: "name",
+                      value: e.target.value,
+                    },
+                  });
+                }}
+                className="py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium border border-solid rounded outline outline-1 outline-transparent focus-visible:outline-primary-pink border-[#CFD0D7] focus-visible:border-primary-pink"
+              />
+            </div>
+            {/* Relationship Field */}
+            <div className="relative pb-5 flex flex-col items-start gap-y-1 flex-[1_1_40%] w-auto h-auto">
+              <span className="text-base text-center text-primary-black font-semibold">
+                Relationship
+              </span>
+              <SelectDropdown
+                id={`relationship-${driverDetails.id}`}
+                placeholder="Brother"
+                onChange={(val: string) =>
+                  dispatch({
+                    type: AddDriverTypes.UpdateDriverDetails,
+                    payload: {
+                      id: driverDetails.id,
+                      prop: "relationship",
+                      value: val,
+                    },
+                  })
+                }
+                selected={driverDetails.relationship}
+                optionList={[{ label: "Brother", value: "brother" }]}
+              />
+            </div>
+            {/* ID Type Field */}
+            <div className="relative pb-5 flex flex-col items-start gap-y-1 flex-[1_1_40%] w-auto h-auto">
+              <span className="text-base text-center text-primary-black font-semibold">
+                ID Type
+              </span>
+              <SelectDropdown
+                id={`idType-${driverDetails.id}`}
+                placeholder="NRIC"
+                onChange={(val: string) =>
+                  dispatch({
+                    type: AddDriverTypes.UpdateDriverDetails,
+                    payload: {
+                      id: driverDetails.id,
+                      prop: "idType",
+                      value: val,
+                    },
+                  })
+                }
+                selected={driverDetails.idType}
+                optionList={[{ label: "NRIC", value: "nric" }]}
+              />
+            </div>
+            {/* ID No. Field */}
+            <div className="relative pb-5 flex flex-col items-start gap-y-1 w-full h-auto">
+              <label
+                htmlFor={`idNo-${driverDetails.id}`}
+                className="text-base text-center text-primary-black font-semibold"
+              >
+                ID No.*
+              </label>
+              <input
+                id={`idNo-${driverDetails.id}`}
+                type="text"
+                value={driverDetails.idNo}
+                placeholder="IADS787"
+                onChange={(e) => {
+                  dispatch({
+                    type: AddDriverTypes.UpdateDriverDetails,
+                    payload: {
+                      id: driverDetails.id,
+                      prop: "idNo",
+                      value: e.target.value,
+                    },
+                  });
+                }}
                 className="py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium border border-solid rounded outline outline-1 outline-transparent focus-visible:outline-primary-pink border-[#CFD0D7] focus-visible:border-primary-pink"
               />
             </div>
@@ -57,7 +169,10 @@ const AddOnsContainer = () => {
               dispatch({
                 type: AddDriverTypes.AddNewDriverDetails,
                 payload: {
-                  id: "asdasd",
+                  id: nanoid(),
+                  name: "",
+                  idType: null,
+                  relationship: null,
                 },
               });
             }}

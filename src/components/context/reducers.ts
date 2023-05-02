@@ -42,12 +42,23 @@ export const addDriverDetailsReducer = (
       return [
         ...state,
         {
-          id: payload.id,
-          name: "",
-          relationship: null,
-          idType: null,
+          ...payload,
         },
       ];
+    }
+    case AddDriverTypes.UpdateDriverDetails: {
+      const updatedProp = state.map((detail) =>
+        detail.id === payload.id
+          ? { ...detail, [payload.prop]: payload.value }
+          : detail
+      );
+      return updatedProp;
+    }
+    case AddDriverTypes.RemoveDriverDetailsById: {
+      const updatedDrivderDetails = state.filter(
+        (detail) => detail.id !== payload.id
+      );
+      return updatedDrivderDetails;
     }
     default:
       return state;

@@ -14,6 +14,7 @@ export type AdditionalDriverDetails = {
   id: string;
   name: string;
   idType: string | null;
+  idNo: string;
   relationship: string | null;
 };
 
@@ -40,6 +41,8 @@ export enum AddOnsTypes {
 
 export enum AddDriverTypes {
   AddNewDriverDetails = "ADD_NEW_DRIVER_DETAILS",
+  UpdateDriverDetails = "UPDATE_DRIVER_DETAILS",
+  RemoveDriverDetailsById = "REMOVE_DRIVER_DETAILS",
 }
 
 export type AddOnsActionType = {
@@ -62,6 +65,18 @@ export type AddOnsActions =
 
 export type AddDriverDetailsPayload = {
   [AddDriverTypes.AddNewDriverDetails]: {
+    id: string;
+    name: string;
+    idType: null;
+    idNo: string;
+    relationship: null;
+  };
+  [AddDriverTypes.UpdateDriverDetails]: {
+    id: string;
+    prop: string;
+    value: string;
+  };
+  [AddDriverTypes.RemoveDriverDetailsById]: {
     id: string;
   };
 };
