@@ -1,11 +1,20 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
+import { InsuranceContext } from "../context/context";
 
 const ApplicationDetailsContainer = () => {
   const { regNo, make, model, yearOfManufacture, engineNo, chasisNo, variant } =
     useSelector((state: RootState) => state.vehicle);
+  const {
+    state: { addDriverDetails },
+  } = useContext(InsuranceContext);
   const [includeRoadTax, updateRoadTax] = useState<boolean>(false);
+
+  const driverDetails = addDriverDetails.filter(
+    (driver) =>
+      driver.name || driver.relationship || driver.idType || driver.idNo
+  );
 
   return (
     <div className="relative max-w-xl w-full">
@@ -183,6 +192,55 @@ const ApplicationDetailsContainer = () => {
           </div>
         </div>
       </div>
+      {driverDetails.length !== 0 && (
+        <div className="flex flex-col items-start w-full">
+          <h2 className="text-xl text-center text-primary-black font-bold">
+            Additional Driver Details
+          </h2>
+
+          {driverDetails.map((detail, index) => (
+            <div key={detail.id} className="relative mt-2 w-full">
+              <h3 className="text-lg text-left text-primary-black font-bold">
+                Additional Driver {index + 1}
+              </h3>
+              <div className="px-6 py-2 grid grid-cols-3 gap-4 w-full">
+                <div className="flex flex-col items-start w-auto">
+                  <span className="text-base text-left text-primary-black font-bold">
+                    Name
+                  </span>
+                  <span className="text-base text-left text-primary-black font-normal">
+                    {detail.name}
+                  </span>
+                </div>
+                <div className="flex flex-col items-start w-auto">
+                  <span className="text-base text-left text-primary-black font-bold">
+                    Relationship
+                  </span>
+                  <span className="text-base text-left text-primary-black font-normal">
+                    {detail.relationship}
+                  </span>
+                </div>
+                <div className="flex flex-col items-start w-auto">
+                  <span className="text-base text-left text-primary-black font-bold">
+                    ID Type
+                  </span>
+                  <span className="text-base text-left text-primary-black font-normal">
+                    {detail.idType}
+                  </span>
+                </div>
+                <div className="flex flex-col items-start w-auto">
+                  <span className="text-base text-left text-primary-black font-bold">
+                    ID No.
+                  </span>
+                  <span className="text-base text-left text-primary-black font-normal">
+                    {detail.idNo}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
       <div className="flex items-center justify-start w-full">
         <div className="relative flex items-center justify-center">
           <label
