@@ -148,10 +148,10 @@ const defaultSortOptions = [
 
 // list of options for plan type
 const defaultPlanTypeOptions: PlanType[] = [
-  { value: "comprehensive", label: "Comprehensive", isSelected: false },
+  { value: "comprehensive", label: "Comprehensive", isSelected: true },
   {
     value: "third-party",
-    label: "Third Party/Fire and Theft",
+    label: "Third Party,Fire and Theft",
     isSelected: false,
   },
 ];
