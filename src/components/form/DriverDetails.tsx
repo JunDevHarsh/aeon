@@ -14,7 +14,7 @@ type Inputs = {
   dateOfBirth: string | null;
   email: string;
   mobileNumber: string;
-  maritalStatus: "single" | "married";
+  maritalStatus: string | null;
   gender: "male" | "female";
   postalCode: string;
   drivingExp: string;
