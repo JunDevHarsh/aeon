@@ -70,11 +70,7 @@ const VehicleInfoForm = ({
                 )}
                 selected={value}
                 error={error}
-                optionList={[
-                  { label: "Make 1", value: "make-1" },
-                  { label: "Make 2", value: "make-2" },
-                  { label: "Make 3", value: "make-3" },
-                ]}
+                optionList={[{ label: "Mitsubishi", value: "mitsubishi" }]}
               />
             )}
           />
@@ -103,8 +99,7 @@ const VehicleInfoForm = ({
                 selected={value}
                 error={error}
                 optionList={[
-                  { label: "Honda", value: "honda" },
-                  { label: "City", value: "city" },
+                  { label: "Mitsubishi ASX 2.0 (A)", value: "mitsubishi asx 2.0 (a)" },
                 ]}
               />
             )}
@@ -136,7 +131,7 @@ const VehicleInfoForm = ({
                 optionList={[
                   {
                     label: "MITSUBISHI ASX 2WD-ITX14A",
-                    value: "mitsubishi-asx-2wd-itx14a",
+                    value: "mitsubishi asx 2wd-itx14a",
                   },
                 ]}
               />

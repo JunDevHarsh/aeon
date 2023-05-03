@@ -17,10 +17,10 @@ export type VehicleState = {
 
 const initialState: VehicleState = {
   regNo: "NBS2343",
-  make: null,
-  model: null,
+  make: "mitsubishi",
+  model: "mitsubishi asx 2.0 (a)",
   yearOfManufacture: "2020",
-  variant: null,
+  variant: "mitsubishi asx 2wd-itx14a",
   engineNo: "123456",
   engineCC: "1200",
   chasisNo: "ABCDE123456",

@@ -9,7 +9,7 @@ type UserId = {
 type UserState = {
   id: UserId;
   name: string;
-  maritalStatus: "single" | "married";
+  maritalStatus: string | null;
   gender: "male" | "female";
   mobileNumber: string;
   email: string;
@@ -30,7 +30,7 @@ const initialState: UserState = {
     no: "",
   },
   name: "asdasda",
-  maritalStatus: "single",
+  maritalStatus: null,
   gender: "male",
   mobileNumber: "",
   email: "",
@@ -61,7 +61,7 @@ export const userSlice = createSlice({
     updateUserState: (
       state,
       action: PayloadAction<{
-        maritalStatus: "single" | "married";
+        maritalStatus: string | null;
         gender?: "male" | "female";
         mobileNumber: string;
         email: string;

@@ -15,7 +15,7 @@ import { updateVehicleRegNo } from "../../store/slices/vehicle";
 
 export type Inputs = {
   insuranceType: "new" | "renewal";
-  maritalStatus: "single" | "married";
+  maritalStatus: string | null;
   vehicleRegNo: string;
   email: string;
   postalCode: string;
@@ -37,8 +37,8 @@ const UserRegistrationForm = () => {
     formState: { errors },
   } = useForm<Inputs>({
     defaultValues: {
-      insuranceType: "new",
-      maritalStatus: "single",
+      insuranceType: "renewal",
+      maritalStatus: null,
       vehicleRegNo: "",
       email: "",
       postalCode: "",
@@ -87,6 +87,11 @@ const UserRegistrationForm = () => {
   };
 
   const watchIDType: string | null = watch("idType");
+
+  const regEx = {
+    passport: /^[A-Z]{1}[0-9]{8}$/,
+    nric: /^\d{6}-\d{2}-\d{4}$/,
+  };
 
   return (
     <>
@@ -186,7 +191,7 @@ const UserRegistrationForm = () => {
                   id="insuranceTypeNew"
                   type="radio"
                   value="new"
-                  className="peer absolute opacity-0"
+                  className="peer absolute opacity-0 -z-10"
                   checked={watch("insuranceType") === "new"}
                   {...register("insuranceType")}
                 />
@@ -211,7 +216,7 @@ const UserRegistrationForm = () => {
                   id="insuranceTypeRenewal"
                   type="radio"
                   value="renewal"
-                  className="peer absolute opacity-0"
+                  className="peer absolute opacity-0 -z-10"
                   checked={watch("insuranceType") === "renewal"}
                   {...register("insuranceType")}
                 />
@@ -231,123 +236,6 @@ const UserRegistrationForm = () => {
                   </span>
                 </label>
               </div>
-            </div>
-          </div>
-          {/* Marital Status Field */}
-          <div className="relative pb-2 flex flex-col gap-y-1 items-start w-full h-auto">
-            <span className="text-base text-center text-primary-black font-semibold">
-              Marital Status*
-            </span>
-            <div className="flex items-center justify-start gap-x-2 w-full">
-              {/* Single Value */}
-              <div className="relative flex items-center justify-center w-auto">
-                <input
-                  id="maritalStatusSingle"
-                  type="radio"
-                  value="single"
-                  className="peer absolute opacity-0"
-                  checked={watch("maritalStatus") === "single"}
-                  {...register("maritalStatus")}
-                />
-                <label
-                  htmlFor="maritalStatusSingle"
-                  className="px-1.5 flex items-center gap-x-2 border-2 border-solid border-transparent peer-focus-visible:border-primary-black rounded cursor-pointer"
-                >
-                  <span
-                    className={`inline-block w-2.5 h-2.5 rounded-full ${
-                      watch("maritalStatus") === "single"
-                        ? "bg-primary-black shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
-                        : "bg-white shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
-                    }`}
-                  />
-                  <span className="text-sm text-center text-dark-1 font-normal">
-                    Single
-                  </span>
-                </label>
-              </div>
-              {/* Married Value */}
-              <div className="relative flex items-center justify-center w-auto">
-                <input
-                  id="maritalStatusMarried"
-                  type="radio"
-                  value="married"
-                  className="peer absolute opacity-0"
-                  checked={watch("maritalStatus") === "married"}
-                  {...register("maritalStatus")}
-                />
-                <label
-                  htmlFor="maritalStatusMarried"
-                  className="px-1.5 flex items-center gap-x-2 border-2 border-solid border-transparent peer-focus-visible:border-primary-black rounded cursor-pointer"
-                >
-                  <span
-                    className={`inline-block w-2.5 h-2.5 rounded-full ${
-                      watch("maritalStatus") === "married"
-                        ? "bg-primary-black shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
-                        : "bg-white shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
-                    }`}
-                  />
-                  <span className="text-sm text-center text-dark-1 font-normal">
-                    Married
-                  </span>
-                </label>
-              </div>
-            </div>
-          </div>
-          {/* ID Type and ID No. Field */}
-          <div className="flex items-center justify-between gap-x-2 w-full">
-            <div className="relative pb-5 flex flex-col items-start gap-y-1 flex-[1_1_40%] w-auto h-auto">
-              <label
-                htmlFor="selectIdType"
-                className="text-base text-center text-primary-black font-semibold"
-              >
-                ID Type*
-              </label>
-              <Controller
-                control={control}
-                name="idType"
-                rules={{
-                  validate: (val) => val !== null || "Select an option",
-                  // validate: {
-                  //   notMa: (fieldValue) => {
-                  //     return fieldValue !== null || "Hell";
-                  //   },
-                  // },
-                }}
-                render={({ field: { value }, fieldState: { error } }) => (
-                  <SelectDropdown
-                    id="selectedIdType"
-                    onChange={(val: string) => (
-                      setValue("idType", val), clearErrors("idType")
-                    )}
-                    selected={value}
-                    error={error}
-                    optionList={[
-                      { label: "NRIC", value: "nric" },
-                      { label: "Passport", value: "passport" },
-                      { label: "Company", value: "company" },
-                    ]}
-                  />
-                )}
-              />
-            </div>
-            <div className="flex items-center flex-[1_1_60%] w-auto">
-              <InputTextField
-                label="ID/Company Reg No."
-                name="idNo"
-                register={register}
-                errors={errors.idNo}
-                placeholder="960116015377"
-                options={{
-                  maxLength: {
-                    value: 20,
-                    message: "Maximum 20 characters allowed.",
-                  },
-                  required: {
-                    value: true,
-                    message: "Field can't be empty",
-                  },
-                }}
-              />
             </div>
           </div>
           {/* Vehicle Reg. No. Field */}
@@ -374,6 +262,133 @@ const UserRegistrationForm = () => {
               },
             }}
           />
+          {/* ID Type and ID No. Field */}
+          <div className="flex items-center justify-between gap-x-2 w-full">
+            <div className="relative pb-5 flex flex-col items-start gap-y-1 flex-[1_1_40%] w-auto h-auto">
+              <label
+                htmlFor="selectIdType"
+                className="text-base text-center text-primary-black font-semibold"
+              >
+                ID Type*
+              </label>
+              <Controller
+                control={control}
+                name="idType"
+                rules={{
+                  validate: (val) => val !== null || "Select an option",
+                }}
+                render={({ field: { value }, fieldState: { error } }) => (
+                  <SelectDropdown
+                    id="selectedIdType"
+                    onChange={(val: string) => (
+                      setValue("idType", val), clearErrors("idType")
+                    )}
+                    selected={value}
+                    placeholder="NRIC"
+                    error={error}
+                    optionList={[
+                      { label: "NRIC", value: "nric" },
+                      { label: "Passport", value: "passport" },
+                      { label: "Company", value: "company" },
+                    ]}
+                  />
+                )}
+              />
+            </div>
+            <div className="flex items-center flex-[1_1_60%] w-auto">
+              <InputTextField
+                label="ID/Company Reg No."
+                name="idNo"
+                register={register}
+                errors={errors.idNo}
+                placeholder={
+                  watchIDType === "passport"
+                    ? "A12365498"
+                    : watchIDType === "company"
+                    ? "1344743-J"
+                    : "123456-12-1234"
+                }
+                options={{
+                  maxLength: {
+                    value: 20,
+                    message: "Maximum 20 characters allowed.",
+                  },
+                  required: {
+                    value: true,
+                    message: "Field can't be empty",
+                  },
+                  pattern: {
+                    value: watchIDType
+                      ? regEx[watchIDType as keyof typeof regEx]
+                      : /^\d{6}-\d{2}-\d{4}$/,
+                    message: "Invalid Id No.",
+                  },
+                  onChange(event: React.ChangeEvent<HTMLInputElement>) {
+                    let { value } = event.currentTarget;
+                    // remove all spaces from the text
+                    value = value.replace(/\s+/g, "");
+                    event.currentTarget.value = value.toUpperCase();
+                  },
+                }}
+              />
+            </div>
+          </div>
+          {/* Postal Code Field */}
+          <InputTextField
+            label="Postal Code"
+            name="postalCode"
+            placeholder="63000"
+            register={register}
+            errors={errors.postalCode}
+            options={{
+              maxLength: {
+                value: 5,
+                message: "Maximum 5 characters allowed.",
+              },
+              required: {
+                value: true,
+                message: "Field can't be empty",
+              },
+              onChange(event: React.ChangeEvent<HTMLInputElement>) {
+                let { value } = event.currentTarget;
+                value = value.replace(/\D/g, "");
+                event.currentTarget.value = value;
+              },
+            }}
+          />
+          {/* Marital Status Field */}
+          <div className="relative pb-5 flex flex-col items-start gap-y-1 flex-[1_1_40%] w-auto h-auto">
+            <label
+              htmlFor="selectMaritalStatus"
+              className="text-base text-center text-primary-black font-semibold"
+            >
+              Marital Status*
+            </label>
+            <Controller
+              control={control}
+              name="maritalStatus"
+              rules={{
+                validate: (val) => val !== null || "Select an option",
+              }}
+              render={({ field: { value }, fieldState: { error } }) => (
+                <SelectDropdown
+                  id="selectMaritalStatus"
+                  onChange={(val: string) => (
+                    setValue("maritalStatus", val), clearErrors("maritalStatus")
+                  )}
+                  placeholder="Single"
+                  selected={value}
+                  error={error}
+                  optionList={[
+                    { label: "Single", value: "single" },
+                    { label: "Married", value: "married" },
+                    { label: "Divorced", value: "divorced" },
+                    { label: "Widowed", value: "widowed" },
+                  ]}
+                />
+              )}
+            />
+          </div>
           {watchIDType && watchIDType === "passport" && (
             <>
               {/* Gender Field */}
@@ -495,29 +510,7 @@ const UserRegistrationForm = () => {
               },
             }}
           />
-          {/* Postal Code Field */}
-          <InputTextField
-            label="Postal Code"
-            name="postalCode"
-            placeholder="63000"
-            register={register}
-            errors={errors.postalCode}
-            options={{
-              maxLength: {
-                value: 5,
-                message: "Maximum 5 characters allowed.",
-              },
-              required: {
-                value: true,
-                message: "Field can't be empty",
-              },
-              onChange(event: React.ChangeEvent<HTMLInputElement>) {
-                let { value } = event.currentTarget;
-                value = value.replace(/\D/g, "");
-                event.currentTarget.value = value;
-              },
-            }}
-          />
+
           <Code
             textToDisplay="I have a referral code"
             title="Referral Code"
