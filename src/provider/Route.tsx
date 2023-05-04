@@ -27,7 +27,7 @@ const router = createBrowserRouter(
           fallback={
             <>
               <Header />
-              <main className="relative w-full min-h-[calc(100vh-141px)] h-full">
+              <main className="relative w-full min-h-[calc(100vh-159px)] h-full">
                 <div className="mx-auto py-auto py-10 flex flex-col items-center justify-between max-w-3xl w-full">
                   <img
                     src={GuyImg}
