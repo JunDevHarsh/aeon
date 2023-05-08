@@ -1,8 +1,8 @@
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-const minAge = 16;
-const maxAge = 80;
+// const minAge = 16;
+// const maxAge = 80;
 
 function DateOfBirthField({
   selected,
@@ -24,11 +24,11 @@ function DateOfBirthField({
     onChange(dateObj);
   }
 
-  const maxDate = new Date();
-  maxDate.setFullYear(maxDate.getFullYear() - maxAge);
+  // const maxDate = new Date();
+  // maxDate.setFullYear(maxDate.getFullYear() - maxAge);
 
-  const minDate = new Date();
-  minDate.setFullYear(minDate.getFullYear() - minAge);
+  // const minDate = new Date();
+  // minDate.setFullYear(minDate.getFullYear() - minAge);
 
   return (
     <div className="relative pb-5 w-full">
@@ -47,8 +47,8 @@ function DateOfBirthField({
           disabled={disabled}
           placeholderText={new Date().toISOString().substring(0, 10)}
           dateFormat="yyyy-MM-dd"
-          maxDate={minDate}
-          minDate={maxDate}
+          // maxDate={minDate}
+          // minDate={maxDate}
           className="py-1.5 px-2 w-full text-sm text-left text-primary-black border border-solid border-[#CFD0D7] rounded outline outline-2 outline-transparent focus-visible:outline-primary-pink"
         />
       </div>

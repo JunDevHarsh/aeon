@@ -66,21 +66,22 @@ const UserRegistrationForm = () => {
       mobileNumber,
       postalCode,
       vehicleRegNo,
+      dateOfBirth,
     } = data;
-    let { dateOfBirth } = data;
-    if (idType === "nric") {
-      const year = parseInt(idNo.slice(0, 2));
-      const month = parseInt(idNo.slice(2, 4));
-      const day = parseInt(idNo.slice(4, 6));
-      const currentYear = new Date().getFullYear() % 100;
-      // Check if year should belong to the 19th or 20th century
-      const century = year > currentYear ? 1900 : 2000;
+    // let { dateOfBirth } = data;
+    // if (idType === "nric") {
+    //   const year = parseInt(idNo.slice(0, 2));
+    //   const month = parseInt(idNo.slice(2, 4));
+    //   const day = parseInt(idNo.slice(4, 6));
+    //   const currentYear = new Date().getFullYear() % 100;
+    //   // Check if year should belong to the 19th or 20th century
+    //   const century = year > currentYear ? 1900 : 2000;
 
-      const birthYear = century + year;
+    //   const birthYear = century + year;
 
-      dateOfBirth = new Date(`${birthYear}-${month}-${day}`);
-      setValue("dateOfBirth", dateOfBirth);
-    }
+    //   dateOfBirth = new Date(`${birthYear}-${month}-${day}`);
+    //   setValue("dateOfBirth", dateOfBirth);
+    // }
     // update insurance => type, vehicle
     dispatch(updateVehicleRegNo(vehicleRegNo));
     dispatch(
@@ -95,7 +96,7 @@ const UserRegistrationForm = () => {
         maritalStatus,
         mobileNumber,
         postalCode,
-        dateOfBirth: dateOfBirth?.toISOString(),
+        dateOfBirth: dateOfBirth ? dateOfBirth.toISOString() : null,
       })
     );
     navigate("/vehicle-info");
@@ -311,7 +312,7 @@ const UserRegistrationForm = () => {
                         setValue("idNo", "");
                       }
                       prevValue = "";
-                      clearErrors("idNo")
+                      clearErrors("idNo");
                       clearErrors("idType");
                     }}
                     selected={value}
