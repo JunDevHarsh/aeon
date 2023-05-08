@@ -1,5 +1,11 @@
 import { createContext, useReducer } from "react";
-import { addDriverDetailsReducer, addOnsReducer } from "./reducers";
+import {
+  addDriverDetailsReducer,
+  addOnsReducer,
+  driverDetailsReducer,
+} from "./reducers";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store/store";
 
 // Types
 export type AddOns = {
@@ -16,11 +22,30 @@ export type AdditionalDriverDetails = {
   idType: string | null;
   idNo: string;
   relationship: string | null;
+  nationality: string | null;
+};
+
+export type DriverDetails = {
+  name: string;
+  mobileNumber: string;
+  email: string;
+  nationality: string | null;
+  race: string | null;
+  drivingExp: string;
+  occupation: string | null;
+  address1: string;
+  address2: string;
+  address3: string;
+  city: string;
+  state: string;
+  country: string | null;
+  postalCode: string;
 };
 
 export type InsuranceState = {
   addOns: AddOns[];
   addDriverDetails: AdditionalDriverDetails[];
+  driverDetails: DriverDetails;
 };
 
 type ActionMap<M extends { [index: string]: any }> = {
@@ -43,6 +68,10 @@ export enum AddDriverTypes {
   AddNewDriverDetails = "ADD_NEW_DRIVER_DETAILS",
   UpdateDriverDetails = "UPDATE_DRIVER_DETAILS",
   RemoveDriverDetailsById = "REMOVE_DRIVER_DETAILS",
+}
+
+export enum DriverTypes {
+  UpdateDriverInfo = "UPDATE_DRIVER_INFO",
 }
 
 export type AddOnsActionType = {
@@ -70,6 +99,7 @@ export type AddDriverDetailsPayload = {
     idType: null;
     idNo: string;
     relationship: null;
+    nationality: null;
   };
   [AddDriverTypes.UpdateDriverDetails]: {
     id: string;
@@ -83,6 +113,16 @@ export type AddDriverDetailsPayload = {
 
 export type AddDriverActions =
   ActionMap<AddDriverDetailsPayload>[keyof ActionMap<AddDriverDetailsPayload>];
+
+export type DriverDetailsPayload = {
+  [DriverTypes.UpdateDriverInfo]: {
+    prop: string;
+    value: string;
+  };
+};
+
+export type DriverDetailsActions =
+  ActionMap<DriverDetailsPayload>[keyof ActionMap<DriverDetailsPayload>];
 
 const initialInsuranceState: InsuranceState = {
   addOns: [
@@ -102,19 +142,38 @@ const initialInsuranceState: InsuranceState = {
     },
   ],
   addDriverDetails: [],
+  driverDetails: {
+    name: "",
+    email: "",
+    city: "",
+    country: "",
+    mobileNumber: "",
+    drivingExp: "",
+    nationality: null,
+    occupation: null,
+    race: null,
+    address1: "",
+    address2: "",
+    address3: "",
+    state: "",
+    postalCode: "",
+  },
 };
 
 export const InsuranceContext = createContext<{
   state: InsuranceState;
-  dispatch: React.Dispatch<any>;
+  dispatch: React.Dispatch<
+    AddOnsActions | AddDriverActions | DriverDetailsActions
+  >;
 }>({ state: initialInsuranceState, dispatch: () => null });
 
 const mainReducer = (
-  { addOns, addDriverDetails }: InsuranceState,
-  action: AddOnsActions | AddDriverActions
+  { addOns, addDriverDetails, driverDetails }: InsuranceState,
+  action: AddOnsActions | AddDriverActions | DriverDetailsActions
 ) => ({
   addOns: addOnsReducer(addOns, action),
   addDriverDetails: addDriverDetailsReducer(addDriverDetails, action),
+  driverDetails: driverDetailsReducer(driverDetails, action),
 });
 
 export const InsuranceProvider = ({
@@ -122,7 +181,17 @@ export const InsuranceProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [state, dispatch] = useReducer(mainReducer, initialInsuranceState);
+  const user = useSelector((state: RootState) => state.user);
+  const [state, dispatch] = useReducer(mainReducer, {
+    ...initialInsuranceState,
+    driverDetails: {
+      ...initialInsuranceState.driverDetails,
+      email: user.email,
+      mobileNumber: user.mobileNumber,
+      postalCode: user.postalCode,
+    },
+  });
+
   return (
     <InsuranceContext.Provider value={{ state, dispatch }}>
       {children}

@@ -16,7 +16,7 @@ const CheckboxWithTextField: React.FC<CheckboxWithTextProps> = ({
   const uid = useId();
 
   return (
-    <div className="relative flex items-center justify-center">
+    <div className="relative flex items-center justify-start">
       <label
         htmlFor={uid}
         className="relative flex items-center justify-center w-auto cursor-pointer"

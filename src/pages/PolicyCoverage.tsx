@@ -26,10 +26,16 @@ export function numberWithCommas(x: number): string {
   return x.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
 }
 
+function getRandomVehicleValue(minValue: number, maxValue: number) {
+  return new Promise(function (resolve) {
+    setTimeout(function () {
+      resolve(getRandomNumber(minValue, maxValue));
+    }, 1000);
+  });
+}
+
 const PolicyCoveragePage = () => {
-  const [value, setValue] = useState<number>(() =>
-    getRandomNumber(MIN_VALUE, MAX_VALUE)
-  );
+  const [value, setValue] = useState<number>(0);
   const [coverage, setCovergae] = useState<CoverageType>({
     type: "market",
     carType: null,
@@ -81,7 +87,7 @@ const PolicyCoveragePage = () => {
               <div className="relative inline-block w-auto">
                 <input
                   type="radio"
-                  name="covergae-type"
+                  name="coverage-type"
                   id="marketValue1"
                   value="market"
                   checked={coverage.type === "market"}

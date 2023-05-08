@@ -8,6 +8,23 @@ import {
 } from "../context/context";
 import SelectDropdown from "../fields/SelectDropdown";
 
+// const regEx = {
+//   passport: {
+//     pattern: /^[A-Z]{1}[0-9]{8}$/,
+//     errorMessage: "For e.g. A12365498",
+//   },
+//   nric: {
+//     pattern: /^\d{6}-\d{2}-\d{4}$/,
+//     errorMessage: "For e.g. 050505-12-2321",
+//   },
+//   company: {
+//     pattern: /^[0-9]{7}-[A-Z]/g,
+//     errorMessage: "For e.g. 1234567-J",
+//   },
+// };
+
+let prevValue: string = "";
+
 const AddOnsContainer = () => {
   const {
     state: { addOns, addDriverDetails },
@@ -65,6 +82,7 @@ const AddOnsContainer = () => {
                 Additional Driver {index + 1}
               </h3>
             </div>
+            {/* Name Field */}
             <div className="relative pb-5 flex flex-col items-start gap-y-1 w-full h-auto">
               <label
                 htmlFor={`addDriverDetailsName-${driverDetails.id}`}
@@ -76,40 +94,18 @@ const AddOnsContainer = () => {
                 id={`addDriverDetailsName-${driverDetails.id}`}
                 type="text"
                 value={driverDetails.name}
-                placeholder="USerName"
+                placeholder="UserName"
                 onChange={(e) => {
                   dispatch({
                     type: AddDriverTypes.UpdateDriverDetails,
                     payload: {
                       id: driverDetails.id,
                       prop: "name",
-                      value: e.target.value,
+                      value: e.target.value.toUpperCase(),
                     },
                   });
                 }}
                 className="py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium border border-solid rounded outline outline-1 outline-transparent focus-visible:outline-primary-pink border-[#CFD0D7] focus-visible:border-primary-pink"
-              />
-            </div>
-            {/* Relationship Field */}
-            <div className="relative pb-5 flex flex-col items-start gap-y-1 flex-[1_1_40%] w-auto h-auto">
-              <span className="text-base text-center text-primary-black font-semibold">
-                Relationship
-              </span>
-              <SelectDropdown
-                id={`relationship-${driverDetails.id}`}
-                placeholder="Brother"
-                onChange={(val: string) =>
-                  dispatch({
-                    type: AddDriverTypes.UpdateDriverDetails,
-                    payload: {
-                      id: driverDetails.id,
-                      prop: "relationship",
-                      value: val,
-                    },
-                  })
-                }
-                selected={driverDetails.relationship}
-                optionList={[{ label: "Brother", value: "brother" }]}
               />
             </div>
             {/* ID Type Field */}
@@ -120,7 +116,7 @@ const AddOnsContainer = () => {
               <SelectDropdown
                 id={`idType-${driverDetails.id}`}
                 placeholder="NRIC"
-                onChange={(val: string) =>
+                onChange={(val: string) => {
                   dispatch({
                     type: AddDriverTypes.UpdateDriverDetails,
                     payload: {
@@ -128,10 +124,22 @@ const AddOnsContainer = () => {
                       prop: "idType",
                       value: val,
                     },
-                  })
-                }
+                  });
+                  dispatch({
+                    type: AddDriverTypes.UpdateDriverDetails,
+                    payload: {
+                      id: driverDetails.id,
+                      prop: "idNo",
+                      value: "",
+                    },
+                  });
+                }}
                 selected={driverDetails.idType}
-                optionList={[{ label: "NRIC", value: "nric" }]}
+                optionList={[
+                  { label: "NRIC", value: "nric" },
+                  { label: "Passport", value: "passport" },
+                  { label: "Company", value: "company" },
+                ]}
               />
             </div>
             {/* ID No. Field */}
@@ -148,6 +156,28 @@ const AddOnsContainer = () => {
                 value={driverDetails.idNo}
                 placeholder="IADS787"
                 onChange={(e) => {
+                  let { value } = e.target;
+                  // remove all spaces from the text
+                  value = value.replace(/\s+/g, "").toUpperCase();
+                  if (driverDetails.idType === "nric") {
+                    if (value.length === 6 || value.length === 9) {
+                      if (value.length > prevValue.length) {
+                        value += "-";
+                      } else {
+                        value = value.slice(0, value.length - 1);
+                      }
+                    }
+                  } else if (driverDetails.idType === "company") {
+                    if (value.length === 7) {
+                      if (value.length > prevValue.length) {
+                        value += "-";
+                      } else {
+                        value = value.slice(0, value.length - 1);
+                      }
+                    }
+                  }
+                  prevValue = value;
+                  e.target.value = value;
                   dispatch({
                     type: AddDriverTypes.UpdateDriverDetails,
                     payload: {
@@ -160,8 +190,66 @@ const AddOnsContainer = () => {
                 className="py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium border border-solid rounded outline outline-1 outline-transparent focus-visible:outline-primary-pink border-[#CFD0D7] focus-visible:border-primary-pink"
               />
             </div>
+            {/* Relationship Field */}
+            <div className="relative pb-5 flex flex-col items-start gap-y-1 flex-[1_1_40%] w-auto h-auto">
+              <span className="text-base text-center text-primary-black font-semibold">
+                Relationship
+              </span>
+              <SelectDropdown
+                id={`relationship-${driverDetails.id}`}
+                placeholder="Insured"
+                onChange={(val: string) =>
+                  dispatch({
+                    type: AddDriverTypes.UpdateDriverDetails,
+                    payload: {
+                      id: driverDetails.id,
+                      prop: "relationship",
+                      value: val,
+                    },
+                  })
+                }
+                selected={driverDetails.relationship}
+                optionList={[
+                  { label: "Insured", value: "insured" },
+                  { label: "Parent", value: "parent" },
+                  { label: "Parent-in-law", value: "parent-in-law" },
+                  { label: "Spouse", value: "spouse" },
+                  { label: "Child", value: "child" },
+                  { label: "Siblings", value: "siblings" },
+                  { label: "Co-worker", value: "co-worker" },
+                ]}
+              />
+            </div>
+            {/* Relationship Field */}
+            <div className="relative pb-5 flex flex-col items-start gap-y-1 flex-[1_1_40%] w-auto h-auto">
+              <span className="text-base text-center text-primary-black font-semibold">
+                Nationality
+              </span>
+              <SelectDropdown
+                id={`nationality-${driverDetails.id}`}
+                placeholder="Malayisa"
+                onChange={(val: string) =>
+                  dispatch({
+                    type: AddDriverTypes.UpdateDriverDetails,
+                    payload: {
+                      id: driverDetails.id,
+                      prop: "relationship",
+                      value: val,
+                    },
+                  })
+                }
+                disabled={driverDetails.idType === "nric"}
+                selected={driverDetails.relationship}
+                optionList={[
+                  { label: "Malaysia", value: "malaysia" },
+                  { label: "India", value: "india" },
+                  { label: "Other", value: "other" },
+                ]}
+              />
+            </div>
           </div>
         ))}
+        {/* Add Additional Driver button */}
         <div className="flex items-center justify-start w-full">
           <button
             className="flex items-center justify-start w-auto"
@@ -171,8 +259,10 @@ const AddOnsContainer = () => {
                 payload: {
                   id: nanoid(),
                   name: "",
+                  idNo: "",
                   idType: null,
                   relationship: null,
+                  nationality: null,
                 },
               });
             }}

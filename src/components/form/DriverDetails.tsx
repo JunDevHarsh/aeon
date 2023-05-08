@@ -3,64 +3,46 @@ import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import InputTextField from "../fields/InputText";
-import DateOfBirthField from "../fields/DateOfBirth";
 import SelectDropdown from "../fields/SelectDropdown";
 import MobileNumberField from "../fields/MobileNumber";
+import { useContext } from "react";
+import { InsuranceContext, DriverTypes } from "../context/context";
 
 type Inputs = {
   name: string;
-  idNo: string;
-  idType: string | null;
-  dateOfBirth: string | null;
   email: string;
   mobileNumber: string;
-  maritalStatus: string | null;
-  gender: "male" | "female";
+  race: string | null;
   postalCode: string;
+  occupation: string | null;
   drivingExp: string;
-  address: string;
-  state: string | null;
+  address1: string;
+  address2: string;
+  address3: string;
+  state: string;
   city: string | null;
   nationality: string | null;
+  country: string | null;
 };
 
 const DriverDetailsForm = () => {
+  const { dateOfBirth, id, gender, maritalStatus } = useSelector(
+    (state: RootState) => state.user
+  );
   const {
-    name,
-    dateOfBirth,
-    id,
-    email,
-    gender,
-    mobileNumber,
-    maritalStatus,
-    drivingExp,
-    postalCode,
-    address,
-  } = useSelector((state: RootState) => state.user);
+    state: { driverDetails },
+    dispatch,
+  } = useContext(InsuranceContext);
+
   const {
     control,
-    watch,
     register,
     handleSubmit,
     setValue,
-    clearErrors,
     formState: { errors },
   } = useForm<Inputs>({
     defaultValues: {
-      name: name,
-      dateOfBirth: dateOfBirth,
-      idNo: id.no,
-      idType: id.type,
-      email: email,
-      mobileNumber: mobileNumber,
-      maritalStatus: maritalStatus,
-      postalCode: postalCode,
-      gender: gender,
-      drivingExp: drivingExp,
-      address: address.residence,
-      city: address.city,
-      nationality: address.nationality,
-      state: address.state,
+      ...driverDetails,
     },
   });
 
@@ -75,6 +57,7 @@ const DriverDetailsForm = () => {
       </div>
       <form onSubmit={handleSubmit(onSubmit)} className="relative mt-4 w-full">
         <div className="grid grid-cols-2 gap-x-4 w-full">
+          {/* Name field */}
           <InputTextField
             label="Name(as per NRIC)"
             name="name"
@@ -89,69 +72,50 @@ const DriverDetailsForm = () => {
               onChange(event: React.ChangeEvent<HTMLInputElement>) {
                 let { value } = event.currentTarget;
                 event.currentTarget.value = value.toUpperCase();
+                dispatch({
+                  type: DriverTypes.UpdateDriverInfo,
+                  payload: {
+                    prop: "name",
+                    value: event.target.value,
+                  },
+                });
               },
             }}
           />
-          <Controller
-            control={control}
-            name="dateOfBirth"
-            render={({ field }) => (
-              <DateOfBirthField
-                onChange={(date: Date | null) => field.onChange(date)}
-                selected={field.value ? new Date(field.value) : null}
-                disabled={true}
-              />
-            )}
-          />
+          {/* DOB Field */}
+          <div className="relative pb-5 w-full">
+            <div className="relative">
+              <span className="inline-block mb-1 text-base text-left text-primary-black font-semibold">
+                DOB
+              </span>
+              <div className="py-1.5 px-2 w-full text-sm text-left text-[#9ca3af] bg-[#fafafa] border border-solid border-[#CFD0D7] rounded cursor-default">
+                {dateOfBirth?.slice(0, 10) || "DOB"}
+              </div>
+            </div>
+          </div>
           {/* ID Type Field */}
-          <div className="relative pb-5 flex flex-col items-start gap-y-1 w-auto h-auto">
-            <label
-              htmlFor="selectIdType"
-              className="text-base text-center text-primary-black font-semibold"
-            >
-              ID Type*
-            </label>
-            <Controller
-              control={control}
-              name="idType"
-              rules={{
-                validate: (val) => val !== null || "Select an option",
-                // validate: {
-                //   notMa: (fieldValue) => {
-                //     return fieldValue !== null || "Hell";
-                //   },
-                // },
-              }}
-              render={({ field: { value }, fieldState: { error } }) => (
-                <SelectDropdown
-                  id="selectedIdType"
-                  disabled={true}
-                  onChange={(val: string) => (
-                    setValue("idType", val), clearErrors("idType")
-                  )}
-                  selected={value}
-                  error={error}
-                  optionList={[
-                    { label: "NRIC", value: "nric" },
-                    { label: "Passport", value: "passport" },
-                    { label: "Company", value: "company" },
-                  ]}
-                />
-              )}
-            />
+          <div className="relative pb-5 w-full">
+            <div className="relative">
+              <span className="inline-block mb-1 text-base text-left text-primary-black font-semibold">
+                ID Type
+              </span>
+              <div className="py-1.5 px-2 w-full text-sm text-left text-[#9ca3af] bg-[#fafafa] border border-solid border-[#CFD0D7] rounded cursor-default">
+                {id.type ?? "NRIC"}
+              </div>
+            </div>
           </div>
           {/* ID No. Field */}
           <div className="flex items-center w-auto">
-            <InputTextField
-              label="ID/Company Reg No."
-              name="idNo"
-              register={register}
-              errors={errors.idNo}
-              placeholder="960116015377"
-              options={{
-                disabled: true,
-              }}
-            />
+            <div className="relative pb-5 w-full">
+              <div className="relative">
+                <span className="inline-block mb-1 text-base text-left text-primary-black font-semibold">
+                  ID/Company Reg No.
+                </span>
+                <div className="py-1.5 px-2 w-full font-medium text-sm text-left text-[#9ca3af] bg-[#fafafa] border border-solid border-[#CFD0D7] rounded cursor-default">
+                  {id.no || "92374887"}
+                </div>
+              </div>
+            </div>
           </div>
           {/* Mobile Number Field */}
           <MobileNumberField
@@ -173,8 +137,15 @@ const DriverDetailsForm = () => {
               },
               onChange(event: React.ChangeEvent<HTMLInputElement>) {
                 let { value } = event.currentTarget;
-                value = value.replace(/\D/g, "");
-                event.currentTarget.value = value;
+                let updatedValue = value.replace(/\D/g, "");
+                event.currentTarget.value = updatedValue;
+                dispatch({
+                  type: DriverTypes.UpdateDriverInfo,
+                  payload: {
+                    prop: "mobileNumber",
+                    value: updatedValue,
+                  },
+                });
               },
             }}
           />
@@ -198,125 +169,37 @@ const DriverDetailsForm = () => {
                 value: true,
                 message: "Field can't be empty",
               },
+              onChange(event: React.ChangeEvent<HTMLInputElement>) {
+                let { value } = event.currentTarget;
+                dispatch({
+                  type: DriverTypes.UpdateDriverInfo,
+                  payload: {
+                    prop: "email",
+                    value: value,
+                  },
+                });
+              },
             }}
           />
           {/* Marital Status Field */}
-          <div className="relative pb-2 flex flex-col gap-y-1 items-start w-full h-auto">
-            <span className="text-base text-center text-primary-black font-semibold">
-              Marital Status
-            </span>
-            <div className="flex items-center justify-start gap-x-2 w-full">
-              {/* Single Value */}
-              <div className="relative flex items-center justify-center w-auto">
-                <input
-                  id="maritalStatusSingle"
-                  type="radio"
-                  value="single"
-                  className="peer absolute opacity-0"
-                  checked={watch("maritalStatus") === "single"}
-                  {...register("maritalStatus")}
-                />
-                <label
-                  htmlFor="maritalStatusSingle"
-                  className="px-1.5 flex items-center gap-x-2 border-2 border-solid border-transparent peer-focus-visible:border-primary-black rounded cursor-pointer"
-                >
-                  <span
-                    className={`inline-block w-2.5 h-2.5 rounded-full ${
-                      watch("maritalStatus") === "single"
-                        ? "bg-primary-black shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
-                        : "bg-white shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
-                    }`}
-                  />
-                  <span className="text-sm text-center text-dark-1 font-normal">
-                    Single
-                  </span>
-                </label>
-              </div>
-              {/* Married Value */}
-              <div className="relative flex items-center justify-center w-auto">
-                <input
-                  id="maritalStatusMarried"
-                  type="radio"
-                  value="married"
-                  className="peer absolute opacity-0"
-                  checked={watch("maritalStatus") === "married"}
-                  {...register("maritalStatus")}
-                />
-                <label
-                  htmlFor="maritalStatusMarried"
-                  className="px-1.5 flex items-center gap-x-2 border-2 border-solid border-transparent peer-focus-visible:border-primary-black rounded cursor-pointer"
-                >
-                  <span
-                    className={`inline-block w-2.5 h-2.5 rounded-full ${
-                      watch("maritalStatus") === "married"
-                        ? "bg-primary-black shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
-                        : "bg-white shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
-                    }`}
-                  />
-                  <span className="text-sm text-center text-dark-1 font-normal">
-                    Married
-                  </span>
-                </label>
+          <div className="relative pb-5 w-full">
+            <div className="relative">
+              <span className="inline-block mb-1 text-base text-left text-primary-black font-semibold">
+                Marital Status
+              </span>
+              <div className="py-1.5 px-2 w-full text-sm text-left text-[#9ca3af] bg-[#fafafa] border border-solid border-[#CFD0D7] rounded cursor-default">
+                {maritalStatus ?? "Single"}
               </div>
             </div>
           </div>
           {/* Gender Field */}
-          <div className="relative pb-2 flex flex-col gap-y-1 items-start w-full h-auto">
-            <span className="text-base text-center text-primary-black font-semibold">
-              Gender
-            </span>
-            <div className="flex items-center justify-start gap-x-2 w-full">
-              {/* Single Value */}
-              <div className="relative flex items-center justify-center w-auto">
-                <input
-                  id="genderMale"
-                  type="radio"
-                  value="male"
-                  className="peer absolute opacity-0"
-                  checked={watch("gender") === "male"}
-                  {...register("gender")}
-                />
-                <label
-                  htmlFor="genderMale"
-                  className="px-1.5 flex items-center gap-x-2 border-2 border-solid border-transparent peer-focus-visible:border-primary-black rounded cursor-pointer"
-                >
-                  <span
-                    className={`inline-block w-2.5 h-2.5 rounded-full ${
-                      watch("gender") === "male"
-                        ? "bg-primary-black shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
-                        : "bg-white shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
-                    }`}
-                  />
-                  <span className="text-sm text-center text-dark-1 font-normal">
-                    Male
-                  </span>
-                </label>
-              </div>
-              {/* Female Value */}
-              <div className="relative flex items-center justify-center w-auto">
-                <input
-                  id="genderFemale"
-                  type="radio"
-                  value="female"
-                  className="peer absolute opacity-0"
-                  checked={watch("gender") === "female"}
-                  {...register("gender")}
-                />
-                <label
-                  htmlFor="genderFemale"
-                  className="px-1.5 flex items-center gap-x-2 border-2 border-solid border-transparent peer-focus-visible:border-primary-black rounded cursor-pointer"
-                >
-                  <span
-                    className={`inline-block w-2.5 h-2.5 rounded-full ${
-                      watch("gender") === "female"
-                        ? "bg-primary-black shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
-                        : "bg-white shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
-                    }`}
-                  />
-                  <span className="text-sm text-center text-dark-1 font-normal">
-                    Female
-                  </span>
-                </label>
+          <div className="relative pb-5 w-full">
+            <div className="relative">
+              <span className="inline-block mb-1 text-base text-left text-primary-black font-semibold">
+                Gender
+              </span>
+              <div className="py-1.5 px-2 w-full text-sm text-left text-[#9ca3af] bg-[#fafafa] border border-solid border-[#CFD0D7] rounded cursor-default">
+                {gender ?? "Male"}
               </div>
             </div>
           </div>
@@ -337,9 +220,16 @@ const DriverDetailsForm = () => {
               render={({ field: { value }, fieldState: { error } }) => (
                 <SelectDropdown
                   id="nationalityType"
-                  onChange={(val: string) => (
-                    setValue("nationality", val), clearErrors("nationality")
-                  )}
+                  onChange={(val: string) => {
+                    setValue("nationality", val);
+                    dispatch({
+                      type: DriverTypes.UpdateDriverInfo,
+                      payload: {
+                        prop: "nationality",
+                        value: val,
+                      },
+                    });
+                  }}
                   selected={value}
                   error={error}
                   placeholder="Malaysia"
@@ -347,6 +237,85 @@ const DriverDetailsForm = () => {
                     { label: "Malaysia", value: "malaysia" },
                     { label: "India", value: "india" },
                     { label: "Others", value: "others" },
+                  ]}
+                />
+              )}
+            />
+          </div>
+          {/* Race Field */}
+          <div className="relative pb-5 flex flex-col items-start gap-y-1 w-auto h-auto">
+            <label
+              htmlFor="raceType"
+              className="text-base text-center text-primary-black font-semibold"
+            >
+              Race
+            </label>
+            <Controller
+              control={control}
+              name="race"
+              rules={{
+                validate: (val) => val !== null || "Select an option",
+              }}
+              render={({ field: { value }, fieldState: { error } }) => (
+                <SelectDropdown
+                  id="raceType"
+                  onChange={(val: string) => {
+                    setValue("race", val);
+                    dispatch({
+                      type: DriverTypes.UpdateDriverInfo,
+                      payload: {
+                        prop: "race",
+                        value: val,
+                      },
+                    });
+                  }}
+                  selected={value}
+                  error={error}
+                  placeholder="CHI"
+                  optionList={[
+                    { label: "CHI", value: "Chinese" },
+                    { label: "EUR", value: "Eurasian" },
+                    { label: "MAL", value: "Malay" },
+                    { label: "IND", value: "Indian" },
+                    { label: "OTH", value: "Others" },
+                  ]}
+                />
+              )}
+            />
+          </div>
+          {/* Occupation Field */}
+          <div className="relative pb-5 flex flex-col items-start gap-y-1 w-auto h-auto">
+            <label
+              htmlFor="occupationType"
+              className="text-base text-center text-primary-black font-semibold"
+            >
+              Occupation
+            </label>
+            <Controller
+              control={control}
+              name="occupation"
+              rules={{
+                validate: (val) => val !== null || "Select an option",
+              }}
+              render={({ field: { value }, fieldState: { error } }) => (
+                <SelectDropdown
+                  id="occupationType"
+                  onChange={(val: string) => {
+                    setValue("occupation", val);
+                    dispatch({
+                      type: DriverTypes.UpdateDriverInfo,
+                      payload: {
+                        prop: "occupation",
+                        value: val,
+                      },
+                    });
+                  }}
+                  selected={value}
+                  error={error}
+                  placeholder="Teacher"
+                  optionList={[
+                    { label: "Teacher", value: "Teacher" },
+                    { label: "Engineer", value: "Engineer" },
                   ]}
                 />
               )}
@@ -366,18 +335,25 @@ const DriverDetailsForm = () => {
               },
               onChange(event: React.ChangeEvent<HTMLInputElement>) {
                 let { value } = event.currentTarget;
-                value = value.replace(/\D/g, "");
-                event.currentTarget.value = value;
+                const updatedValue = value.replace(/\D/g, "");
+                event.currentTarget.value = updatedValue;
+                dispatch({
+                  type: DriverTypes.UpdateDriverInfo,
+                  payload: {
+                    prop: "drivingExp",
+                    value: updatedValue,
+                  },
+                });
               },
             }}
           />
-          {/* Postal Code Field */}
+          {/* Address 1 Field */}
           <InputTextField
-            label="Address"
-            name="address"
+            label="Address 1"
+            name="address1"
             placeholder="Address"
             register={register}
-            errors={errors.address}
+            errors={errors.address1}
             options={{
               maxLength: {
                 value: 250,
@@ -387,71 +363,148 @@ const DriverDetailsForm = () => {
                 value: true,
                 message: "Field can't be empty",
               },
+              onChange(event: React.ChangeEvent<HTMLInputElement>) {
+                let { value } = event.currentTarget;
+                dispatch({
+                  type: DriverTypes.UpdateDriverInfo,
+                  payload: {
+                    prop: "address1",
+                    value: value,
+                  },
+                });
+              },
             }}
           />
+          {/* Address 2 Field */}
+          <InputTextField
+            label="Address 2"
+            name="address2"
+            placeholder="Address"
+            register={register}
+            options={{
+              maxLength: {
+                value: 250,
+                message: "Maximum 250 characters allowed.",
+              },
+              onChange(event: React.ChangeEvent<HTMLInputElement>) {
+                let { value } = event.currentTarget;
+                dispatch({
+                  type: DriverTypes.UpdateDriverInfo,
+                  payload: {
+                    prop: "address2",
+                    value: value,
+                  },
+                });
+              },
+            }}
+          />
+          {/* Address 3 Field */}
+          <InputTextField
+            label="Address 3"
+            name="address3"
+            placeholder="Address"
+            register={register}
+            options={{
+              maxLength: {
+                value: 250,
+                message: "Maximum 250 characters allowed.",
+              },
+              onChange(event: React.ChangeEvent<HTMLInputElement>) {
+                let { value } = event.currentTarget;
+                dispatch({
+                  type: DriverTypes.UpdateDriverInfo,
+                  payload: {
+                    prop: "address3",
+                    value: value,
+                  },
+                });
+              },
+            }}
+          />
+          {/* Country Field */}
+          <div className="relative pb-5 flex flex-col items-start gap-y-1 w-auto h-auto">
+            <label
+              htmlFor="country"
+              className="text-base text-center text-primary-black font-semibold"
+            >
+              Country
+            </label>
+            <Controller
+              control={control}
+              name="country"
+              rules={{
+                validate: (val) => val !== null || "Select an option",
+              }}
+              render={({ field: { value }, fieldState: { error } }) => (
+                <SelectDropdown
+                  id="country"
+                  onChange={(val: string) => {
+                    setValue("country", val);
+                    dispatch({
+                      type: DriverTypes.UpdateDriverInfo,
+                      payload: {
+                        prop: "country",
+                        value: val,
+                      },
+                    });
+                  }}
+                  selected={value}
+                  error={error}
+                  placeholder="Malaysia"
+                  optionList={[
+                    { label: "Malaysia", value: "Malaysia" },
+                    { label: "India", value: "India" },
+                  ]}
+                />
+              )}
+            />
+          </div>
           {/* State Field */}
-          <div className="relative pb-5 flex flex-col items-start gap-y-1 w-auto h-auto">
-            <label
-              htmlFor="stateType"
-              className="text-base text-center text-primary-black font-semibold"
-            >
-              State
-            </label>
-            <Controller
-              control={control}
-              name="state"
-              rules={{
-                validate: (val) => val !== null || "Select an option",
-              }}
-              render={({ field: { value }, fieldState: { error } }) => (
-                <SelectDropdown
-                  id="stateType"
-                  onChange={(val: string) => (
-                    setValue("state", val), clearErrors("state")
-                  )}
-                  selected={value}
-                  error={error}
-                  placeholder="State"
-                  optionList={[
-                    { label: "Sabah", value: "sabah" },
-                    { label: "Sarawak", value: "sarawak" },
-                    { label: "Johor", value: "johor" },
-                  ]}
-                />
-              )}
-            />
-          </div>
+          <InputTextField
+            label="State"
+            name="state"
+            placeholder="State"
+            register={register}
+            options={{
+              maxLength: {
+                value: 100,
+                message: "Maximum 100 characters allowed.",
+              },
+              onChange(event: React.ChangeEvent<HTMLInputElement>) {
+                let { value } = event.currentTarget;
+                dispatch({
+                  type: DriverTypes.UpdateDriverInfo,
+                  payload: {
+                    prop: "state",
+                    value: value,
+                  },
+                });
+              },
+            }}
+          />
           {/* City Field */}
-          <div className="relative pb-5 flex flex-col items-start gap-y-1 w-auto h-auto">
-            <label
-              htmlFor="cityType"
-              className="text-base text-center text-primary-black font-semibold"
-            >
-              City
-            </label>
-            <Controller
-              control={control}
-              name="city"
-              rules={{
-                validate: (val) => val !== null || "Select an option",
-              }}
-              render={({ field: { value }, fieldState: { error } }) => (
-                <SelectDropdown
-                  id="cityType"
-                  onChange={(val: string) => (
-                    setValue("city", val), clearErrors("city")
-                  )}
-                  selected={value}
-                  error={error}
-                  placeholder="City"
-                  optionList={[
-                    { label: "Malacca", value: "malacca" },
-                    { label: "Kuala Terengganu", value: "kuala-terengganu" },
-                  ]}
-                />
-              )}
-            />
-          </div>
+          <InputTextField
+            label="City"
+            name="city"
+            placeholder="City"
+            register={register}
+            options={{
+              maxLength: {
+                value: 100,
+                message: "Maximum 100 characters allowed.",
+              },
+              onChange(event: React.ChangeEvent<HTMLInputElement>) {
+                let { value } = event.currentTarget;
+                dispatch({
+                  type: DriverTypes.UpdateDriverInfo,
+                  payload: {
+                    prop: "city",
+                    value: value,
+                  },
+                });
+              },
+            }}
+          />
           {/* Postal Code Field */}
           <InputTextField
             label="Postal Code"
@@ -470,8 +523,15 @@ const DriverDetailsForm = () => {
               },
               onChange(event: React.ChangeEvent<HTMLInputElement>) {
                 let { value } = event.currentTarget;
-                value = value.replace(/\D/g, "");
-                event.currentTarget.value = value;
+                let updatedValue = value.replace(/\D/g, "");
+                event.currentTarget.value = updatedValue;
+                dispatch({
+                  type: DriverTypes.UpdateDriverInfo,
+                  payload: {
+                    prop: "postalCode",
+                    value: updatedValue,
+                  },
+                });
               },
             }}
           />

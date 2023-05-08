@@ -4,6 +4,13 @@ import { RootState } from "../../store/store";
 import { useSelector, useDispatch } from "react-redux";
 import InputTextField from "../fields/InputText";
 import SelectDropdown from "../fields/SelectDropdown";
+import CheckboxWithTextField from "../fields/CheckboxWithText";
+
+interface VehicleStateInfo extends VehicleState {
+  region: string | null;
+  drivers: string;
+  hailingServices: boolean;
+}
 
 const VehicleInfoForm = ({
   setShowLoading,
@@ -20,8 +27,13 @@ const VehicleInfoForm = ({
     setValue,
     clearErrors,
     formState: { errors },
-  } = useForm<VehicleState>({
-    defaultValues: vehicleState,
+  } = useForm<VehicleStateInfo>({
+    defaultValues: {
+      ...vehicleState,
+      region: null,
+      drivers: "2",
+      hailingServices: false,
+    },
   });
   const dispatch = useDispatch();
 
@@ -37,18 +49,16 @@ const VehicleInfoForm = ({
     >
       <div className="grid grid-cols-1 md:grid-cols-2 items-start gap-0 md:gap-x-4 w-full">
         {/* Vehicle Reg No. */}
-        <InputTextField
-          label="Vehicle Registration No."
-          name="regNo"
-          register={register}
-          errors={errors.regNo}
-          placeholder="ABC1234"
-          options={{
-            disabled: true,
-          }}
-        />
+        <div className="relative pb-5 flex flex-col items-start gap-y-1 w-full h-auto">
+          <span className="text-base text-center text-primary-black font-semibold">
+            Vehicle Registration No.
+          </span>
+          <span className="py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium bg-[#f8f8f8] cursor-default border border-solid border-[#CFD0D7] rounded">
+            {vehicleState.regNo}
+          </span>
+        </div>
         {/* Vehicle Make Field  */}
-        <div className="relative pb-5 flex flex-col items-start gap-y-1 flex-[1_1_40%] w-auto h-auto">
+        <div className="relative pb-5 flex flex-col items-start gap-y-1 w-auto h-auto">
           <label
             htmlFor="vehicleMake"
             className="text-base text-center text-primary-black font-semibold"
@@ -76,7 +86,7 @@ const VehicleInfoForm = ({
           />
         </div>
         {/* Vehicle Model Field  */}
-        <div className="relative pb-5 flex flex-col items-start gap-y-1 flex-[1_1_40%] w-auto h-auto">
+        <div className="relative pb-5 flex flex-col items-start gap-y-1 w-auto h-auto">
           <label
             htmlFor="vehicleModel"
             className="text-base text-center text-primary-black font-semibold"
@@ -99,14 +109,17 @@ const VehicleInfoForm = ({
                 selected={value}
                 error={error}
                 optionList={[
-                  { label: "Mitsubishi ASX 2.0 (A)", value: "mitsubishi asx 2.0 (a)" },
+                  {
+                    label: "Mitsubishi ASX 2.0 (A)",
+                    value: "mitsubishi asx 2.0 (a)",
+                  },
                 ]}
               />
             )}
           />
         </div>
         {/* Vehicle Variant Field  */}
-        <div className="relative pb-5 flex flex-col items-start gap-y-1 flex-[1_1_40%] w-auto h-auto">
+        <div className="relative pb-5 flex flex-col items-start gap-y-1 w-auto h-auto">
           <label
             htmlFor="vehicleVariant"
             className="text-base text-center text-primary-black font-semibold"
@@ -139,67 +152,53 @@ const VehicleInfoForm = ({
           />
         </div>
         {/* Engine CC Field */}
-        <InputTextField
-          label="Engine CC"
-          name="engineCC"
-          register={register}
-          errors={errors.engineCC}
-          placeholder="1998"
-          options={{
-            maxLength: {
-              value: 4,
-              message: "Maximum 4 characters allowed.",
-            },
-            required: {
-              value: true,
-              message: "Field can't be empty",
-            },
-          }}
-        />
+        <div className="relative pb-5 flex flex-col items-start gap-y-1 w-full h-auto">
+          <span className="text-base text-center text-primary-black font-semibold">
+            Engine CC
+          </span>
+          <span className="py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium bg-[#f8f8f8] cursor-default border border-solid border-[#CFD0D7] rounded">
+            {vehicleState.engineCC}
+          </span>
+        </div>
         {/* Engine No. Field */}
-        <InputTextField
-          label="Engine No."
-          name="engineNo"
-          register={register}
-          errors={errors.engineNo}
-          placeholder="0039EC4017"
-          options={{
-            maxLength: {
-              value: 50,
-              message: "Maximum 50 characters allowed.",
-            },
-            required: {
-              value: true,
-              message: "Field can't be empty",
-            },
-          }}
-        />
+        <div className="relative pb-5 flex flex-col items-start gap-y-1 w-full h-auto">
+          <span className="text-base text-center text-primary-black font-semibold">
+            Engine No.
+          </span>
+          <span className="py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium bg-[#f8f8f8] cursor-default border border-solid border-[#CFD0D7] rounded">
+            {vehicleState.engineNo}
+          </span>
+        </div>
         {/* Vehicle Class Field */}
-        <InputTextField
-          label="Vehicle Class"
-          name="class"
-          register={register}
-          errors={errors.class}
-          placeholder="Private Class"
-          options={{
-            maxLength: {
-              value: 10,
-              message: "Maximum 10 characters allowed.",
-            },
-            required: {
-              value: true,
-              message: "Field can't be empty",
-            },
-          }}
-        />
+        <div className="relative pb-5 flex flex-col items-start gap-y-1 w-full h-auto">
+          <span className="text-base text-center text-primary-black font-semibold">
+            Vehicle Class
+          </span>
+          <span className="py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium bg-[#f8f8f8] cursor-default border border-solid border-[#CFD0D7] rounded">
+            {vehicleState.class}
+          </span>
+        </div>
         {/* Seating Field */}
+        <div className="relative pb-5 flex flex-col items-start gap-y-1 w-full h-auto">
+          <span className="text-base text-center text-primary-black font-semibold">
+            Seating
+          </span>
+          <span className="py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium bg-[#f8f8f8] cursor-default border border-solid border-[#CFD0D7] rounded">
+            {vehicleState.seating}
+          </span>
+        </div>
+        {/* Driver Field */}
         <InputTextField
-          label="Seating"
-          name="seating"
+          label="Drivers"
+          name="drivers"
           register={register}
-          errors={errors.seating}
-          placeholder="5"
+          errors={errors.drivers}
+          placeholder="2"
           options={{
+            validate: {
+              sadsad: (val: string) =>
+                parseInt(val) <= 10 || "Can't exceed more than 10",
+            },
             maxLength: {
               value: 2,
               message: "Maximum 2 characters allowed.",
@@ -216,29 +215,73 @@ const VehicleInfoForm = ({
             },
           }}
         />
+        {/*  */}
+        <div className="relative pb-5 flex flex-col items-start gap-y-1 w-full h-auto">
+          <span className="text-base text-center text-primary-black font-semibold">
+            Period of Coverrage
+          </span>
+          <span className="py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium bg-[#f8f8f8] cursor-default border border-solid border-[#CFD0D7] rounded">
+            {vehicleState.ncd}
+          </span>
+        </div>
         {/* NCD Field */}
-        <InputTextField
-          label="NCD"
-          name="ncd"
-          register={register}
-          errors={errors.ncd}
-          placeholder="55%"
-          options={{
-            maxLength: {
-              value: 5,
-              message: "Maximum 5 characters allowed.",
-            },
-            required: {
-              value: true,
-              message: "Field can't be empty",
-            },
-            onChange(event: React.ChangeEvent<HTMLInputElement>) {
-              let { value } = event.currentTarget;
-              // remove all spaces from the text
-              value = value.replace(/\D/g, "");
-              event.currentTarget.value = value;
-            },
-          }}
+        <div className="relative pb-5 flex flex-col items-start gap-y-1 w-full h-auto">
+          <span className="text-base text-center text-primary-black font-semibold">
+            NCD
+          </span>
+          <span className="py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium bg-[#f8f8f8] cursor-default border border-solid border-[#CFD0D7] rounded">
+            {vehicleState.ncd}
+          </span>
+        </div>
+        {/* Vehicle Model Field  */}
+        <div className="relative pb-5 flex flex-col items-start gap-y-1 w-auto h-auto">
+          <label
+            htmlFor="vehicleModel"
+            className="text-base text-center text-primary-black font-semibold"
+          >
+            Region*
+          </label>
+          <Controller
+            control={control}
+            name="region"
+            rules={{
+              validate: (val) => val !== null || "Select an option",
+            }}
+            render={({ field: { value }, fieldState: { error } }) => (
+              <SelectDropdown
+                id="region"
+                placeholder="West"
+                onChange={(val: string) => (
+                  setValue("region", val), clearErrors("region")
+                )}
+                selected={value}
+                error={error}
+                optionList={[
+                  {
+                    label: "West",
+                    value: "west",
+                  },
+                  {
+                    label: "East",
+                    value: "east",
+                  },
+                ]}
+              />
+            )}
+          />
+        </div>
+        {/* E-hailing services */}
+        <Controller
+          control={control}
+          name="hailingServices"
+          render={({ field: { value } }) => (
+            <CheckboxWithTextField
+              id="hailingServices"
+              isSelected={value}
+              text="This Vehicle used for E-Hailing Services"
+              updateIsSelected={() => setValue("hailingServices", !value)}
+            />
+          )}
         />
       </div>
       {/* Submit Form */}

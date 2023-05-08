@@ -16,7 +16,7 @@ const InsurancePage = () => {
 
   return (
     <div className="py-10 mx-auto max-w-7xl w-full">
-      <div className="py-8 px-12 flex flex-col items-center justify-cente gap-y-4 w-full bg-white rounded-[20px]">
+      <div className="py-8 px-12 flex flex-col items-center justify-center gap-y-4 w-full bg-white rounded-[20px] shadow-container">
         <StepperNavbar currentStep={currentStep} steps={steps} />
         {currentStep === 1 ? (
           <QuoteListingsContainer />

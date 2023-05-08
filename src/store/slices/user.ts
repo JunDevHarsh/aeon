@@ -29,7 +29,7 @@ const initialState: UserState = {
     type: null,
     no: "",
   },
-  name: "asdasda",
+  name: "",
   maritalStatus: null,
   gender: "male",
   mobileNumber: "",

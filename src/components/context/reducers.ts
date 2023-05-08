@@ -5,11 +5,14 @@ import {
   AddDriverTypes,
   AddOns,
   AdditionalDriverDetails,
+  DriverDetails,
+  DriverDetailsActions,
+  DriverTypes,
 } from "./context";
 
 export const addOnsReducer = (
   state: AddOns[],
-  action: AddOnsActions | AddDriverActions
+  action: AddOnsActions | AddDriverActions | DriverDetailsActions
 ) => {
   const { type, payload } = action;
   switch (type) {
@@ -34,7 +37,7 @@ export const addOnsReducer = (
 
 export const addDriverDetailsReducer = (
   state: AdditionalDriverDetails[],
-  action: AddDriverActions | AddOnsActions
+  action: AddDriverActions | AddOnsActions | DriverDetailsActions
 ) => {
   const { type, payload } = action;
   switch (type) {
@@ -59,6 +62,24 @@ export const addDriverDetailsReducer = (
         (detail) => detail.id !== payload.id
       );
       return updatedDrivderDetails;
+    }
+    default:
+      return state;
+  }
+};
+
+export const driverDetailsReducer = (
+  state: DriverDetails,
+  action: AddOnsActions | AddDriverActions | DriverDetailsActions
+) => {
+  const { type, payload } = action;
+  switch (type) {
+    case DriverTypes.UpdateDriverInfo: {
+      const updatedDriverDetails = {
+        ...state,
+        [payload.prop]: payload.value,
+      };
+      return updatedDriverDetails;
     }
     default:
       return state;

@@ -4,14 +4,26 @@ import { RootState } from "../../store/store";
 import { InsuranceContext } from "../context/context";
 
 const ApplicationDetailsContainer = () => {
-  const { regNo, make, model, yearOfManufacture, engineNo, chasisNo, variant } =
-    useSelector((state: RootState) => state.vehicle);
   const {
-    state: { addDriverDetails },
+    user: { id, gender, maritalStatus, dateOfBirth },
+    vehicle: {
+      regNo,
+      make,
+      model,
+      yearOfManufacture,
+      engineNo,
+      chasisNo,
+      variant,
+    },
+  } = useSelector((state: RootState) => state);
+  const {
+    state: { addDriverDetails, driverDetails },
   } = useContext(InsuranceContext);
   const [includeRoadTax, updateRoadTax] = useState<boolean>(false);
 
-  const driverDetails = addDriverDetails.filter(
+  const { name, mobileNumber, email } = driverDetails;
+
+  const driverInfo = addDriverDetails.filter(
     (driver) =>
       driver.name || driver.relationship || driver.idType || driver.idNo
   );
@@ -91,7 +103,7 @@ const ApplicationDetailsContainer = () => {
               Name
             </span>
             <span className="text-base text-left text-primary-black font-normal">
-              Ajay
+              {name || "Usertest"}
             </span>
           </div>
           <div className="flex flex-col items-start w-auto">
@@ -99,7 +111,7 @@ const ApplicationDetailsContainer = () => {
               ID No.
             </span>
             <span className="text-base text-left text-primary-black font-normal">
-              897678888
+              {id.no || "897678888"}
             </span>
           </div>
           <div className="flex flex-col items-start w-auto">
@@ -107,7 +119,7 @@ const ApplicationDetailsContainer = () => {
               DOB
             </span>
             <span className="text-base text-left text-primary-black font-normal">
-              09/09/1994
+              {dateOfBirth?.slice(0, 10) || "09/09/1994"}
             </span>
           </div>
           <div className="flex flex-col items-start w-auto">
@@ -115,7 +127,7 @@ const ApplicationDetailsContainer = () => {
               Mobile No.
             </span>
             <span className="text-base text-left text-primary-black font-normal">
-              018 678 5678
+              +60 {mobileNumber || "12345687"}
             </span>
           </div>
           <div className="flex flex-col items-start w-auto">
@@ -123,7 +135,7 @@ const ApplicationDetailsContainer = () => {
               Email
             </span>
             <span className="text-base text-left text-primary-black font-normal">
-              ajay@gmail.com
+              {email || "ajay@gmail.com"}
             </span>
           </div>
           <div className="flex flex-col items-start w-auto">
@@ -131,7 +143,7 @@ const ApplicationDetailsContainer = () => {
               Marital Status
             </span>
             <span className="text-base text-left text-primary-black font-normal">
-              Married
+              {maritalStatus || "Single"}
             </span>
           </div>
           <div className="flex flex-col items-start w-auto">
@@ -139,7 +151,7 @@ const ApplicationDetailsContainer = () => {
               Gender
             </span>
             <span className="text-base text-left text-primary-black font-normal">
-              Male
+              {gender || "Male"}
             </span>
           </div>
           <div className="flex flex-col items-start w-auto">
@@ -147,7 +159,7 @@ const ApplicationDetailsContainer = () => {
               Driving Experience
             </span>
             <span className="text-base text-left text-primary-black font-normal">
-              10 Years
+              {driverDetails.drivingExp || 10} Years
             </span>
           </div>
           <div className="flex flex-col items-start w-auto">
@@ -155,7 +167,7 @@ const ApplicationDetailsContainer = () => {
               Nationality
             </span>
             <span className="text-base text-left text-primary-black font-normal">
-              Malaysia
+              {driverDetails.nationality || "Malaysia"}
             </span>
           </div>
           <div className="flex flex-col items-start w-auto">
@@ -163,7 +175,7 @@ const ApplicationDetailsContainer = () => {
               Address
             </span>
             <span className="text-base text-left text-primary-black font-normal">
-              376, Jalan Merak 16
+              {driverDetails.address1 || "376, Jalan Merak 16"}
             </span>
           </div>
           <div className="flex flex-col items-start w-auto">
@@ -171,7 +183,7 @@ const ApplicationDetailsContainer = () => {
               State
             </span>
             <span className="text-base text-left text-primary-black font-normal">
-              Negeri Sembilan
+              {driverDetails.state || "Negeri Sembilan"}
             </span>
           </div>
           <div className="flex flex-col items-start w-auto">
@@ -179,7 +191,7 @@ const ApplicationDetailsContainer = () => {
               City
             </span>
             <span className="text-base text-left text-primary-black font-normal">
-              Seremban
+              {driverDetails.city || "Seremban"}Seremban
             </span>
           </div>
           <div className="flex flex-col items-start w-auto">
@@ -187,18 +199,18 @@ const ApplicationDetailsContainer = () => {
               Postal Code
             </span>
             <span className="text-base text-left text-primary-black font-normal">
-              7500
+              {driverDetails.postalCode || "7500"}
             </span>
           </div>
         </div>
       </div>
-      {driverDetails.length !== 0 && (
+      {driverInfo.length !== 0 && (
         <div className="flex flex-col items-start w-full">
           <h2 className="text-xl text-center text-primary-black font-bold">
             Additional Driver Details
           </h2>
 
-          {driverDetails.map((detail, index) => (
+          {driverInfo.map((detail, index) => (
             <div key={detail.id} className="relative mt-2 w-full">
               <h3 className="text-lg text-left text-primary-black font-bold">
                 Additional Driver {index + 1}

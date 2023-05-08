@@ -26,6 +26,8 @@ export type Inputs = {
   dateOfBirth: Date | null;
 };
 
+let prevValue: string = "";
+
 const UserRegistrationForm = () => {
   const {
     control,
@@ -42,7 +44,7 @@ const UserRegistrationForm = () => {
       vehicleRegNo: "",
       email: "",
       postalCode: "",
-      idType: null,
+      idType: "nric",
       gender: "male",
       idNo: "",
       mobileNumber: "",
@@ -63,9 +65,22 @@ const UserRegistrationForm = () => {
       maritalStatus,
       mobileNumber,
       postalCode,
-      dateOfBirth,
       vehicleRegNo,
     } = data;
+    let { dateOfBirth } = data;
+    if (idType === "nric") {
+      const year = parseInt(idNo.slice(0, 2));
+      const month = parseInt(idNo.slice(2, 4));
+      const day = parseInt(idNo.slice(4, 6));
+      const currentYear = new Date().getFullYear() % 100;
+      // Check if year should belong to the 19th or 20th century
+      const century = year > currentYear ? 1900 : 2000;
+
+      const birthYear = century + year;
+
+      dateOfBirth = new Date(`${birthYear}-${month}-${day}`);
+      setValue("dateOfBirth", dateOfBirth);
+    }
     // update insurance => type, vehicle
     dispatch(updateVehicleRegNo(vehicleRegNo));
     dispatch(
@@ -89,8 +104,18 @@ const UserRegistrationForm = () => {
   const watchIDType: string | null = watch("idType");
 
   const regEx = {
-    passport: /^[A-Z]{1}[0-9]{8}$/,
-    nric: /^\d{6}-\d{2}-\d{4}$/,
+    passport: {
+      pattern: /^[A-Z]{1}[0-9]{8}$/,
+      errorMessage: "For e.g. A12365498",
+    },
+    nric: {
+      pattern: /^\d{6}-\d{2}-\d{4}$/,
+      errorMessage: "For e.g. 050505-12-2321",
+    },
+    company: {
+      pattern: /^[0-9]{7}-[A-Z]/g,
+      errorMessage: "For e.g. 1234567-J",
+    },
   };
 
   return (
@@ -280,9 +305,15 @@ const UserRegistrationForm = () => {
                 render={({ field: { value }, fieldState: { error } }) => (
                   <SelectDropdown
                     id="selectedIdType"
-                    onChange={(val: string) => (
-                      setValue("idType", val), clearErrors("idType")
-                    )}
+                    onChange={(val: string) => {
+                      setValue("idType", val);
+                      if (value !== val) {
+                        setValue("idNo", "");
+                      }
+                      prevValue = "";
+                      clearErrors("idNo")
+                      clearErrors("idType");
+                    }}
                     selected={value}
                     placeholder="NRIC"
                     error={error}
@@ -319,15 +350,35 @@ const UserRegistrationForm = () => {
                   },
                   pattern: {
                     value: watchIDType
-                      ? regEx[watchIDType as keyof typeof regEx]
+                      ? regEx[watchIDType as keyof typeof regEx]["pattern"]
                       : /^\d{6}-\d{2}-\d{4}$/,
-                    message: "Invalid Id No.",
+                    message:
+                      regEx[watchIDType as keyof typeof regEx]["errorMessage"],
                   },
                   onChange(event: React.ChangeEvent<HTMLInputElement>) {
+                    // event.preventDefault();
                     let { value } = event.currentTarget;
                     // remove all spaces from the text
-                    value = value.replace(/\s+/g, "");
-                    event.currentTarget.value = value.toUpperCase();
+                    value = value.replace(/\s+/g, "").toUpperCase();
+                    if (watchIDType === "nric") {
+                      if (value.length === 6 || value.length === 9) {
+                        if (value.length > prevValue.length) {
+                          value += "-";
+                        } else {
+                          value = value.slice(0, value.length - 1);
+                        }
+                      }
+                    } else if (watchIDType === "company") {
+                      if (value.length === 7) {
+                        if (value.length > prevValue.length) {
+                          value += "-";
+                        } else {
+                          value = value.slice(0, value.length - 1);
+                        }
+                      }
+                    }
+                    prevValue = value;
+                    event.currentTarget.value = value;
                   },
                 }}
               />
