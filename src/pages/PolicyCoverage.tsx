@@ -18,9 +18,9 @@ const MAX_VALUE = 21000;
 /**
  * Returns a random number between min (inclusive) and max (exclusive)
  */
-function getRandomNumber(min: number, max: number): number {
-  return Math.round(Math.random() * (max - min) + min);
-}
+// function getRandomNumber(min: number, max: number): number {
+//   return Math.round(Math.random() * (max - min) + min);
+// }
 
 export function numberWithCommas(x: number): string {
   return x.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
