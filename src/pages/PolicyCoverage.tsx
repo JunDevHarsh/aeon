@@ -26,13 +26,13 @@ export function numberWithCommas(x: number): string {
   return x.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
 }
 
-function getRandomVehicleValue(minValue: number, maxValue: number) {
-  return new Promise(function (resolve) {
-    setTimeout(function () {
-      resolve(getRandomNumber(minValue, maxValue));
-    }, 1000);
-  });
-}
+// function getRandomVehicleValue(minValue: number, maxValue: number) {
+//   return new Promise(function (resolve) {
+//     setTimeout(function () {
+//       resolve(getRandomNumber(minValue, maxValue));
+//     }, 1000);
+//   });
+// }
 
 const PolicyCoveragePage = () => {
   const [value, setValue] = useState<number>(0);
