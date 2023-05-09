@@ -79,6 +79,10 @@ const SelectDropdown = ({
             height: "32px",
             width: "32px",
           }),
+          menu: (base) => ({
+            ...base,
+            zIndex: "11"
+          }), 
           placeholder: (base) => ({
             ...base,
             fontSize: "14px",
@@ -102,7 +106,7 @@ const SelectDropdown = ({
               ...styles,
               backgroundColor: bgColor,
               color: textColor,
-              cursor: "pointer",
+              cursor: "pointer",  
             };
           },
         }}

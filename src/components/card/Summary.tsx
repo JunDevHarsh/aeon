@@ -1,11 +1,12 @@
 import { useContext } from "react";
 import { Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { updateCurrentStep } from "../../store/slices/insurance";
+import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { numberWithCommas } from "../../pages/PolicyCoverage";
 import { InsuranceContext } from "../context/context";
 import Code from "../button/Code";
+import { VehicleCoverageContext } from "../../pages/Insurance";
+import { MultiFormStepTypes, StepContext } from "../../context/StepContext";
 
 export interface AddBenefitsType {
   id: string;
@@ -18,16 +19,19 @@ export interface AddBenefitsType {
 
 const SummaryInfoCard = () => {
   //   const [promoCode, setPromoCode] = useState<string>("");
-  const {
-    currentStep: step,
-    coverage,
-    provider,
-  } = useSelector((state: RootState) => state.insurance);
+  const { provider } = useSelector((state: RootState) => state.insurance);
   const { ncd } = useSelector((state: RootState) => state.vehicle);
-  const dispatch = useDispatch();
   const {
     state: { addOns },
   } = useContext(InsuranceContext);
+  const {
+    state: { currentStep },
+    dispatch: updateStep,
+  } = useContext(StepContext);
+  const {
+    store: { selectedCoverage },
+    dispatch: updateVehicleCoverage,
+  } = useContext(VehicleCoverageContext);
 
   const selectedAddOns = addOns.filter((addOn) => addOn.isSelected);
 
@@ -47,7 +51,7 @@ const SummaryInfoCard = () => {
   const totalAmount = Number((subTotal + serviceTax + 10).toFixed(2));
 
   return (
-    <div className="relative flex flex-col items-center justify-between max-w-sm w-full h-auto rounded-[20px] overflow-hidden">
+    <div className="relative flex flex-col items-center justify-between max-w-sm w-full h-auto rounded-[20px] shadow-container overflow-hidden">
       <div className="inline-block p-2 w-full bg-[#283CC6]">
         <h3 className="text-xl text-center text-white font-bold">Summary</h3>
       </div>
@@ -63,13 +67,22 @@ const SummaryInfoCard = () => {
           </div>
           <div className="flex items-center justify-between w-full">
             <span className="text-base text-left text-primary-black font-bold w-1/2">
-              Sum Insured
+              Sum Insured <br />
+              {`(${selectedCoverage?.type || "Market"} Value)`}
             </span>
             <div className="flex items-center justify-start w-1/2">
               <span className="text-base text-left text-primary-black font-medium">
-                RM {numberWithCommas(coverage?.value ?? 1200)}
+                RM {numberWithCommas(selectedCoverage?.price ?? 1200)}
               </span>
-              <Link to="/vehicle-market" className="ml-1">
+              <button
+                onClick={() =>
+                  updateVehicleCoverage((prev) => ({
+                    ...prev,
+                    isContainerVisible: true,
+                  }))
+                }
+                className="ml-1"
+              >
                 <svg
                   width="13"
                   height="13"
@@ -82,7 +95,7 @@ const SummaryInfoCard = () => {
                     fill="#A5308A"
                   />
                 </svg>
-              </Link>
+              </button>
             </div>
           </div>
         </div>
@@ -203,7 +216,14 @@ const SummaryInfoCard = () => {
         </div>
         <div className="mt-4 flex items-center justify-start gap-x-4 w-full">
           <button
-            onClick={() => dispatch(updateCurrentStep(step - 1))}
+            onClick={() =>
+              updateStep({
+                type: MultiFormStepTypes.UpdateCurrentStep,
+                payload: {
+                  newStep: currentStep - 1,
+                },
+              })
+            }
             className="relative py-2 px-6 min-w-[120px] w-auto bg-primary-blue rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
           >
             <span className="text-base text-center font-medium text-white">
@@ -211,7 +231,7 @@ const SummaryInfoCard = () => {
             </span>
           </button>
 
-          {step === 4 ? (
+          {currentStep === 4 ? (
             <Link
               to="/payment"
               className="relative py-2 px-6 min-w-[120px] w-auto bg-primary-blue rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
@@ -222,11 +242,18 @@ const SummaryInfoCard = () => {
             </Link>
           ) : (
             <button
-              onClick={() => dispatch(updateCurrentStep(step + 1))}
+              onClick={() =>
+                updateStep({
+                  type: MultiFormStepTypes.UpdateCurrentStep,
+                  payload: {
+                    newStep: currentStep + 1,
+                  },
+                })
+              }
               className="relative py-2 px-6 min-w-[120px] w-auto bg-primary-blue rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
             >
               <span className="text-base text-center font-medium text-white">
-                {step === 3 ? "Proceed To Confirm" : "Next"}
+                {currentStep === 3 ? "Proceed To Confirm" : "Next"}
               </span>
             </button>
           )}

@@ -2,23 +2,26 @@ import React from "react";
 import { numberWithCommas } from "../../pages/PolicyCoverage";
 
 const InputRange = ({
+  type,
   value,
   setValue,
   minValue,
   maxValue,
 }: {
+  type: "market" | "agreed";
   value: number;
-  setValue: React.Dispatch<React.SetStateAction<number>>;
+  setValue: (type: "market" | "agreed", value: number) => void;
   minValue: number;
   maxValue: number;
 }) => {
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(parseInt(e.target.value));
+    setValue(type, parseInt(e.target.value));
   };
 
-  const labelPosition = `${
-    (((value - minValue) / (maxValue - minValue)) * 100).toFixed(2)
-  }%`;
+  const labelPosition = `${(
+    ((value - minValue) / (maxValue - minValue)) *
+    100
+  ).toFixed(2)}%`;
 
   return (
     <div className="mt-4 flex flex-col items-start w-full">
@@ -34,12 +37,13 @@ const InputRange = ({
           id="insuredValue"
           min={minValue}
           max={maxValue}
+          step={maxValue - minValue}
           className="peer w-full"
         />
         <label
           htmlFor="insuredValue"
           className={
-            "absolute top-0 px-1.5 -translate-x-1/2 bg-[#888686] rounded z-[1]"
+            "absolute top-0 left-1/2 px-1.5 -translate-x-1/2 bg-[#888686] rounded z-[1]"
           }
           style={{ left: labelPosition }}
         >

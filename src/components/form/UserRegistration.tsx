@@ -1,32 +1,37 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
+// fields
 import InputTextField from "../fields/InputText";
 import SelectDropdown from "../fields/SelectDropdown";
 import MobileNumberField from "../fields/MobileNumber";
-import CarImg from "../../assets/images/car_vehicle.png";
-import BikeImg from "../../assets/images/motorcycle_vehicle.png";
+import DateOfBirthField from "../fields/DateOfBirth";
 import Code from "../button/Code";
+// store
 import { useDispatch } from "react-redux";
 import { updateInsuranceState } from "../../store/slices/insurance";
 import { updateUserId, updateUserState } from "../../store/slices/user";
-import DateOfBirthField from "../fields/DateOfBirth";
 import { updateVehicleRegNo } from "../../store/slices/vehicle";
-
-export type Inputs = {
-  insuranceType: "new" | "renewal";
-  maritalStatus: string | null;
-  vehicleRegNo: string;
-  email: string;
-  postalCode: string;
-  gender: "male" | "female";
-  idType: null | string;
-  idNo: string;
-  mobileNumber: string;
-  dateOfBirth: Date | null;
-};
+// types
+import { UserInsuranceInputs } from "./types";
+import VehicleSelector from "../fields/VehicleSelector";
 
 let prevValue: string = "";
+
+// default value for user insurance form fields
+const defaultUserInsuranceState: UserInsuranceInputs = {
+  idNo: "",
+  email: "",
+  postalCode: "",
+  idType: "nric",
+  gender: "male",
+  vehicleRegNo: "",
+  mobileNumber: "",
+  dateOfBirth: null,
+  maritalStatus: null,
+  insuranceType: "renewal",
+  insuranceVehicle: "car",
+};
 
 const UserRegistrationForm = () => {
   const {
@@ -37,25 +42,16 @@ const UserRegistrationForm = () => {
     watch,
     setValue,
     formState: { errors },
-  } = useForm<Inputs>({
-    defaultValues: {
-      insuranceType: "renewal",
-      maritalStatus: null,
-      vehicleRegNo: "",
-      email: "",
-      postalCode: "",
-      idType: "nric",
-      gender: "male",
-      idNo: "",
-      mobileNumber: "",
-      dateOfBirth: null,
-    },
+  } = useForm<UserInsuranceInputs>({
+    defaultValues: defaultUserInsuranceState,
   });
   const [vehicleType, setVehicleType] = useState<"car" | "motorcycle">("car");
   const dispatch = useDispatch();
   const navigate = useNavigate();
   // handle form subit
-  const onSubmit: SubmitHandler<Inputs> = (data: Inputs) => {
+  const onSubmit: SubmitHandler<UserInsuranceInputs> = (
+    data: UserInsuranceInputs
+  ) => {
     const {
       insuranceType,
       email,
@@ -121,86 +117,10 @@ const UserRegistrationForm = () => {
 
   return (
     <>
-      <div className="block my-4 w-full">
-        <div className="flex flex-col md:flex-row items-center justify-center w-full gap-4">
-          <div className="relative w-auto">
-            <input
-              type="radio"
-              name="vehicleType"
-              id="vehicleTypeCar"
-              value="car"
-              onChange={() => setVehicleType("car")}
-              className="peer absolute top-0 left-0 -z-10 opacity-0"
-            />
-            <label
-              htmlFor="vehicleTypeCar"
-              className={`relative px-2.5 flex items-center justify-start w-auto border border-solid rounded cursor-pointer outline-2 outline outline-transparent peer-focus-visible:outline-primary-black ${
-                vehicleType === "car"
-                  ? "bg-[#F8F9FF] border-[#4B5EAA]"
-                  : "bg-white border-[#8A8A8A]"
-              }`}
-            >
-              <span
-                className={`inline-block w-3 h-3 rounded-full ${
-                  vehicleType === "car"
-                    ? "bg-[#4B5EAA] shadow-selected"
-                    : "bg-white shadow-unselected"
-                }`}
-              />
-              <img
-                src={CarImg}
-                alt="car-vehicle-img"
-                className="ml-3 mr-1 w-auto h-auto"
-                aria-label="Image of car vehicle"
-              />
-              <span
-                className="text-xl text-center text-primary-black font-bold whitespace-nowrap"
-                aria-label="Vehicle text"
-              >
-                Car Insurance
-              </span>
-            </label>
-          </div>
-          <div className="relative w-auto">
-            <input
-              type="radio"
-              name="vehicleType"
-              id="vehicleTypeBike"
-              value="motorcycle"
-              onChange={() => setVehicleType("motorcycle")}
-              className="peer absolute top-0 left-0 -z-10 opacity-0"
-            />
-            <label
-              htmlFor="vehicleTypeBike"
-              className={`relative px-2.5 flex items-center justify-start w-auto border border-solid rounded cursor-pointer outline-2 outline outline-transparent peer-focus-visible:outline-primary-black ${
-                vehicleType === "motorcycle"
-                  ? "bg-[#F8F9FF] border-[#4B5EAA]"
-                  : "bg-white border-[#8A8A8A]"
-              }`}
-            >
-              <span
-                className={`inline-block w-3 h-3 rounded-full ${
-                  vehicleType === "motorcycle"
-                    ? "bg-[#4B5EAA] shadow-selected"
-                    : "bg-white shadow-unselected"
-                }`}
-              />
-              <img
-                src={BikeImg}
-                alt="bike-vehicle-img"
-                className="ml-3 mr-1 w-auto h-auto"
-                aria-label="Image of bike vehicle"
-              />
-              <span
-                className="text-xl text-center text-primary-black font-bold whitespace-nowrap"
-                aria-label="Vehicle text"
-              >
-                Motorcycle Insurance
-              </span>
-            </label>
-          </div>
-        </div>
-      </div>
+      <VehicleSelector
+        vehicleType={vehicleType}
+        setVehicleType={setVehicleType}
+      />
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="relative mt-6 w-full px-6"

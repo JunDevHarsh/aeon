@@ -1,15 +1,19 @@
-import React from "react";
+import { useContext } from "react";
 import Stepper from "../Stepper";
+import { StepContext } from "../../context/StepContext";
 
-interface StepperNavbarProps {
-  currentStep: number;
-  steps: Array<string>;
-}
+const steps: string[] = [
+  "Plan Selection",
+  "Plan Add Ons",
+  "Application Details",
+  "Review & Pay",
+];
 
-const StepperNavbar: React.FC<StepperNavbarProps> = ({
-  currentStep,
-  steps,
-}) => {
+const StepperNavbar = () => {
+  const {
+    state: { currentStep },
+  } = useContext(StepContext);
+
   return (
     <div className="flex items-center justify-center w-full" role="navigation">
       {steps.map((step, index) => (
@@ -17,17 +21,17 @@ const StepperNavbar: React.FC<StepperNavbarProps> = ({
           key={`stepper-${index}`}
           count={index + 1}
           status={
-            (index + 1) === currentStep
+            index + 1 === currentStep
               ? "current"
-              : (index + 1) < currentStep
+              : index + 1 < currentStep
               ? "fulfilled"
               : "pending"
           }
           title={step}
           turn={
-            (index + 1) === 1
+            index + 1 === 1
               ? "start"
-              : (index + 1) === steps.length
+              : index + 1 === steps.length
               ? "end"
               : "center"
           }

@@ -1,18 +1,13 @@
-import { useContext } from "react";
-import { StepContext } from "../../context/StepContext";
-import QuoteListingsContainer from "../container/QuoteListings";
-import AddOnsContainer from "../container/AddOns";
+import InsuranceContextProvider from "../../context/InsuranceContext";
+import QuoteListingsContainer from "./QuoteListings";
+import AddOnsContainer from "./AddOns";
 import DriverDetailsForm from "../form/DriverDetails";
-import ApplicationDetailsContainer from "../container/ApplicationDetails";
+import ApplicationDetailsContainer from "./ApplicationDetails";
 import SummaryInfoCard from "../card/Summary";
 
-const InsuranceStepsLayout = () => {
-  const {
-    state: { currentStep },
-  } = useContext(StepContext);
-
+const InsuranceContainer = ({ currentStep }: { currentStep: number }) => {
   return (
-    <>
+    <InsuranceContextProvider>
       {currentStep === 1 ? (
         <QuoteListingsContainer />
       ) : (
@@ -23,8 +18,8 @@ const InsuranceStepsLayout = () => {
           <SummaryInfoCard />
         </div>
       )}
-    </>
+    </InsuranceContextProvider>
   );
 };
 
-export default InsuranceStepsLayout;
+export default InsuranceContainer;

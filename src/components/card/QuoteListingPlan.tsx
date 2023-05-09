@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Coverage } from "../container/QuoteListings";
 import FileDownloadButton from "../button/FileDownload";
 import CheckboxWithTextField from "../fields/CheckboxWithText";
-import { useDispatch } from "react-redux";
-import { updateInsuranceProvider } from "../../store/slices/insurance";
-import { useNavigate } from "react-router-dom";
+import {
+  InsuranceContext,
+  InsuranceProviderTypes,
+} from "../../context/InsuranceContext";
+import { MultiFormStepTypes, StepContext } from "../../context/StepContext";
+import { VehicleCoverageContext } from "../../pages/Insurance";
 
 type QuoteListingPlanProps = {
   id: string;
@@ -36,8 +39,11 @@ const QuoteListingPlanCard = ({
     coverages.length < MAX_LIST_LIMIT ? coverages.length : MAX_LIST_LIMIT
   ); // limit for displaying list of coverages, default is 4
   const [showDownloadButton, setShowDownloadButton] = useState<boolean>(false);
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const { dispatch } = useContext(InsuranceContext);
+  const { dispatch: updateVehicleCoverage } = useContext(
+    VehicleCoverageContext
+  );
+  const { dispatch: updateCurrentStep } = useContext(StepContext);
 
   function updateListSize(size: number, updatedSize: number): void {
     setShowDownloadButton((prev) => !prev);
@@ -53,14 +59,24 @@ const QuoteListingPlanCard = ({
   }
 
   function handleSelectedQuotePlan() {
-    dispatch(
-      updateInsuranceProvider({
-        companyId,
-        companyName,
-        price: Number(price),
-      })
-    );
-    navigate("/vehicle-market");
+    dispatch({
+      type: InsuranceProviderTypes.UpdateInsuranceProvider,
+      payload: {
+        companyId: companyId,
+        companyName: companyName,
+        price: price,
+      },
+    });
+    updateVehicleCoverage((prev) => ({
+      ...prev,
+      isContainerVisible: !prev.isContainerVisible,
+    }));
+    updateCurrentStep({
+      type: MultiFormStepTypes.UpdateCurrentStep,
+      payload: {
+        newStep: 2,
+      },
+    });
   }
 
   return (

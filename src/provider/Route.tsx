@@ -2,6 +2,7 @@ import {
   Route,
   createBrowserRouter,
   createRoutesFromElements,
+  useRouteError,
 } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import Root from "../components/layout/Root";
@@ -49,12 +50,23 @@ const router = createBrowserRouter(
     >
       <Route index element={<MemoizedHomePage />} />
       <Route path="/vehicle-info" element={<MemoizedVehicleInfoPage />} />
-      <Route path="/insurance" element={<MemoizedInsurancePage />} />
+      <Route
+        path="/insurance"
+        element={<MemoizedInsurancePage />}
+        errorElement={<ErrorBoundary />}
+      />
       <Route path="/vehicle-market" element={<MemoizedPolicyCoveragePage />} />
       <Route path="/payment" element={<MemoizedPaymentPage />} />
       <Route path="*" element={<MemoizedNotFoundPage />} />
     </Route>
   )
 );
+
+function ErrorBoundary() {
+  let error = useRouteError();
+  console.error(error);
+  // Uncaught ReferenceError: path is not defined
+  return <div>Dang!</div>;
+}
 
 export default router;
