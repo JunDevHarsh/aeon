@@ -2,11 +2,11 @@ import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
-import { numberWithCommas } from "../../pages/PolicyCoverage";
 import { InsuranceContext } from "../context/context";
 import Code from "../button/Code";
 import { VehicleCoverageContext } from "../../pages/Insurance";
 import { MultiFormStepTypes, StepContext } from "../../context/StepContext";
+import { numberWithCommas } from "../container/VehicleCoverage";
 
 export interface AddBenefitsType {
   id: string;

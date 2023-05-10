@@ -1,6 +1,6 @@
 import { useId } from "react";
 import CarSlideIcon from "../../assets/images/addOns/CarSlide";
-import { numberWithCommas } from "../../pages/PolicyCoverage";
+import { numberWithCommas } from "../container/VehicleCoverage";
 
 interface AddOnsCardProps {
   id: string;
