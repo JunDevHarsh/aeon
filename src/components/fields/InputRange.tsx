@@ -1,5 +1,5 @@
 import React from "react";
-import { numberWithCommas } from "../../pages/PolicyCoverage";
+import { numberWithCommas } from "../container/VehicleCoverage";
 
 const InputRange = ({
   type,
