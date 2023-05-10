@@ -13,9 +13,6 @@ import GuyImg from "../assets/images/guy_holding_stick.png";
 const MemoizedHomePage = lazy(() => import("../pages/Home"));
 const MemoizedVehicleInfoPage = lazy(() => import("../pages/VehicleInfo"));
 const MemoizedInsurancePage = lazy(() => import("../pages/Insurance"));
-const MemoizedPolicyCoveragePage = lazy(
-  () => import("../pages/PolicyCoverage")
-);
 const MemoizedPaymentPage = lazy(() => import("../pages/Payment"));
 const MemoizedNotFoundPage = lazy(() => import("../pages/NotFound"));
 
@@ -55,7 +52,6 @@ const router = createBrowserRouter(
         element={<MemoizedInsurancePage />}
         errorElement={<ErrorBoundary />}
       />
-      <Route path="/vehicle-market" element={<MemoizedPolicyCoveragePage />} />
       <Route path="/payment" element={<MemoizedPaymentPage />} />
       <Route path="*" element={<MemoizedNotFoundPage />} />
     </Route>

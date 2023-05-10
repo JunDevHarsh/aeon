@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Coverage, QuotePlansType } from "../container/QuoteListings";
-import { useDispatch } from "react-redux";
-import { updateInsuranceProvider } from "../../store/slices/insurance";
-import { useNavigate } from "react-router-dom";
+import { InsuranceContext, InsuranceProviderTypes } from "../../context/InsuranceContext";
+import { VehicleCoverageContext } from "../../pages/Insurance";
+import { MultiFormStepTypes, StepContext } from "../../context/StepContext";
 
 type QuoteComparePopupProps = {
   selectedQuotes: QuotePlansType[];
@@ -52,8 +52,11 @@ const QuoteComparePopup = ({
   updateSelectedQuotePlans,
 }: QuoteComparePopupProps) => {
   const [showDifference, setShowDifference] = useState<boolean>(false);
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const { dispatch } = useContext(InsuranceContext);
+  const { dispatch: updateVehicleCoverage } = useContext(
+    VehicleCoverageContext
+  );
+  const { dispatch: updateCurrentStep } = useContext(StepContext);
 
   const quoteCoverages: Coverage[] =
     getUniqueCoveragesFromPlans(selectedQuotes);
@@ -64,14 +67,24 @@ const QuoteComparePopup = ({
   function handleSelectedQuote(id: string) {
     const quotePlan = selectedQuotes.find((quote) => quote.id === id);
     if (quotePlan) {
-      dispatch(
-        updateInsuranceProvider({
+      dispatch({
+        type: InsuranceProviderTypes.UpdateInsuranceProvider,
+        payload: {
           companyId: quotePlan.companyId,
           companyName: quotePlan.companyName,
-          price: parseInt(quotePlan.price),
-        })
-      );
-      navigate("/vehicle-market");
+          price: quotePlan.price,
+        },
+      });
+      updateVehicleCoverage((prev) => ({
+        ...prev,
+        isContainerVisible: !prev.isContainerVisible,
+      }));
+      updateCurrentStep({
+        type: MultiFormStepTypes.UpdateCurrentStep,
+        payload: {
+          newStep: 2,
+        },
+      });
     }
   }
 
