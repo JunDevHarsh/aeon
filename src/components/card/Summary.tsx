@@ -2,11 +2,12 @@ import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
-import { InsuranceContext } from "../context/context";
 import Code from "../button/Code";
 import { VehicleCoverageContext } from "../../pages/Insurance";
 import { MultiFormStepTypes, StepContext } from "../../context/StepContext";
 import { numberWithCommas } from "../container/VehicleCoverage";
+import { MultiStepFormContext } from "../../context/MultiFormContext";
+import { InsuranceContext } from "../../context/InsuranceContext";
 
 export interface AddBenefitsType {
   id: string;
@@ -19,11 +20,14 @@ export interface AddBenefitsType {
 
 const SummaryInfoCard = () => {
   //   const [promoCode, setPromoCode] = useState<string>("");
-  const { provider } = useSelector((state: RootState) => state.insurance);
+  // const { provider } = useSelector((state: RootState) => state.insurance);
+  const {
+    state: { provider },
+  } = useContext(InsuranceContext);
   const { ncd } = useSelector((state: RootState) => state.vehicle);
   const {
-    state: { addOns },
-  } = useContext(InsuranceContext);
+    store: { addOns },
+  } = useContext(MultiStepFormContext);
   const {
     state: { currentStep },
     dispatch: updateStep,
@@ -35,18 +39,20 @@ const SummaryInfoCard = () => {
 
   const selectedAddOns = addOns.filter((addOn) => addOn.isSelected);
 
+  const providerPrice: number = provider?.price ? parseInt(provider.price) : 0;
+
   const updatedNCD: number = Number(
-    (((provider?.price ?? 0) * parseInt(ncd)) / 100).toFixed(2)
+    ((providerPrice * parseInt(ncd)) / 100).toFixed(2)
   );
   const grossPremium = Number(
     (
-      (provider?.price ?? 0) -
+      providerPrice -
       updatedNCD +
       selectedAddOns.reduce((acc, curr) => (acc += curr.price), 0)
     ).toFixed(2)
   );
-
-  const subTotal = grossPremium;
+      const discount = (grossPremium * 10) / 100;
+  const subTotal = grossPremium - discount;
   const serviceTax = Number(((grossPremium * 6) / 100).toFixed(2));
   const totalAmount = Number((subTotal + serviceTax + 10).toFixed(2));
 
@@ -102,14 +108,14 @@ const SummaryInfoCard = () => {
         <div className="inline-block my-3 w-full h-[1px] bg-[#bcbcbc]" />
         <div className="flex flex-col items-start gap-y-1 w-full">
           <h4 className="text-lg text-center text-primary-black font-bold">
-            {provider?.companyName ?? "MSIG Motor Plus Insurance"}
+            {provider?.name ?? "MSIG Motor Plus Insurance"}
           </h4>
           <div className="flex items-center justify-between w-full">
             <span className="text-base text-left text-primary-black font-bold w-1/2">
               Premium
             </span>
             <span className="text-base text-left text-primary-black font-medium w-1/2">
-              RM {provider?.price ?? 671.67}
+              RM {providerPrice ?? 671.67}
             </span>
           </div>
           <div className="flex items-center justify-between w-full">
@@ -170,7 +176,7 @@ const SummaryInfoCard = () => {
               Discount (10%)
             </span>
             <span className="text-base text-left text-primary-black font-medium w-1/2">
-              RM 58
+              RM {discount}
             </span>
           </div>
           <div className="flex items-center justify-between w-full">

@@ -1,12 +1,13 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { nanoid } from "@reduxjs/toolkit";
 import AddOnsCard from "../card/AddOns";
+import SelectDropdown from "../fields/SelectDropdown";
 import {
   AddDriverTypes,
   AddOnsTypes,
-  InsuranceContext,
-} from "../context/context";
-import SelectDropdown from "../fields/SelectDropdown";
+  MultiStepFormContext,
+} from "../../context/MultiFormContext";
+import { AddOns, AdditionalDriverDetails } from "../../context/types";
 
 // const regEx = {
 //   passport: {
@@ -23,17 +24,64 @@ import SelectDropdown from "../fields/SelectDropdown";
 //   },
 // };
 
+//
+const defaultAddOns: AddOns[] = [
+  {
+    id: "addon-1",
+    title: "Cover for Windscreens",
+    description: "Cover for Windscreens, Windows And Sunroof",
+    isSelected: true,
+    price: 23,
+  },
+  {
+    id: "addon-2",
+    title: "Towing and Cleaning",
+    description: "Towing and Cleaning due to Water Damage",
+    isSelected: false,
+    price: 32,
+  },
+];
+
 let prevValue: string = "";
 
 const AddOnsContainer = () => {
+  // const {
+  //   state: { addDriverDetails },
+  //   dispatch,
+  // } = useContext(InsuranceContext);
   const {
-    state: { addOns, addDriverDetails },
+    store: { addOns, addDriverDetails },
     dispatch,
-  } = useContext(InsuranceContext);
+  } = useContext(MultiStepFormContext);
 
   function toggleAddOnsById(id: string) {
-    dispatch({ type: AddOnsTypes.ToggleAddOnById, payload: { id: id } });
+    dispatch({
+      type: AddOnsTypes.SelectionToggleById,
+      payload: { id: id },
+    });
   }
+
+  function updateDriverDetails(
+    id: string,
+    updatedValue: Partial<AdditionalDriverDetails>
+  ) {
+    dispatch({
+      type: AddDriverTypes.UpdateDriverDetails,
+      payload: { id: id, updatedValue: { ...updatedValue } },
+    });
+  }
+
+  useEffect(() => {
+    if (addOns.length === 0) {
+      const timeout = setTimeout(() => {
+        dispatch({
+          type: AddOnsTypes.IncludeAddOns,
+          payload: { addOns: defaultAddOns },
+        });
+      }, 1000);
+      return () => clearTimeout(timeout);
+    }
+  }, []);
 
   return (
     <div className="flex flex-col items-start max-w-[39rem] w-full">
@@ -42,13 +90,20 @@ const AddOnsContainer = () => {
           Additional Add Ons
         </h2>
         <div className="mt-4 grid grid-cols-3 items-start justify-between gap-4 w-full">
-          {addOns.map((addOn) => (
-            <AddOnsCard
-              key={addOn.id}
-              {...addOn}
-              updateBenefitList={toggleAddOnsById}
-            />
-          ))}
+          {addOns.length === 0
+            ? [...Array(6)].map((_, index) => (
+                <div
+                  className="animate-pulse relative w-[200px] h-[184px] bg-gray-300 rounded-lg"
+                  key={`addon-skeleton-${index}`}
+                />
+              ))
+            : addOns.map((addOn) => (
+                <AddOnsCard
+                  key={addOn.id}
+                  {...addOn}
+                  updateBenefitList={toggleAddOnsById}
+                />
+              ))}
         </div>
       </div>
       <div className="mt-4 flex flex-col items-start justify-start w-full h-auto">
@@ -95,16 +150,11 @@ const AddOnsContainer = () => {
                 type="text"
                 value={driverDetails.name}
                 placeholder="UserName"
-                onChange={(e) => {
-                  dispatch({
-                    type: AddDriverTypes.UpdateDriverDetails,
-                    payload: {
-                      id: driverDetails.id,
-                      prop: "name",
-                      value: e.target.value.toUpperCase(),
-                    },
-                  });
-                }}
+                onChange={(e) =>
+                  updateDriverDetails(driverDetails.id, {
+                    name: e.target.value.toUpperCase(),
+                  })
+                }
                 className="py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium border border-solid rounded outline outline-1 outline-transparent focus-visible:outline-primary-pink border-[#CFD0D7] focus-visible:border-primary-pink"
               />
             </div>
@@ -116,24 +166,12 @@ const AddOnsContainer = () => {
               <SelectDropdown
                 id={`idType-${driverDetails.id}`}
                 placeholder="NRIC"
-                onChange={(val: string) => {
-                  dispatch({
-                    type: AddDriverTypes.UpdateDriverDetails,
-                    payload: {
-                      id: driverDetails.id,
-                      prop: "idType",
-                      value: val,
-                    },
-                  });
-                  dispatch({
-                    type: AddDriverTypes.UpdateDriverDetails,
-                    payload: {
-                      id: driverDetails.id,
-                      prop: "idNo",
-                      value: "",
-                    },
-                  });
-                }}
+                onChange={(val: string) =>
+                  updateDriverDetails(driverDetails.id, {
+                    idType: val,
+                    idNo: "",
+                  })
+                }
                 selected={driverDetails.idType}
                 optionList={[
                   { label: "NRIC", value: "nric" },
@@ -178,13 +216,8 @@ const AddOnsContainer = () => {
                   }
                   prevValue = value;
                   e.target.value = value;
-                  dispatch({
-                    type: AddDriverTypes.UpdateDriverDetails,
-                    payload: {
-                      id: driverDetails.id,
-                      prop: "idNo",
-                      value: e.target.value,
-                    },
+                  updateDriverDetails(driverDetails.id, {
+                    idNo: value,
                   });
                 }}
                 className="py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium border border-solid rounded outline outline-1 outline-transparent focus-visible:outline-primary-pink border-[#CFD0D7] focus-visible:border-primary-pink"
@@ -199,13 +232,8 @@ const AddOnsContainer = () => {
                 id={`relationship-${driverDetails.id}`}
                 placeholder="Insured"
                 onChange={(val: string) =>
-                  dispatch({
-                    type: AddDriverTypes.UpdateDriverDetails,
-                    payload: {
-                      id: driverDetails.id,
-                      prop: "relationship",
-                      value: val,
-                    },
+                  updateDriverDetails(driverDetails.id, {
+                    relationship: val,
                   })
                 }
                 selected={driverDetails.relationship}
@@ -229,17 +257,12 @@ const AddOnsContainer = () => {
                 id={`nationality-${driverDetails.id}`}
                 placeholder="Malayisa"
                 onChange={(val: string) =>
-                  dispatch({
-                    type: AddDriverTypes.UpdateDriverDetails,
-                    payload: {
-                      id: driverDetails.id,
-                      prop: "relationship",
-                      value: val,
-                    },
+                  updateDriverDetails(driverDetails.id, {
+                    nationality: val,
                   })
                 }
                 disabled={driverDetails.idType === "nric"}
-                selected={driverDetails.relationship}
+                selected={driverDetails.nationality}
                 optionList={[
                   { label: "Malaysia", value: "malaysia" },
                   { label: "India", value: "india" },
@@ -258,11 +281,6 @@ const AddOnsContainer = () => {
                 type: AddDriverTypes.AddNewDriverDetails,
                 payload: {
                   id: nanoid(),
-                  name: "",
-                  idNo: "",
-                  idType: null,
-                  relationship: null,
-                  nationality: null,
                 },
               });
             }}

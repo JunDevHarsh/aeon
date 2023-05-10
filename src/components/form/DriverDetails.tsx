@@ -1,4 +1,3 @@
-// import React from "react";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
@@ -6,7 +5,8 @@ import InputTextField from "../fields/InputText";
 import SelectDropdown from "../fields/SelectDropdown";
 import MobileNumberField from "../fields/MobileNumber";
 import { useContext } from "react";
-import { InsuranceContext, DriverTypes } from "../context/context";
+import { DriverTypes, MultiStepFormContext } from "../../context/MultiFormContext";
+import { DriverDetails } from "../../context/types";
 
 type Inputs = {
   name: string;
@@ -30,9 +30,9 @@ const DriverDetailsForm = () => {
     (state: RootState) => state.user
   );
   const {
-    state: { driverDetails },
+    store: { driverDetails },
     dispatch,
-  } = useContext(InsuranceContext);
+  } = useContext(MultiStepFormContext);
 
   const {
     control,
@@ -47,6 +47,15 @@ const DriverDetailsForm = () => {
   });
 
   const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data);
+
+  function updateStoreValue(updateValue: Partial<DriverDetails>) {
+    dispatch({
+      type: DriverTypes.UpdateDriverInfo,
+      payload: {
+        updatedValues: updateValue,
+      },
+    });
+  }
 
   return (
     <div className="relative max-w-xl w-full">
@@ -71,14 +80,9 @@ const DriverDetailsForm = () => {
               },
               onChange(event: React.ChangeEvent<HTMLInputElement>) {
                 let { value } = event.currentTarget;
-                event.currentTarget.value = value.toUpperCase();
-                dispatch({
-                  type: DriverTypes.UpdateDriverInfo,
-                  payload: {
-                    prop: "name",
-                    value: event.target.value,
-                  },
-                });
+                value = value.toUpperCase();
+                event.currentTarget.value = value;
+                updateStoreValue({ name: value });
               },
             }}
           />
@@ -139,13 +143,7 @@ const DriverDetailsForm = () => {
                 let { value } = event.currentTarget;
                 let updatedValue = value.replace(/\D/g, "");
                 event.currentTarget.value = updatedValue;
-                dispatch({
-                  type: DriverTypes.UpdateDriverInfo,
-                  payload: {
-                    prop: "mobileNumber",
-                    value: updatedValue,
-                  },
-                });
+                updateStoreValue({ mobileNumber: updatedValue });
               },
             }}
           />
@@ -171,13 +169,7 @@ const DriverDetailsForm = () => {
               },
               onChange(event: React.ChangeEvent<HTMLInputElement>) {
                 let { value } = event.currentTarget;
-                dispatch({
-                  type: DriverTypes.UpdateDriverInfo,
-                  payload: {
-                    prop: "email",
-                    value: value,
-                  },
-                });
+                updateStoreValue({ email: value });
               },
             }}
           />
@@ -222,13 +214,7 @@ const DriverDetailsForm = () => {
                   id="nationalityType"
                   onChange={(val: string) => {
                     setValue("nationality", val);
-                    dispatch({
-                      type: DriverTypes.UpdateDriverInfo,
-                      payload: {
-                        prop: "nationality",
-                        value: val,
-                      },
-                    });
+                    updateStoreValue({ nationality: val });
                   }}
                   selected={value}
                   error={error}
@@ -261,13 +247,7 @@ const DriverDetailsForm = () => {
                   id="raceType"
                   onChange={(val: string) => {
                     setValue("race", val);
-                    dispatch({
-                      type: DriverTypes.UpdateDriverInfo,
-                      payload: {
-                        prop: "race",
-                        value: val,
-                      },
-                    });
+                    updateStoreValue({ race: val });
                   }}
                   selected={value}
                   error={error}
@@ -302,13 +282,7 @@ const DriverDetailsForm = () => {
                   id="occupationType"
                   onChange={(val: string) => {
                     setValue("occupation", val);
-                    dispatch({
-                      type: DriverTypes.UpdateDriverInfo,
-                      payload: {
-                        prop: "occupation",
-                        value: val,
-                      },
-                    });
+                    updateStoreValue({ occupation: val });
                   }}
                   selected={value}
                   error={error}
@@ -337,13 +311,7 @@ const DriverDetailsForm = () => {
                 let { value } = event.currentTarget;
                 const updatedValue = value.replace(/\D/g, "");
                 event.currentTarget.value = updatedValue;
-                dispatch({
-                  type: DriverTypes.UpdateDriverInfo,
-                  payload: {
-                    prop: "drivingExp",
-                    value: updatedValue,
-                  },
-                });
+                updateStoreValue({ drivingExp: updatedValue });
               },
             }}
           />
@@ -365,13 +333,7 @@ const DriverDetailsForm = () => {
               },
               onChange(event: React.ChangeEvent<HTMLInputElement>) {
                 let { value } = event.currentTarget;
-                dispatch({
-                  type: DriverTypes.UpdateDriverInfo,
-                  payload: {
-                    prop: "address1",
-                    value: value,
-                  },
-                });
+                updateStoreValue({ address1: value });
               },
             }}
           />
@@ -388,13 +350,7 @@ const DriverDetailsForm = () => {
               },
               onChange(event: React.ChangeEvent<HTMLInputElement>) {
                 let { value } = event.currentTarget;
-                dispatch({
-                  type: DriverTypes.UpdateDriverInfo,
-                  payload: {
-                    prop: "address2",
-                    value: value,
-                  },
-                });
+                updateStoreValue({ address2: value });
               },
             }}
           />
@@ -411,13 +367,7 @@ const DriverDetailsForm = () => {
               },
               onChange(event: React.ChangeEvent<HTMLInputElement>) {
                 let { value } = event.currentTarget;
-                dispatch({
-                  type: DriverTypes.UpdateDriverInfo,
-                  payload: {
-                    prop: "address3",
-                    value: value,
-                  },
-                });
+                updateStoreValue({ address3: value });
               },
             }}
           />
@@ -440,13 +390,7 @@ const DriverDetailsForm = () => {
                   id="country"
                   onChange={(val: string) => {
                     setValue("country", val);
-                    dispatch({
-                      type: DriverTypes.UpdateDriverInfo,
-                      payload: {
-                        prop: "country",
-                        value: val,
-                      },
-                    });
+                    updateStoreValue({ country: val });
                   }}
                   selected={value}
                   error={error}
@@ -472,13 +416,7 @@ const DriverDetailsForm = () => {
               },
               onChange(event: React.ChangeEvent<HTMLInputElement>) {
                 let { value } = event.currentTarget;
-                dispatch({
-                  type: DriverTypes.UpdateDriverInfo,
-                  payload: {
-                    prop: "state",
-                    value: value,
-                  },
-                });
+                updateStoreValue({ state: value });
               },
             }}
           />
@@ -495,13 +433,7 @@ const DriverDetailsForm = () => {
               },
               onChange(event: React.ChangeEvent<HTMLInputElement>) {
                 let { value } = event.currentTarget;
-                dispatch({
-                  type: DriverTypes.UpdateDriverInfo,
-                  payload: {
-                    prop: "city",
-                    value: value,
-                  },
-                });
+                updateStoreValue({ city: value });
               },
             }}
           />
@@ -525,13 +457,7 @@ const DriverDetailsForm = () => {
                 let { value } = event.currentTarget;
                 let updatedValue = value.replace(/\D/g, "");
                 event.currentTarget.value = updatedValue;
-                dispatch({
-                  type: DriverTypes.UpdateDriverInfo,
-                  payload: {
-                    prop: "postalCode",
-                    value: updatedValue,
-                  },
-                });
+                updateStoreValue({ postalCode: value });
               },
             }}
           />

@@ -1,7 +1,7 @@
 import { useState, useContext } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
-import { InsuranceContext } from "../context/context";
+import { MultiStepFormContext } from "../../context/MultiFormContext";
 
 const ApplicationDetailsContainer = () => {
   const {
@@ -17,8 +17,8 @@ const ApplicationDetailsContainer = () => {
     },
   } = useSelector((state: RootState) => state);
   const {
-    state: { addDriverDetails, driverDetails },
-  } = useContext(InsuranceContext);
+    store: { addDriverDetails, driverDetails },
+  } = useContext(MultiStepFormContext);
   const [includeRoadTax, updateRoadTax] = useState<boolean>(false);
 
   const { name, mobileNumber, email } = driverDetails;
@@ -246,6 +246,14 @@ const ApplicationDetailsContainer = () => {
                   </span>
                   <span className="text-base text-left text-primary-black font-normal">
                     {detail.idNo}
+                  </span>
+                </div>
+                <div className="flex flex-col items-start w-auto">
+                  <span className="text-base text-left text-primary-black font-bold">
+                    Nationality
+                  </span>
+                  <span className="text-base text-left text-primary-black font-normal">
+                    {detail.nationality}
                   </span>
                 </div>
               </div>
