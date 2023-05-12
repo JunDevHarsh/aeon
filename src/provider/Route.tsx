@@ -29,7 +29,7 @@ const router = createBrowserRouter(
                 <div className="mx-auto  py-auto py-10 flex flex-col items-center justify-between max-w-3xl w-full">
                   <img
                     src={GuyImg}
-                    alt="guy-holding-stick-in-his-hand"
+                    alt="guy-holding-stick-in-his-hand-img"
                     className="mx-auto"
                   />
                   <p className="text-3xl text-center text-primary-black font-bold">
