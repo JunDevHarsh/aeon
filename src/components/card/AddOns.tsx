@@ -6,18 +6,22 @@ interface AddOnsCardProps {
   id: string;
   title: string;
   isSelected: boolean;
+  isEditable: boolean;
   description: string;
   price: number;
   updateBenefitList: (id: string) => void;
+  openAddOnPopup: (id: string, title: string, defaultValue: string) => void;
 }
 
 const AddOnsCard: React.FC<AddOnsCardProps> = ({
   id,
   title,
   isSelected,
+  isEditable,
   description,
   price,
   updateBenefitList,
+  openAddOnPopup,
 }) => {
   const uid = useId();
 
@@ -68,24 +72,33 @@ const AddOnsCard: React.FC<AddOnsCardProps> = ({
             <span className="text-sm text-center text-primary-black font-medium">
               Sum Insured
             </span>
-            <button className="flex items-center justify-center w-auto">
+            {isEditable ? (
+              <button
+                className="flex items-center justify-center w-auto"
+                onClick={() => openAddOnPopup(id, title, price.toString())}
+              >
+                <span className="text-sm text-center text-primary-black font-normal">
+                  RM {numberWithCommas(price)}
+                </span>
+                <svg
+                  width="13"
+                  height="13"
+                  viewBox="0 0 13 13"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="ml-1"
+                >
+                  <path
+                    d="M11.4176 3.62363L9.40265 1.60869L10.0439 0.963642C10.2285 0.77909 10.458 0.688793 10.7323 0.692752C11.0066 0.69671 11.2398 0.792215 11.4319 0.979267L12.0664 1.61003C12.2584 1.79957 12.3513 2.02954 12.3451 2.29992C12.3388 2.5703 12.2435 2.79777 12.0589 2.98233L11.4176 3.62363ZM10.7651 4.27614L2.8714 12.1698H0.856445V10.1549L8.7464 2.26494L10.7651 4.27614Z"
+                    fill="#A5308A"
+                  />
+                </svg>
+              </button>
+            ) : (
               <span className="text-sm text-center text-primary-black font-normal">
                 RM {numberWithCommas(price)}
               </span>
-              <svg
-                width="13"
-                height="13"
-                viewBox="0 0 13 13"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="ml-1"
-              >
-                <path
-                  d="M11.4176 3.62363L9.40265 1.60869L10.0439 0.963642C10.2285 0.77909 10.458 0.688793 10.7323 0.692752C11.0066 0.69671 11.2398 0.792215 11.4319 0.979267L12.0664 1.61003C12.2584 1.79957 12.3513 2.02954 12.3451 2.29992C12.3388 2.5703 12.2435 2.79777 12.0589 2.98233L11.4176 3.62363ZM10.7651 4.27614L2.8714 12.1698H0.856445V10.1549L8.7464 2.26494L10.7651 4.27614Z"
-                  fill="#A5308A"
-                />
-              </svg>
-            </button>
+            )}
           </div>
         )}
       </label>

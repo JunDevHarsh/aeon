@@ -37,6 +37,7 @@ export type AddOns = {
   id: string;
   title: string;
   isSelected: boolean;
+  isEditable: boolean;
   description: string;
   price: number;
 };

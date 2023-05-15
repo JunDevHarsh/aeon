@@ -84,6 +84,13 @@ export const addOnsReducer = (
     case AddOnsTypes.IncludeAddOns: {
       return [...payload.addOns];
     }
+    case AddOnsTypes.UpdateAddOnPrice: {
+      const { id, price } = payload;
+      const updatedAddOns = state.map((addOn) =>
+        addOn.id === id ? { ...addOn, price: price } : addOn
+      );
+      return [...updatedAddOns];
+    }
     default:
       return state;
   }

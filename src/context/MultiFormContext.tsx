@@ -20,12 +20,12 @@ const initialMultiStepFormState: MultiStepFormState = {
     name: "",
     email: "",
     city: "",
-    country: "",
+    country: "Malaysia",
     mobileNumber: "",
     drivingExp: "",
-    nationality: null,
-    occupation: null,
-    race: null,
+    nationality: "Malaysia",
+    occupation: "Teacher",
+    race: "Chinese",
     address1: "",
     address2: "",
     address3: "",
@@ -38,6 +38,7 @@ const initialMultiStepFormState: MultiStepFormState = {
 export enum AddOnsTypes {
   SelectionToggleById = "SELECTION_TOGGLE_BY_ID",
   IncludeAddOns = "INCLUDE_ADD_ONS",
+  UpdateAddOnPrice = "UPDATE_ADD_ON_PRICE"
 }
 
 export enum AddDriverTypes {
@@ -58,6 +59,10 @@ export type AddOnsPayload = {
   [AddOnsTypes.IncludeAddOns]: {
     addOns: AddOns[];
   };
+  [AddOnsTypes.UpdateAddOnPrice]: {
+    id: string;
+    price: number;
+  }
 };
 
 export type AddDriverDetailsPayload = {

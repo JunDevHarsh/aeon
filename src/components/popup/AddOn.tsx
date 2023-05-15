@@ -1,24 +1,40 @@
 import React, { useState } from "react";
 
 type AddOnProps = {
+  id: string;
   title: string;
   defaultValue?: string;
+  closeAddOnPopup: () => void;
+  updateAddOnPrice: (id: string, price: string) => void;
 };
 
-const AddOnPopup = ({ title, defaultValue }: AddOnProps) => {
+const AddOnPopup = ({
+  id,
+  title,
+  defaultValue,
+  closeAddOnPopup,
+  updateAddOnPrice,
+}: AddOnProps) => {
   const [value, setValue] = useState<string>(defaultValue ?? "");
+  const hasError = Number(value) < Number(defaultValue);
+
+  function handleOnSubmit(id: string, price: string) {
+    if (value === "" || hasError) return;
+    updateAddOnPrice(id, price);
+  }
+
   return (
     <div className="fixed top-0 left-0 right-0 bottom-0 bg-gradient-to-tr from-[rgba(0,0,0,0.7)] to-[rgba(0,0,0,0.7)] z-[20]">
       <div className="relative flex items-center justify-center h-screen w-screen">
         <div className="relative max-w-[412px] bg-white w-full rounded">
-          <div className="px-6 py-4 flex flex-col items-center w-full border-b border-solid border-gray-300">
+          <div className="relative px-6 pt-4 pb-6 flex flex-col items-center w-full border-b border-solid border-gray-300">
             <div className="mb-6 flex items-center justify-between w-full">
               <h3 className="text-base text-center text-primary-black font-bold">
-                {title}
+                Sum insured for {title}
               </h3>
               <button
                 className="inline-block w-auto h-auto"
-                //   onClick={)_ }
+                onClick={closeAddOnPopup}
               >
                 <svg
                   width="24"
@@ -47,16 +63,33 @@ const AddOnPopup = ({ title, defaultValue }: AddOnProps) => {
             <input
               type="text"
               value={value}
+              autoFocus
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                 let { value } = event.currentTarget;
                 value = value.replace(/\D/g, "");
                 return setValue(value);
               }}
               placeholder="Placeholder"
-              className="py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium border border-solid rounded outline outline-1 outline-transparent focus-visible:outline-primary-pink border-[#CFD0D7] focus-visible:border-primary-pink"
+              className={`py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium border border-solid rounded outline 
+              outline-1 outline-transparent ${
+                hasError
+                  ? "border-[#e57398] placeholder:text-[#e57398] "
+                  : "focus-visible:outline-primary-pink border-[#CFD0D7] focus-visible:border-primary-pink"
+              }`}
             />
+            {Number(value) < Number(defaultValue) && (
+              <span
+                role="alert"
+                className="absolute bottom-0.5 left-0 px-6 text-sm text-left font-medium text-[#e57398]"
+              >
+                Sum insured value should be or more than RM {defaultValue}
+              </span>
+            )}
           </div>
-          <div className="px-6 py-3 flex items-center justify-end w-full">
+          <div
+            className="px-6 py-3 flex items-center justify-end w-full"
+            onClick={() => handleOnSubmit(id, value)}
+          >
             <button className="relative py-1 px-2 w-auto h-auto bg-primary-blue rounded-lg">
               <span className="text-sm text-center text-white font-medium">
                 Submit

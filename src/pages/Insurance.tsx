@@ -115,7 +115,7 @@ const InsurancePage = () => {
         }));
       }
       const newGeneratedValues: GeneratedValue = generateVehicleCoverages();
-      console.log(newGeneratedValues);
+      // console.log(newGeneratedValues);
       const { minValue, maxValue } = newGeneratedValues;
       setVehicleCoverage((prev: VehicleCoverageState) => ({
         ...prev,

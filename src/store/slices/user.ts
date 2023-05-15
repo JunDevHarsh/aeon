@@ -26,21 +26,21 @@ type UserState = {
 
 const initialState: UserState = {
   id: {
-    type: null,
-    no: "",
+    type: "NRIC",
+    no: "070212-12-1231",
   },
-  name: "",
-  maritalStatus: null,
+  name: "User 1",
+  maritalStatus: "Single",
   gender: "male",
-  mobileNumber: "",
-  email: "",
-  postalCode: "",
-  dateOfBirth: null,
-  drivingExp: "",
+  mobileNumber: "11239878",
+  email: "user.test@gmail.com",
+  postalCode: "55000",
+  dateOfBirth: "2007-02-12T00:00:00.000Z",
+  drivingExp: "2",
   address: {
-    city: null,
-    nationality: null,
-    state: null,
+    city: "Kuala Terengganu",
+    nationality: "Malaysia",
+    state: "Terengganu",
     residence: "",
   },
 };

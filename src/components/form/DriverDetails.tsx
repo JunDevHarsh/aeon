@@ -220,9 +220,9 @@ const DriverDetailsForm = () => {
                   error={error}
                   placeholder="Malaysia"
                   optionList={[
-                    { label: "Malaysia", value: "malaysia" },
-                    { label: "India", value: "india" },
-                    { label: "Others", value: "others" },
+                    { label: "Malaysia", value: "Malaysia" },
+                    { label: "India", value: "India" },
+                    { label: "Others", value: "Others" },
                   ]}
                 />
               )}
