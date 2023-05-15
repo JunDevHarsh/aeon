@@ -174,9 +174,9 @@ const AddOnsContainer = () => {
                 }
                 selected={driverDetails.idType}
                 optionList={[
-                  { label: "NRIC", value: "nric" },
-                  { label: "Passport", value: "passport" },
-                  { label: "Company", value: "company" },
+                  { label: "NRIC", value: "NRIC" },
+                  { label: "Passport", value: "Passport" },
+                  { label: "Company", value: "Company" },
                 ]}
               />
             </div>
@@ -193,9 +193,9 @@ const AddOnsContainer = () => {
                 type="text"
                 value={driverDetails.idNo}
                 placeholder={
-                  driverDetails.idType === "passport"
+                  driverDetails.idType === "Passport"
                     ? "A12365498"
-                    : driverDetails.idType === "company"
+                    : driverDetails.idType === "Company"
                     ? "1344743-J"
                     : "123456-12-1234"
                 }
@@ -203,7 +203,7 @@ const AddOnsContainer = () => {
                   let { value } = e.target;
                   // remove all spaces from the text
                   value = value.replace(/\s+/g, "").toUpperCase();
-                  if (driverDetails.idType === "nric") {
+                  if (driverDetails.idType === "NRIC") {
                     value = value.replace(/\D/g, "");
                     let formatValue = "";
                     for (let i = 0; i < value.length; i++) {
@@ -214,7 +214,7 @@ const AddOnsContainer = () => {
                       }
                     }
                     value = formatValue;
-                  } else if (driverDetails.idType === "company") {
+                  } else if (driverDetails.idType === "Company") {
                     if (value.length === 7) {
                       if (value.length > prevValue.length) {
                         value += "-";
@@ -247,13 +247,13 @@ const AddOnsContainer = () => {
                 }
                 selected={driverDetails.relationship}
                 optionList={[
-                  { label: "Insured", value: "insured" },
-                  { label: "Parent", value: "parent" },
-                  { label: "Parent-in-law", value: "parent-in-law" },
-                  { label: "Spouse", value: "spouse" },
-                  { label: "Child", value: "child" },
-                  { label: "Siblings", value: "siblings" },
-                  { label: "Co-worker", value: "co-worker" },
+                  { label: "Insured", value: "Insured" },
+                  { label: "Parent", value: "Parent" },
+                  { label: "Parent-in-law", value: "Parent-in-Law" },
+                  { label: "Spouse", value: "Spouse" },
+                  { label: "Child", value: "Child" },
+                  { label: "Siblings", value: "Siblings" },
+                  { label: "Co-worker", value: "Co-worker" },
                 ]}
               />
             </div>
@@ -273,9 +273,9 @@ const AddOnsContainer = () => {
                 disabled={driverDetails.idType === "nric"}
                 selected={driverDetails.nationality}
                 optionList={[
-                  { label: "Malaysia", value: "malaysia" },
-                  { label: "India", value: "india" },
-                  { label: "Other", value: "other" },
+                  { label: "Malaysia", value: "Malaysia" },
+                  { label: "India", value: "India" },
+                  { label: "Other", value: "Other" },
                 ]}
               />
             </div>

@@ -30,7 +30,7 @@ const VehicleInfoForm = ({
   } = useForm<VehicleStateInfo>({
     defaultValues: {
       ...vehicleState,
-      region: null,
+      region: "West",
       drivers: "2",
       hailingServices: false,
     },
@@ -259,11 +259,11 @@ const VehicleInfoForm = ({
                 optionList={[
                   {
                     label: "West",
-                    value: "west",
+                    value: "West",
                   },
                   {
                     label: "East",
-                    value: "east",
+                    value: "East",
                   },
                 ]}
               />

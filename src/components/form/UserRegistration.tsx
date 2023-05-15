@@ -23,12 +23,12 @@ const defaultUserInsuranceState: UserInsuranceInputs = {
   idNo: "",
   email: "",
   postalCode: "",
-  idType: "nric",
+  idType: "NRIC",
   gender: "male",
   vehicleRegNo: "",
   mobileNumber: "",
   dateOfBirth: null,
-  maritalStatus: null,
+  maritalStatus: "Single",
   insuranceType: "renewal",
   insuranceVehicle: "car",
 };
@@ -101,15 +101,15 @@ const UserRegistrationForm = () => {
   const watchIDType: string | null = watch("idType");
 
   const regEx = {
-    passport: {
+    Passport: {
       pattern: /^[A-Z]{1}[0-9]{8}$/,
       errorMessage: "For e.g. A12365498",
     },
-    nric: {
+    NRIC: {
       pattern: /^\d{6}-\d{2}-\d{4}$/,
       errorMessage: "For e.g. 050505-12-2321",
     },
-    company: {
+    Company: {
       pattern: /^[0-9]{7}-[A-Z]/g,
       errorMessage: "For e.g. 1234567-J",
     },
@@ -238,9 +238,9 @@ const UserRegistrationForm = () => {
                     placeholder="NRIC"
                     error={error}
                     optionList={[
-                      { label: "NRIC", value: "nric" },
-                      { label: "Passport", value: "passport" },
-                      { label: "Company", value: "company" },
+                      { label: "NRIC", value: "NRIC" },
+                      { label: "Passport", value: "Passport" },
+                      { label: "Company", value: "Company" },
                     ]}
                   />
                 )}
@@ -253,9 +253,9 @@ const UserRegistrationForm = () => {
                 register={register}
                 errors={errors.idNo}
                 placeholder={
-                  watchIDType === "passport"
+                  watchIDType === "Passport"
                     ? "A12365498"
-                    : watchIDType === "company"
+                    : watchIDType === "Company"
                     ? "1344743-J"
                     : "123456-12-1234"
                 }
@@ -280,7 +280,7 @@ const UserRegistrationForm = () => {
                     let { value } = event.currentTarget;
                     // remove all spaces from the text
                     value = value.replace(/\s+/g, "").toUpperCase();
-                    if (watchIDType === "nric") {
+                    if (watchIDType === "NRIC") {
                       value = value.replace(/\D/g, "");
                       let formatValue = "";
                       for(let i = 0; i < value.length; i++){
@@ -291,7 +291,7 @@ const UserRegistrationForm = () => {
                         }
                       }
                       value = formatValue;
-                    } else if (watchIDType === "company") {
+                    } else if (watchIDType === "Company") {
                       if (value.length === 7) {
                         if (value.length > prevValue.length) {
                           value += "-";
@@ -358,10 +358,10 @@ const UserRegistrationForm = () => {
                   selected={value}
                   error={error}
                   optionList={[
-                    { label: "Single", value: "single" },
-                    { label: "Married", value: "married" },
-                    { label: "Divorced", value: "divorced" },
-                    { label: "Widowed", value: "widowed" },
+                    { label: "Single", value: "Single" },
+                    { label: "Married", value: "Married" },
+                    { label: "Divorced", value: "Divorced" },
+                    { label: "Widowed", value: "Widowed" },
                   ]}
                 />
               )}

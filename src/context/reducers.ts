@@ -100,10 +100,10 @@ export const addDriverDetailsReducer = (
       const newDetails: AdditionalDriverDetails = {
         id: payload.id,
         idNo: "",
-        idType: null,
+        idType: "NRIC",
         name: "",
-        nationality: null,
-        relationship: null,
+        nationality: "Malaysia",
+        relationship: "Insured",
       };
       return [...state, newDetails];
     }
