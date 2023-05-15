@@ -20,6 +20,8 @@ const router = createBrowserRouter(
   createRoutesFromElements(
     <Route
       path="/"
+      hasErrorBoundary={true}
+      errorElement={<ErrorBoundary />}
       element={
         <Suspense
           fallback={

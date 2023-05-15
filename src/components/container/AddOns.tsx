@@ -192,19 +192,28 @@ const AddOnsContainer = () => {
                 id={`idNo-${driverDetails.id}`}
                 type="text"
                 value={driverDetails.idNo}
-                placeholder="IADS787"
+                placeholder={
+                  driverDetails.idType === "passport"
+                    ? "A12365498"
+                    : driverDetails.idType === "company"
+                    ? "1344743-J"
+                    : "123456-12-1234"
+                }
                 onChange={(e) => {
                   let { value } = e.target;
                   // remove all spaces from the text
                   value = value.replace(/\s+/g, "").toUpperCase();
                   if (driverDetails.idType === "nric") {
-                    if (value.length === 6 || value.length === 9) {
-                      if (value.length > prevValue.length) {
-                        value += "-";
+                    value = value.replace(/\D/g, "");
+                    let formatValue = "";
+                    for (let i = 0; i < value.length; i++) {
+                      if (i === 5 || i === 7) {
+                        formatValue += value[i] + "-";
                       } else {
-                        value = value.slice(0, value.length - 1);
+                        formatValue += value[i];
                       }
                     }
+                    value = formatValue;
                   } else if (driverDetails.idType === "company") {
                     if (value.length === 7) {
                       if (value.length > prevValue.length) {

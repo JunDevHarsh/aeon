@@ -202,8 +202,7 @@ const UserRegistrationForm = () => {
               },
               onChange(event: React.ChangeEvent<HTMLInputElement>) {
                 let { value } = event.currentTarget;
-                // remove all spaces from the text
-                value = value.replace(/\s+/g, "");
+                value = value.replace(/[^A-Z0-9]/gi, "");
                 event.currentTarget.value = value.toUpperCase();
               },
             }}
@@ -282,13 +281,16 @@ const UserRegistrationForm = () => {
                     // remove all spaces from the text
                     value = value.replace(/\s+/g, "").toUpperCase();
                     if (watchIDType === "nric") {
-                      if (value.length === 6 || value.length === 9) {
-                        if (value.length > prevValue.length) {
-                          value += "-";
-                        } else {
-                          value = value.slice(0, value.length - 1);
+                      value = value.replace(/\D/g, "");
+                      let formatValue = "";
+                      for(let i = 0; i < value.length; i++){
+                        if(i === 5 || i === 7){
+                          formatValue += value[i] + "-";
+                        }else{
+                          formatValue += value[i];
                         }
                       }
+                      value = formatValue;
                     } else if (watchIDType === "company") {
                       if (value.length === 7) {
                         if (value.length > prevValue.length) {
@@ -313,6 +315,10 @@ const UserRegistrationForm = () => {
             register={register}
             errors={errors.postalCode}
             options={{
+              minLength: {
+                value: 4,
+                message: "Minimum 4 characters required",
+              },
               maxLength: {
                 value: 5,
                 message: "Maximum 5 characters allowed.",
@@ -445,6 +451,10 @@ const UserRegistrationForm = () => {
             register={register}
             errors={errors.mobileNumber}
             options={{
+              minLength: {
+                value: 7,
+                message: "Minimum 7 characters are required",
+              },
               maxLength: {
                 value: 11,
                 message: "Max 11 characters are allowed",
