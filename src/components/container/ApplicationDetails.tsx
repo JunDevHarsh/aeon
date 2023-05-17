@@ -34,7 +34,7 @@ const ApplicationDetailsContainer = () => {
         <h2 className="text-xl text-center text-primary-black font-bold">
           Vehicle Details
         </h2>
-        <div className="px-6 py-4 grid grid-cols-3 gap-4 w-full">
+        <div className="px-6 py-4 grid grid-cols-3 gap-4 w-full bg-[#fcf6ff] rounded-lg">
           <div className="flex flex-col items-start w-auto">
             <span className="text-base text-left text-primary-black font-bold">
               Car Registration No
@@ -97,7 +97,7 @@ const ApplicationDetailsContainer = () => {
         <h2 className="text-xl text-center text-primary-black font-bold">
           Insured Details
         </h2>
-        <div className="px-6 py-4 grid grid-cols-3 gap-4 w-full">
+        <div className="px-6 py-4 grid grid-cols-3 gap-4 w-full bg-[#fcf6ff] rounded-lg">
           <div className="flex flex-col items-start w-auto">
             <span className="text-base text-left text-primary-black font-bold">
               Name
@@ -215,7 +215,7 @@ const ApplicationDetailsContainer = () => {
               <h3 className="text-lg text-left text-primary-black font-bold">
                 Additional Driver {index + 1}
               </h3>
-              <div className="px-6 py-2 grid grid-cols-3 gap-4 w-full">
+              <div className="px-6 py-2 grid grid-cols-3 gap-4 w-full rounded-lg">
                 <div className="flex flex-col items-start w-auto">
                   <span className="text-base text-left text-primary-black font-bold">
                     Name

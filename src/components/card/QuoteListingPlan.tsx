@@ -8,6 +8,8 @@ import {
 } from "../../context/InsuranceContext";
 import { MultiFormStepTypes, StepContext } from "../../context/StepContext";
 import { VehicleCoverageContext } from "../../pages/Insurance";
+import { useDispatch } from "react-redux";
+import { updateInsuranceProvider } from "../../store/slices/insurance";
 
 type QuoteListingPlanProps = {
   id: string;
@@ -43,6 +45,7 @@ const QuoteListingPlanCard = ({
   const { dispatch: updateVehicleCoverage } = useContext(
     VehicleCoverageContext
   );
+  const updateInsuranceStore = useDispatch();
   const { dispatch: updateCurrentStep } = useContext(StepContext);
 
   function updateListSize(size: number, updatedSize: number): void {
@@ -59,6 +62,13 @@ const QuoteListingPlanCard = ({
   }
 
   function handleSelectedQuotePlan() {
+    updateInsuranceStore(
+      updateInsuranceProvider({
+        price: Number(price),
+        companyId: companyId,
+        companyName: companyName,
+      })
+    );
     dispatch({
       type: InsuranceProviderTypes.UpdateInsuranceProvider,
       payload: {
@@ -155,7 +165,8 @@ const QuoteListingPlanCard = ({
             <div className="mt-6 flex items-center justify-center w-full">
               <FileDownloadButton
                 text="Download Brochure"
-                href="https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
+                // href="https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
+                href="https://softsolverscom.sharepoint.com/sites/AEONRepo/Retail%20Portal/Requirements/APIs/Allianz/MotorOnlineProductDisclosure.pdf?CT=1684218785770&OR=ItemsView"
               />
             </div>
           )}

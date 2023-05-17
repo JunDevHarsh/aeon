@@ -1,9 +1,5 @@
 import React from "react";
-
-type IconProps = {
-  svgColor: string;
-  pathColor: string;
-};
+import { IconProps } from "../../icons/types";
 
 const CarSlideIcon: React.FC<Partial<IconProps>> = ({
   svgColor = "none",

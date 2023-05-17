@@ -4,6 +4,8 @@ import StepperNavbar from "../components/navbar/Stepper";
 import InsuranceContextProvider from "../context/InsuranceContext";
 import StepContextProvider from "../context/StepContext";
 import VehicleCoverageContainer from "../components/container/VehicleCoverage";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
 
 type GeneratedValue = {
   minValue: number;
@@ -80,6 +82,7 @@ function generateVehicleCoverages(): {
 }
 
 const InsurancePage = () => {
+  const {} = useSelector((state: RootState) => state.vehicle);
   const [vehicleCoverage, setVehicleCoverage] = useState<VehicleCoverageState>(
     initialVehicleCoverage
   );

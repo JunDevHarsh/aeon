@@ -34,6 +34,7 @@ const defaultAddOns: AddOns[] = [
     isSelected: true,
     isEditable: false,
     price: 23,
+    imgName: "WindScreen",
   },
   {
     id: "addon-2",
@@ -42,6 +43,7 @@ const defaultAddOns: AddOns[] = [
     isSelected: false,
     isEditable: true,
     price: 32,
+    imgName: "Towing",
   },
 ];
 
@@ -130,6 +132,7 @@ const AddOnsContainer = () => {
           defaultValue={addOnPopup.defaultValue}
           closeAddOnPopup={closeAddOnPopup}
           updateAddOnPrice={updateAddOnPrice}
+          toggleAddOnsById={toggleAddOnsById}
         />
       )}
       <div className="flex flex-col items-start max-w-[39rem] w-full">

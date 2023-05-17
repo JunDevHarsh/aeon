@@ -43,14 +43,14 @@ const InputTextField = ({
         {...rest}
         className={`py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium border border-solid rounded outline outline-1 outline-transparent focus-visible:outline-primary-pink ${
           errors
-            ? "border-[#e57398] placeholder:text-[#e57398]"
+            ? "border-red-600 placeholder:text-red-600"
             : "border-[#CFD0D7] focus-visible:border-primary-pink"
         }`}
       />
       {errors && (
         <span
           role="alert"
-          className="absolute bottom-0 left-0 text-sm text-left font-medium text-[#e57398]"
+          className="absolute bottom-0 left-0 text-sm text-left font-medium text-red-600"
         >
           {errors.message}
         </span>

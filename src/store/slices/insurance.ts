@@ -23,7 +23,7 @@ type InsuranceState = {
 };
 
 const initialState: InsuranceState = {
-  type: "new",
+  type: "renewal",
   vehicle: "car",
   coverage: null,
   referralCode: null,

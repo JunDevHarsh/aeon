@@ -40,6 +40,7 @@ export type AddOns = {
   isEditable: boolean;
   description: string;
   price: number;
+  imgName: string;
 };
 
 // Additional Driver Details

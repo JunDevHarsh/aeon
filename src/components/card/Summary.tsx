@@ -51,8 +51,8 @@ const SummaryInfoCard = () => {
       selectedAddOns.reduce((acc, curr) => (acc += curr.price), 0)
     ).toFixed(2)
   );
-      const discount = (grossPremium * 10) / 100;
-  const subTotal = grossPremium - discount;
+  const discount = (grossPremium * 10) / 100;
+  const subTotal = Number((grossPremium - discount).toFixed());
   const serviceTax = Number(((grossPremium * 6) / 100).toFixed(2));
   const totalAmount = Number((subTotal + serviceTax + 10).toFixed(2));
 
@@ -74,34 +74,41 @@ const SummaryInfoCard = () => {
           <div className="flex items-center justify-between w-full">
             <span className="text-base text-left text-primary-black font-bold w-1/2">
               Sum Insured <br />
-              {`(${selectedCoverage?.type || "Market"} Value)`}
+              {`(${
+                (selectedCoverage?.type &&
+                  selectedCoverage.type[0].toUpperCase() +
+                    selectedCoverage.type.slice(1)) ||
+                "Market"
+              } Value)`}
             </span>
             <div className="flex items-center justify-start w-1/2">
               <span className="text-base text-left text-primary-black font-medium">
                 RM {numberWithCommas(selectedCoverage?.price ?? 1200)}
               </span>
-              <button
-                onClick={() =>
-                  updateVehicleCoverage((prev) => ({
-                    ...prev,
-                    isContainerVisible: true,
-                  }))
-                }
-                className="ml-1"
-              >
-                <svg
-                  width="13"
-                  height="13"
-                  viewBox="0 0 13 13"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
+              {currentStep !== 4 && (
+                <button
+                  onClick={() =>
+                    updateVehicleCoverage((prev) => ({
+                      ...prev,
+                      isContainerVisible: true,
+                    }))
+                  }
+                  className="ml-1"
                 >
-                  <path
-                    d="M11.4176 3.62363L9.40265 1.60869L10.0439 0.963642C10.2285 0.77909 10.458 0.688793 10.7323 0.692752C11.0066 0.69671 11.2398 0.792215 11.4319 0.979267L12.0664 1.61003C12.2584 1.79957 12.3513 2.02954 12.3451 2.29992C12.3388 2.5703 12.2435 2.79777 12.0589 2.98233L11.4176 3.62363ZM10.7651 4.27614L2.8714 12.1698H0.856445V10.1549L8.7464 2.26494L10.7651 4.27614Z"
-                    fill="#A5308A"
-                  />
-                </svg>
-              </button>
+                  <svg
+                    width="13"
+                    height="13"
+                    viewBox="0 0 13 13"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M11.4176 3.62363L9.40265 1.60869L10.0439 0.963642C10.2285 0.77909 10.458 0.688793 10.7323 0.692752C11.0066 0.69671 11.2398 0.792215 11.4319 0.979267L12.0664 1.61003C12.2584 1.79957 12.3513 2.02954 12.3451 2.29992C12.3388 2.5703 12.2435 2.79777 12.0589 2.98233L11.4176 3.62363ZM10.7651 4.27614L2.8714 12.1698H0.856445V10.1549L8.7464 2.26494L10.7651 4.27614Z"
+                      fill="#A5308A"
+                    />
+                  </svg>
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -200,7 +207,7 @@ const SummaryInfoCard = () => {
               Stamp Duty
             </span>
             <span className="text-base text-left text-primary-black font-medium w-1/2">
-              10
+              RM 10
             </span>
           </div>
         </div>

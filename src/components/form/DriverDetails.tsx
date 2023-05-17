@@ -253,11 +253,11 @@ const DriverDetailsForm = () => {
                   error={error}
                   placeholder="CHI"
                   optionList={[
-                    { label: "CHI", value: "Chinese" },
-                    { label: "EUR", value: "Eurasian" },
-                    { label: "MAL", value: "Malay" },
-                    { label: "IND", value: "Indian" },
-                    { label: "OTH", value: "Others" },
+                    { label: "CHINESE", value: "Chinese" },
+                    { label: "EURASIAN", value: "Eurasian" },
+                    { label: "MALAY", value: "Malay" },
+                    { label: "INDIAN", value: "Indian" },
+                    { label: "OTHERS", value: "Others" },
                   ]}
                 />
               )}

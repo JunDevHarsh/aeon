@@ -49,7 +49,7 @@ const MobileNumberField = ({
           })}
           className={`py-1.5 pl-12 pr-2 w-full text-sm text-left text-primary-black border border-solid rounded outline outline-1 outline-transparent focus-visible:outline-primary-pink ${
             errors
-              ? "border-[#e57398] placeholder:text-[#e57398]"
+              ? "border-red-600 placeholder:text-red-600"
               : "border-[#CFD0D7] focus-visible:border-primary-pink"
           }`}
         />

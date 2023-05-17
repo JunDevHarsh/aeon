@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import AEONLogo from "../../assets/images/aeon_insurance_brokers_dark.png";
+import AEONLogo from "../../assets/images/AEON_LOGO.png";
 
 interface MenuListType {
   name: string;
@@ -29,7 +29,7 @@ const Header = () => {
           >
             <img
               src={AEONLogo}
-              className="w-auto h-full"
+              className="max-w-[265px] w-auto h-full"
               alt="aeon-insurance-brokers-logo"
             />
           </Link>

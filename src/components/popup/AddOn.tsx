@@ -6,12 +6,14 @@ type AddOnProps = {
   defaultValue?: string;
   closeAddOnPopup: () => void;
   updateAddOnPrice: (id: string, price: string) => void;
+  toggleAddOnsById: (id: string) => void;
 };
 
 const AddOnPopup = ({
   id,
   title,
   defaultValue,
+  toggleAddOnsById,
   closeAddOnPopup,
   updateAddOnPrice,
 }: AddOnProps) => {
@@ -88,7 +90,10 @@ const AddOnPopup = ({
           </div>
           <div
             className="px-6 py-3 flex items-center justify-end w-full"
-            onClick={() => handleOnSubmit(id, value)}
+            onClick={() => {
+              toggleAddOnsById(id);
+              handleOnSubmit(id, value);
+            }}
           >
             <button className="relative py-1 px-2 w-auto h-auto bg-primary-blue rounded-lg">
               <span className="text-sm text-center text-white font-medium">

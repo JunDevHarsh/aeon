@@ -8,6 +8,7 @@ interface AddOnsCardProps {
   isSelected: boolean;
   isEditable: boolean;
   description: string;
+  imgName: string;
   price: number;
   updateBenefitList: (id: string) => void;
   openAddOnPopup: (id: string, title: string, defaultValue: string) => void;
@@ -20,6 +21,7 @@ const AddOnsCard: React.FC<AddOnsCardProps> = ({
   isEditable,
   description,
   price,
+  // imgName,
   updateBenefitList,
   openAddOnPopup,
 }) => {
@@ -33,7 +35,12 @@ const AddOnsCard: React.FC<AddOnsCardProps> = ({
         id={uid}
         className="peer/checkbox absolute top-0 left-0 -z-10 opacity-0"
         checked={isSelected}
-        onChange={() => updateBenefitList(id)}
+        onChange={() => {
+          if (isEditable && !isSelected) {
+            return openAddOnPopup(id, title, price.toString());
+          }
+          updateBenefitList(id);
+        }}
       />
       <label
         htmlFor={uid}

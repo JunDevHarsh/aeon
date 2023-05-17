@@ -4,7 +4,8 @@ import { RootState } from "../../store/store";
 import { useSelector, useDispatch } from "react-redux";
 import InputTextField from "../fields/InputText";
 import SelectDropdown from "../fields/SelectDropdown";
-import CheckboxWithTextField from "../fields/CheckboxWithText";
+// import CheckboxWithTextField from "../fields/CheckboxWithText";
+import FixedInputTextField from "../fields/FixedInputText";
 
 interface VehicleStateInfo extends VehicleState {
   region: string | null;
@@ -30,8 +31,6 @@ const VehicleInfoForm = ({
   } = useForm<VehicleStateInfo>({
     defaultValues: {
       ...vehicleState,
-      region: "West",
-      drivers: "2",
       hailingServices: false,
     },
   });
@@ -49,14 +48,7 @@ const VehicleInfoForm = ({
     >
       <div className="grid grid-cols-1 md:grid-cols-2 items-start gap-0 md:gap-x-4 w-full">
         {/* Vehicle Reg No. */}
-        <div className="relative pb-5 flex flex-col items-start gap-y-1 w-full h-auto">
-          <span className="text-base text-center text-primary-black font-semibold">
-            Vehicle Registration No.
-          </span>
-          <span className="py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium bg-[#f8f8f8] cursor-default border border-solid border-[#CFD0D7] rounded">
-            {vehicleState.regNo}
-          </span>
-        </div>
+        <FixedInputTextField title="Vehicle Registration No." value={vehicleState.regNo} />
         {/* Vehicle Make Field  */}
         <div className="relative pb-5 flex flex-col items-start gap-y-1 w-auto h-auto">
           <label
@@ -74,13 +66,13 @@ const VehicleInfoForm = ({
             render={({ field: { value }, fieldState: { error } }) => (
               <SelectDropdown
                 id="vehicleMake"
-                placeholder="MITSUBISHI"
+                placeholder="Select Make"
                 onChange={(val: string) => (
                   setValue("make", val), clearErrors("make")
                 )}
                 selected={value}
                 error={error}
-                optionList={[{ label: "Mitsubishi", value: "mitsubishi" }]}
+                optionList={[{ label: "PERODUA", value: "PERODUA" }]}
               />
             )}
           />
@@ -102,7 +94,7 @@ const VehicleInfoForm = ({
             render={({ field: { value }, fieldState: { error } }) => (
               <SelectDropdown
                 id="vehicleModel"
-                placeholder="Mitsubishi ASX 2.0 (A)"
+                placeholder="Select Model"
                 onChange={(val: string) => (
                   setValue("model", val), clearErrors("model")
                 )}
@@ -110,8 +102,8 @@ const VehicleInfoForm = ({
                 error={error}
                 optionList={[
                   {
-                    label: "Mitsubishi ASX 2.0 (A)",
-                    value: "mitsubishi asx 2.0 (a)",
+                    label: "AXIA",
+                    value: "AXIA",
                   },
                 ]}
               />
@@ -135,7 +127,7 @@ const VehicleInfoForm = ({
             render={({ field: { value }, fieldState: { error } }) => (
               <SelectDropdown
                 id="vehicleVariant"
-                placeholder="MITSUBISHI ASX 2WD-ITX14A"
+                placeholder="Select Variant"
                 onChange={(val: string) => (
                   setValue("variant", val), clearErrors("variant")
                 )}
@@ -143,8 +135,12 @@ const VehicleInfoForm = ({
                 error={error}
                 optionList={[
                   {
-                    label: "MITSUBISHI ASX 2WD-ITX14A",
-                    value: "mitsubishi asx 2wd-itx14a",
+                    label: "XL T6 4D DOUBLE CAB PICK-UP 6 SP AUTO SPORTS MODE",
+                    value: "XL T6 4D DOUBLE CAB PICK-UP 6 SP AUTO SPORTS MODE",
+                  },
+                  {
+                    label: "XL (HI-RIDER) T6 4D DOUBLE CAB PICK-U 6 SP MANUA",
+                    value: "XL (HI-RIDER) T6 4D DOUBLE CAB PICK-U 6 SP MANUA",
                   },
                 ]}
               />
@@ -152,41 +148,13 @@ const VehicleInfoForm = ({
           />
         </div>
         {/* Engine CC Field */}
-        <div className="relative pb-5 flex flex-col items-start gap-y-1 w-full h-auto">
-          <span className="text-base text-center text-primary-black font-semibold">
-            Engine CC
-          </span>
-          <span className="py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium bg-[#f8f8f8] cursor-default border border-solid border-[#CFD0D7] rounded">
-            {vehicleState.engineCC}
-          </span>
-        </div>
+        <FixedInputTextField title="Engine CC" value={vehicleState.engineCC} />
         {/* Engine No. Field */}
-        <div className="relative pb-5 flex flex-col items-start gap-y-1 w-full h-auto">
-          <span className="text-base text-center text-primary-black font-semibold">
-            Engine No.
-          </span>
-          <span className="py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium bg-[#f8f8f8] cursor-default border border-solid border-[#CFD0D7] rounded">
-            {vehicleState.engineNo}
-          </span>
-        </div>
+        <FixedInputTextField title="Engine No." value={vehicleState.engineNo} />
         {/* Vehicle Class Field */}
-        <div className="relative pb-5 flex flex-col items-start gap-y-1 w-full h-auto">
-          <span className="text-base text-center text-primary-black font-semibold">
-            Vehicle Class
-          </span>
-          <span className="py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium bg-[#f8f8f8] cursor-default border border-solid border-[#CFD0D7] rounded">
-            {vehicleState.class}
-          </span>
-        </div>
+        <FixedInputTextField title="Vehicle Class" value={vehicleState.class} />
         {/* Seating Field */}
-        <div className="relative pb-5 flex flex-col items-start gap-y-1 w-full h-auto">
-          <span className="text-base text-center text-primary-black font-semibold">
-            Seating
-          </span>
-          <span className="py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium bg-[#f8f8f8] cursor-default border border-solid border-[#CFD0D7] rounded">
-            {vehicleState.seating}
-          </span>
-        </div>
+        <FixedInputTextField title="Seating" value={vehicleState.seating} />
         {/* Driver Field */}
         <InputTextField
           label="Drivers"
@@ -215,24 +183,8 @@ const VehicleInfoForm = ({
             },
           }}
         />
-        {/*  */}
-        <div className="relative pb-5 flex flex-col items-start gap-y-1 w-full h-auto">
-          <span className="text-base text-center text-primary-black font-semibold">
-            Period of Coverrage
-          </span>
-          <span className="py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium bg-[#f8f8f8] cursor-default border border-solid border-[#CFD0D7] rounded">
-            {vehicleState.ncd}
-          </span>
-        </div>
         {/* NCD Field */}
-        <div className="relative pb-5 flex flex-col items-start gap-y-1 w-full h-auto">
-          <span className="text-base text-center text-primary-black font-semibold">
-            NCD
-          </span>
-          <span className="py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium bg-[#f8f8f8] cursor-default border border-solid border-[#CFD0D7] rounded">
-            {vehicleState.ncd}
-          </span>
-        </div>
+        <FixedInputTextField title="NCD" value={vehicleState.ncd} />
         {/* Vehicle Model Field  */}
         <div className="relative pb-5 flex flex-col items-start gap-y-1 w-auto h-auto">
           <label
@@ -271,7 +223,7 @@ const VehicleInfoForm = ({
           />
         </div>
         {/* E-hailing services */}
-        <Controller
+        {/* <Controller
           control={control}
           name="hailingServices"
           render={({ field: { value } }) => (
@@ -282,7 +234,7 @@ const VehicleInfoForm = ({
               updateIsSelected={() => setValue("hailingServices", !value)}
             />
           )}
-        />
+        /> */}
       </div>
       {/* Submit Form */}
       <div className="mt-4 flex flex-col items-center justify-center gap-y-2.5 w-full">

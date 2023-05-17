@@ -316,8 +316,8 @@ const UserRegistrationForm = () => {
             errors={errors.postalCode}
             options={{
               minLength: {
-                value: 4,
-                message: "Minimum 4 characters required",
+                value: 5,
+                message: "Minimum 5 characters required",
               },
               maxLength: {
                 value: 5,

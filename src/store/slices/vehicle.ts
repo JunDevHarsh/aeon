@@ -11,22 +11,26 @@ export type VehicleState = {
   engineCC: string;
   chasisNo: string;
   class: string;
+  region: string | null;
+  drivers: string;
   seating: string;
   ncd: string;
 };
 
 const initialState: VehicleState = {
   regNo: "NBS2343",
-  make: "mitsubishi",
-  model: "mitsubishi asx 2.0 (a)",
+  make: "PERODUA",
+  model: "AXIA",
   yearOfManufacture: "2020",
-  variant: "mitsubishi asx 2wd-itx14a",
+  variant: "XL T6 4D DOUBLE CAB PICK-UP 6 SP AUTO SPORTS MODE",
   engineNo: "123456",
   engineCC: "1200",
   chasisNo: "ABCDE123456",
   class: "Private",
+  region: "West",
+  drivers: "2",
   seating: "5",
-  ncd: "55",
+  ncd: "30",
 };
 
 export const vehicleSlice = createSlice({
