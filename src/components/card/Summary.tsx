@@ -1,13 +1,17 @@
-import { useContext } from "react";
-import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import Code from "../button/Code";
-import { VehicleCoverageContext } from "../../pages/Insurance";
-import { MultiFormStepTypes, StepContext } from "../../context/StepContext";
 import { numberWithCommas } from "../container/VehicleCoverage";
-import { MultiStepFormContext } from "../../context/MultiFormContext";
-import { InsuranceContext } from "../../context/InsuranceContext";
+import {
+  CurentStepTypes,
+  InsuranceContext,
+  IsMVContainerVisibleTypes,
+} from "../../context/InsuranceContext";
+import { AddOnsContext } from "../../context/AddOnContext";
+import { VehicleCoverageContext } from "../../context/VehicleCoverage";
+import { updateFinalPrice } from "../../store/slices/insurance";
 
 export interface AddBenefitsType {
   id: string;
@@ -21,25 +25,24 @@ export interface AddBenefitsType {
 const SummaryInfoCard = () => {
   //   const [promoCode, setPromoCode] = useState<string>("");
   // const { provider } = useSelector((state: RootState) => state.insurance);
+  const [promoCode, setPromoCode] = useState<number>(0);
   const {
-    state: { provider },
-  } = useContext(InsuranceContext);
+    state: { addOns, isEdited },
+    dispatch,
+  } = useContext(AddOnsContext);
   const { ncd } = useSelector((state: RootState) => state.vehicle);
+  const navigate = useNavigate();
   const {
-    store: { addOns },
-  } = useContext(MultiStepFormContext);
+    state: { currentStep, provider },
+    dispatch: updateInsuranceState,
+  } = useContext(InsuranceContext);
   const {
-    state: { currentStep },
-    dispatch: updateStep,
-  } = useContext(StepContext);
-  const {
-    store: { selectedCoverage },
-    dispatch: updateVehicleCoverage,
+    state: { selectedCoverage },
   } = useContext(VehicleCoverageContext);
 
   const selectedAddOns = addOns.filter((addOn) => addOn.isSelected);
 
-  const providerPrice: number = provider?.price ? parseInt(provider.price) : 0;
+  const providerPrice: number = provider?.price ? Number(provider.price) : 0;
 
   const updatedNCD: number = Number(
     ((providerPrice * parseInt(ncd)) / 100).toFixed(2)
@@ -51,9 +54,11 @@ const SummaryInfoCard = () => {
       selectedAddOns.reduce((acc, curr) => (acc += curr.price), 0)
     ).toFixed(2)
   );
-  const discount = (grossPremium * 10) / 100;
+  const updateFinalPriceToStore = useDispatch();
+  // const discount = (grossPremium * 10) / 100;
+  const discount = Number(((grossPremium * promoCode) / 100).toFixed(2));
   const subTotal = Number((grossPremium - discount).toFixed());
-  const serviceTax = Number(((grossPremium * 6) / 100).toFixed(2));
+  const serviceTax = Number(((subTotal * 6) / 100).toFixed(2));
   const totalAmount = Number((subTotal + serviceTax + 10).toFixed(2));
 
   return (
@@ -88,10 +93,12 @@ const SummaryInfoCard = () => {
               {currentStep !== 4 && (
                 <button
                   onClick={() =>
-                    updateVehicleCoverage((prev) => ({
-                      ...prev,
-                      isContainerVisible: true,
-                    }))
+                    updateInsuranceState({
+                      type: IsMVContainerVisibleTypes.UpdateContainerVisibility,
+                      payload: {
+                        shouldVisible: true,
+                      },
+                    })
                   }
                   className="ml-1"
                 >
@@ -178,14 +185,16 @@ const SummaryInfoCard = () => {
               RM {grossPremium}
             </span>
           </div>
-          <div className="flex items-center justify-between w-full">
-            <span className="text-base text-left text-primary-black font-bold w-1/2">
-              Discount (10%)
-            </span>
-            <span className="text-base text-left text-primary-black font-medium w-1/2">
-              RM {discount}
-            </span>
-          </div>
+          {promoCode !== 0 && (
+            <div className="flex items-center justify-between w-full">
+              <span className="text-base text-left text-primary-black font-bold w-1/2">
+                Discount {`${promoCode}%`}
+              </span>
+              <span className="text-base text-left text-primary-black font-medium w-1/2">
+                RM {discount}
+              </span>
+            </div>
+          )}
           <div className="flex items-center justify-between w-full">
             <span className="text-base text-left text-primary-black font-bold w-1/2">
               Sub Total
@@ -216,6 +225,8 @@ const SummaryInfoCard = () => {
             textToDisplay="I have a promo code"
             title="Promo Code"
             placeholder="DFS3432"
+            validationList={["ADSN12"]}
+            updateCode={setPromoCode}
           />
         </div>
         <div className="inline-block my-3 w-full h-[1px] bg-[#bcbcbc]" />
@@ -230,8 +241,8 @@ const SummaryInfoCard = () => {
         <div className="mt-4 flex items-center justify-start gap-x-4 w-full">
           <button
             onClick={() =>
-              updateStep({
-                type: MultiFormStepTypes.UpdateCurrentStep,
+              updateInsuranceState({
+                type: CurentStepTypes.UpdateCurrentStep,
                 payload: {
                   newStep: currentStep - 1,
                 },
@@ -244,20 +255,32 @@ const SummaryInfoCard = () => {
             </span>
           </button>
 
-          {currentStep === 4 ? (
-            <Link
-              to="/payment"
+          {isEdited ? (
+            <button
+              onClick={() => dispatch((prev) => ({ ...prev, isEdited: false }))}
+              className="relative py-2 px-6 min-w-[120px] w-auto bg-primary-blue rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
+            >
+              <span className="text-base text-center font-medium text-white">
+                Update Quote
+              </span>
+            </button>
+          ) : currentStep === 4 ? (
+            <button
+              onClick={() => {
+                updateFinalPriceToStore(updateFinalPrice(totalAmount));
+                navigate("/payment");
+              }}
               className="relative py-2 px-6 min-w-[120px] w-auto bg-primary-blue rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
             >
               <span className="text-base text-center font-medium text-white">
                 Pay Now
               </span>
-            </Link>
+            </button>
           ) : (
             <button
               onClick={() =>
-                updateStep({
-                  type: MultiFormStepTypes.UpdateCurrentStep,
+                updateInsuranceState({
+                  type: CurentStepTypes.UpdateCurrentStep,
                   payload: {
                     newStep: currentStep + 1,
                   },

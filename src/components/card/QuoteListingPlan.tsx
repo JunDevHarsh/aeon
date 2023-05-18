@@ -3,11 +3,11 @@ import { Coverage } from "../container/QuoteListings";
 import FileDownloadButton from "../button/FileDownload";
 import CheckboxWithTextField from "../fields/CheckboxWithText";
 import {
+  CurentStepTypes,
   InsuranceContext,
   InsuranceProviderTypes,
+  IsMVContainerVisibleTypes,
 } from "../../context/InsuranceContext";
-import { MultiFormStepTypes, StepContext } from "../../context/StepContext";
-import { VehicleCoverageContext } from "../../pages/Insurance";
 import { useDispatch } from "react-redux";
 import { updateInsuranceProvider } from "../../store/slices/insurance";
 
@@ -17,6 +17,7 @@ type QuoteListingPlanProps = {
   companyName: string;
   planType: string;
   companyImgHref: string;
+  companyRelImgHref: string;
   price: string;
   isTrending: boolean;
   isSelected: boolean;
@@ -29,7 +30,7 @@ const MAX_LIST_LIMIT = 4; // default max limit for displaying list
 const QuoteListingPlanCard = ({
   id,
   companyId,
-  companyImgHref,
+  companyRelImgHref,
   companyName,
   coverages,
   isTrending,
@@ -42,11 +43,7 @@ const QuoteListingPlanCard = ({
   ); // limit for displaying list of coverages, default is 4
   const [showDownloadButton, setShowDownloadButton] = useState<boolean>(false);
   const { dispatch } = useContext(InsuranceContext);
-  const { dispatch: updateVehicleCoverage } = useContext(
-    VehicleCoverageContext
-  );
   const updateInsuranceStore = useDispatch();
-  const { dispatch: updateCurrentStep } = useContext(StepContext);
 
   function updateListSize(size: number, updatedSize: number): void {
     setShowDownloadButton((prev) => !prev);
@@ -77,14 +74,16 @@ const QuoteListingPlanCard = ({
         price: price,
       },
     });
-    updateVehicleCoverage((prev) => ({
-      ...prev,
-      isContainerVisible: !prev.isContainerVisible,
-    }));
-    updateCurrentStep({
-      type: MultiFormStepTypes.UpdateCurrentStep,
+    dispatch({
+      type: CurentStepTypes.UpdateCurrentStep,
       payload: {
         newStep: 2,
+      },
+    });
+    dispatch({
+      type: IsMVContainerVisibleTypes.UpdateContainerVisibility,
+      payload: {
+        shouldVisible: true,
       },
     });
   }
@@ -117,10 +116,14 @@ const QuoteListingPlanCard = ({
         </div>
       )}
       <div className="flex flex-col md:flex-row items-center justify-between w-full">
+        {/* <img
+          src={`${require(`../../assets/images/providers/${companyRelImgHref}.png`)}`}
+          alt=""
+        /> */}
         <div className="pb-4 md:pb-0 flex flex-col items-start w-full md:w-[60%] border-r-0 md:border-r border-b md:border-b-0 border-solid border-gray-300">
           <div className="flex items-center justify-start gap-x-2 w-auto">
             <img
-              src={companyImgHref}
+              src={`/src/assets/images/providers/${companyRelImgHref}.png`}
               alt={companyName + "img"}
               className="h-10 w-auto"
             />
@@ -179,7 +182,7 @@ const QuoteListingPlanCard = ({
               </span>
             )} */}
             <div className="flex items-center justify-center w-auto">
-              <span className="text-xl text-center text-primary-black font-bold">
+              <span className="text-3xl text-center text-primary-black font-bold">
                 RM {price}
               </span>
               {/* {normalPrice !== specialPrice && (
@@ -190,12 +193,12 @@ const QuoteListingPlanCard = ({
                 </div>
               )} */}
             </div>
-            <div className="mt-2 flex items-center justify-start gap-x-4">
+            <div className="mt-4 mb-2 flex items-center justify-start gap-x-4">
               <button
                 onClick={handleSelectedQuotePlan}
                 className="relative py-1 px-3.5 w-auto bg-primary-blue rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
               >
-                <span className="text-base text-center font-medium text-white">
+                <span className="text-xl text-center font-medium text-white">
                   Buy Now
                 </span>
               </button>

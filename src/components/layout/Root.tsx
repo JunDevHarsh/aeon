@@ -13,7 +13,7 @@ const Root = () => {
   return (
     <>
       <Header />
-      <main className="relative w-full h-full bg-[#F6F6F6] min-h-[calc(100vh-159px)]">
+      <main className="relative w-full h-full bg-[#F6F6F6] min-h-[calc(100vh-143px)]">
         <Outlet />
       </main>
       <Footer />

@@ -1,4 +1,4 @@
-import { VehicleState, updateVehicleState } from "../../store/slices/vehicle";
+import { updateVehicleState } from "../../store/slices/vehicle";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { RootState } from "../../store/store";
 import { useSelector, useDispatch } from "react-redux";
@@ -6,11 +6,12 @@ import InputTextField from "../fields/InputText";
 import SelectDropdown from "../fields/SelectDropdown";
 // import CheckboxWithTextField from "../fields/CheckboxWithText";
 import FixedInputTextField from "../fields/FixedInputText";
+import { VehicleStateType } from "../../store/slices/types";
 
-interface VehicleStateInfo extends VehicleState {
-  region: string | null;
-  drivers: string;
-  hailingServices: boolean;
+interface VehicleInfoStateType extends VehicleStateType {
+  dateOfBirth: string;
+  maritalStatus: string | null;
+  gender: "male" | "female";
 }
 
 const VehicleInfoForm = ({
@@ -18,28 +19,36 @@ const VehicleInfoForm = ({
 }: {
   setShowLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
-  const vehicleState: VehicleState = useSelector(
+  const vehicleState: VehicleStateType = useSelector(
     (state: RootState) => state.vehicle
   );
+  const { dateOfBirth, gender, maritalStatus } = useSelector(
+    (state: RootState) => state.user
+  );
   const {
+    watch,
     register,
     handleSubmit,
     control,
     setValue,
     clearErrors,
     formState: { errors },
-  } = useForm<VehicleStateInfo>({
+  } = useForm<VehicleInfoStateType>({
     defaultValues: {
       ...vehicleState,
-      hailingServices: false,
+      dateOfBirth: dateOfBirth || "2007-02-23",
+      gender,
+      maritalStatus,
     },
   });
   const dispatch = useDispatch();
 
-  const onSubmit: SubmitHandler<VehicleState> = (val: VehicleState) => {
+  const onSubmit: SubmitHandler<VehicleStateType> = (val: VehicleStateType) => {
     dispatch(updateVehicleState(val));
     setShowLoading((prev) => !prev);
   };
+
+  const watchReconIndicator = watch("reconIndicator");
 
   return (
     <form
@@ -48,7 +57,10 @@ const VehicleInfoForm = ({
     >
       <div className="grid grid-cols-1 md:grid-cols-2 items-start gap-0 md:gap-x-4 w-full">
         {/* Vehicle Reg No. */}
-        <FixedInputTextField title="Vehicle Registration No." value={vehicleState.regNo} />
+        <FixedInputTextField
+          title="Vehicle Registration No."
+          value={vehicleState.regNo}
+        />
         {/* Vehicle Make Field  */}
         <div className="relative pb-5 flex flex-col items-start gap-y-1 w-auto h-auto">
           <label
@@ -221,6 +233,165 @@ const VehicleInfoForm = ({
               />
             )}
           />
+        </div>
+        {/* Period Of Coverage */}
+        <FixedInputTextField
+          title="Period of Coverage"
+          value={vehicleState.periodOfCoverage}
+        />
+        {/* Recond Indicator */}
+        <div className="relative pb-2 flex flex-col gap-y-1 items-start w-full h-auto">
+          <span className="text-base text-center text-primary-black font-semibold">
+            Recon Indicator
+          </span>
+          <div className="flex items-center justify-start gap-x-2 w-full">
+            <div className="relative flex items-center justify-center w-auto">
+              <input
+                id="reconIndicatorYes"
+                type="radio"
+                value="yes"
+                className="peer absolute opacity-0 -z-10"
+                checked={watchReconIndicator === "yes"}
+                {...register("reconIndicator")}
+              />
+              <label
+                htmlFor="reconIndicatorYes"
+                className="px-1.5 flex items-center gap-x-2 border-2 border-solid border-transparent peer-focus-visible:border-primary-black rounded cursor-pointer"
+              >
+                <span
+                  className={`inline-block w-2.5 h-2.5 rounded-full ${
+                    watchReconIndicator === "yes"
+                      ? "bg-primary-black shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
+                      : "bg-white shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
+                  }`}
+                />
+                <span className="text-sm text-center text-dark-1 font-normal">
+                  Yes
+                </span>
+              </label>
+            </div>
+            <div className="relative flex items-center justify-center w-auto">
+              <input
+                id="reconIndicatorNo"
+                type="radio"
+                value="no"
+                className="peer absolute opacity-0 -z-10"
+                checked={watchReconIndicator === "no"}
+                {...register("reconIndicator")}
+              />
+              <label
+                htmlFor="reconIndicatorNo"
+                className="px-1.5 flex items-center gap-x-2 border-2 border-solid border-transparent peer-focus-visible:border-primary-black rounded cursor-pointer"
+              >
+                <span
+                  className={`inline-block w-2.5 h-2.5 rounded-full ${
+                    watchReconIndicator === "no"
+                      ? "bg-primary-black shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
+                      : "bg-white shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
+                  }`}
+                />
+                <span className="text-sm text-center text-dark-1 font-normal">
+                  No
+                </span>
+              </label>
+            </div>
+          </div>
+        </div>
+        {/* Date of Birth Field */}
+        <FixedInputTextField
+          title="Date of Birth"
+          value={watch("dateOfBirth").slice(0, 10)}
+        />
+        {/* Marital Status Field */}
+        <div className="relative pb-5 flex flex-col items-start gap-y-1 flex-[1_1_40%] w-auto h-auto">
+          <label
+            htmlFor="selectMaritalStatus"
+            className="text-base text-center text-primary-black font-semibold"
+          >
+            Marital Status
+          </label>
+          <Controller
+            control={control}
+            name="maritalStatus"
+            rules={{
+              validate: (val) => val !== null || "Select an option",
+            }}
+            render={({ field: { value }, fieldState: { error } }) => (
+              <SelectDropdown
+                id="selectMaritalStatus"
+                onChange={(val: string) => (
+                  setValue("maritalStatus", val), clearErrors("maritalStatus")
+                )}
+                placeholder="Single"
+                selected={value}
+                error={error}
+                optionList={[
+                  { label: "Single", value: "Single" },
+                  { label: "Married", value: "Married" },
+                  { label: "Divorced", value: "Divorced" },
+                  { label: "Widowed", value: "Widowed" },
+                ]}
+              />
+            )}
+          />
+        </div>
+        {/* Gender Field */}
+        <div className="relative pb-2 flex flex-col gap-y-1 items-start w-full h-auto">
+          <span className="text-base text-center text-primary-black font-semibold">
+            Gender
+          </span>
+          <div className="flex items-center justify-start gap-x-2 w-full">
+            <div className="relative flex items-center justify-center w-auto">
+              <input
+                id="genderMale"
+                type="radio"
+                value="male"
+                className="peer absolute opacity-0"
+                checked={watch("gender") === "male"}
+                {...register("gender")}
+              />
+              <label
+                htmlFor="genderMale"
+                className="px-1.5 flex items-center gap-x-2 border-2 border-solid border-transparent peer-focus-visible:border-primary-black rounded cursor-pointer"
+              >
+                <span
+                  className={`inline-block w-2.5 h-2.5 rounded-full ${
+                    watch("gender") === "male"
+                      ? "bg-primary-black shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
+                      : "bg-white shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
+                  }`}
+                />
+                <span className="text-sm text-center text-dark-1 font-normal">
+                  Male
+                </span>
+              </label>
+            </div>
+            <div className="relative flex items-center justify-center w-auto">
+              <input
+                id="genderFemale"
+                type="radio"
+                value="female"
+                className="peer absolute opacity-0"
+                checked={watch("gender") === "female"}
+                {...register("gender")}
+              />
+              <label
+                htmlFor="genderFemale"
+                className="px-1.5 flex items-center gap-x-2 border-2 border-solid border-transparent peer-focus-visible:border-primary-black rounded cursor-pointer"
+              >
+                <span
+                  className={`inline-block w-2.5 h-2.5 rounded-full ${
+                    watch("gender") === "female"
+                      ? "bg-primary-black shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
+                      : "bg-white shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
+                  }`}
+                />
+                <span className="text-sm text-center text-dark-1 font-normal">
+                  Female
+                </span>
+              </label>
+            </div>
+          </div>
         </div>
         {/* E-hailing services */}
         {/* <Controller

@@ -1,16 +1,17 @@
 /*---------------Multi Step Form Reducer---------------*/
-
 import {
   AddOns,
   AdditionalDriverDetails,
-  CurrentStepState,
   DriverDetails,
   ProviderState,
 } from "./types";
-import { MultiFormStepAction, MultiFormStepTypes } from "./StepContext";
 import {
+  CurentStepTypes,
+  CurrentStepAction,
   InsuranceProviderAction,
   InsuranceProviderTypes,
+  IsMVContainerVisibleAction,
+  IsMVContainerVisibleTypes,
 } from "./InsuranceContext";
 import {
   AddDriverActions,
@@ -22,16 +23,17 @@ import {
 } from "./MultiFormContext";
 
 export const currentStepReducer = (
-  state: CurrentStepState,
-  action: MultiFormStepAction
+  state: number,
+  action:
+    | CurrentStepAction
+    | InsuranceProviderAction
+    | IsMVContainerVisibleAction
 ) => {
   const { type, payload } = action;
   switch (type) {
-    case MultiFormStepTypes.UpdateCurrentStep: {
+    case CurentStepTypes.UpdateCurrentStep: {
       const { newStep } = payload;
-      return {
-        currentStep: newStep,
-      };
+      return (state = newStep);
     }
     default:
       return state;
@@ -41,7 +43,10 @@ export const currentStepReducer = (
 /*---------------Insurance Reducer---------------*/
 export const insuranceProviderReducer = (
   state: ProviderState | null,
-  action: InsuranceProviderAction
+  action:
+    | InsuranceProviderAction
+    | CurrentStepAction
+    | IsMVContainerVisibleAction
 ) => {
   const { type, payload } = action;
   switch (type) {
@@ -90,6 +95,25 @@ export const addOnsReducer = (
         addOn.id === id ? { ...addOn, price: price } : addOn
       );
       return [...updatedAddOns];
+    }
+    default:
+      return state;
+  }
+};
+
+/*---------------IsMVContainerVisible Reducer---------------*/
+export const IsMVContainerVisibleReducer = (
+  state: boolean,
+  action:
+    | IsMVContainerVisibleAction
+    | InsuranceProviderAction
+    | CurrentStepAction
+) => {
+  const { payload, type } = action;
+  switch (type) {
+    case IsMVContainerVisibleTypes.UpdateContainerVisibility: {
+      const { shouldVisible } = payload;
+      return shouldVisible;
     }
     default:
       return state;

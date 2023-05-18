@@ -1,6 +1,6 @@
 import { useId } from "react";
-import CarSlideIcon from "../../assets/images/addOns/CarSlide";
 import { numberWithCommas } from "../container/VehicleCoverage";
+import * as Images from "../../assets/icons/addOns";
 
 interface AddOnsCardProps {
   id: string;
@@ -8,8 +8,17 @@ interface AddOnsCardProps {
   isSelected: boolean;
   isEditable: boolean;
   description: string;
-  imgName: string;
+  localImgName:
+    | "BodyInjuryIcon"
+    | "CarAccidentIcon"
+    | "CarSlideIcon"
+    | "TowingIcon"
+    | "WindScreenIcon"
+    | "CarOilIcon"
+    | "CarProperty1Icon"
+    | "CarRainIcon";
   price: number;
+  sumInsured: number;
   updateBenefitList: (id: string) => void;
   openAddOnPopup: (id: string, title: string, defaultValue: string) => void;
 }
@@ -20,12 +29,14 @@ const AddOnsCard: React.FC<AddOnsCardProps> = ({
   isSelected,
   isEditable,
   description,
-  price,
-  // imgName,
+  // price,
+  sumInsured,
+  localImgName,
   updateBenefitList,
   openAddOnPopup,
 }) => {
   const uid = useId();
+  const ImageToDisplay = Images[localImgName];
 
   return (
     <div className="relative w-[200px] h-[184px]">
@@ -37,7 +48,7 @@ const AddOnsCard: React.FC<AddOnsCardProps> = ({
         checked={isSelected}
         onChange={() => {
           if (isEditable && !isSelected) {
-            return openAddOnPopup(id, title, price.toString());
+            return openAddOnPopup(id, title, sumInsured.toString());
           }
           updateBenefitList(id);
         }}
@@ -69,44 +80,47 @@ const AddOnsCard: React.FC<AddOnsCardProps> = ({
           </div>
         </div>
         <div className="w-auto h-auto">
-          <CarSlideIcon pathColor={isSelected ? "#4B5EAA" : "#BCBCBC"} />
+          <ImageToDisplay pathColor={isSelected ? "#4B5EAA" : "#BCBCBC"} />
         </div>
         <p className="text-base text-center text-primary-black font-bold">
           {title}
         </p>
         {isSelected && (
-          <div className="flex items-center justify-start gap-x-2 w-full">
-            <span className="text-sm text-center text-primary-black font-medium">
-              Sum Insured
-            </span>
-            {isEditable ? (
-              <button
-                className="flex items-center justify-center w-auto"
-                onClick={() => openAddOnPopup(id, title, price.toString())}
-              >
-                <span className="text-sm text-center text-primary-black font-normal">
-                  RM {numberWithCommas(price)}
-                </span>
-                <svg
-                  width="13"
-                  height="13"
-                  viewBox="0 0 13 13"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="ml-1"
-                >
-                  <path
-                    d="M11.4176 3.62363L9.40265 1.60869L10.0439 0.963642C10.2285 0.77909 10.458 0.688793 10.7323 0.692752C11.0066 0.69671 11.2398 0.792215 11.4319 0.979267L12.0664 1.61003C12.2584 1.79957 12.3513 2.02954 12.3451 2.29992C12.3388 2.5703 12.2435 2.79777 12.0589 2.98233L11.4176 3.62363ZM10.7651 4.27614L2.8714 12.1698H0.856445V10.1549L8.7464 2.26494L10.7651 4.27614Z"
-                    fill="#A5308A"
-                  />
-                </svg>
-              </button>
-            ) : (
-              <span className="text-sm text-center text-primary-black font-normal">
-                RM {numberWithCommas(price)}
+          <>
+            <div className="block h-[2px] w-2/3 bg-[#D9D9D9]" />
+            <div className="flex items-center justify-start gap-x-2 w-full">
+              <span className="text-sm text-center text-primary-black font-medium">
+                Sum Insured
               </span>
-            )}
-          </div>
+              {isEditable ? (
+                <button
+                  className="flex items-center justify-center w-auto"
+                  onClick={() => openAddOnPopup(id, title, sumInsured.toString())}
+                >
+                  <span className="text-sm text-center text-primary-black font-normal">
+                    RM {numberWithCommas(sumInsured)}
+                  </span>
+                  <svg
+                    width="13"
+                    height="13"
+                    viewBox="0 0 13 13"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="ml-1"
+                  >
+                    <path
+                      d="M11.4176 3.62363L9.40265 1.60869L10.0439 0.963642C10.2285 0.77909 10.458 0.688793 10.7323 0.692752C11.0066 0.69671 11.2398 0.792215 11.4319 0.979267L12.0664 1.61003C12.2584 1.79957 12.3513 2.02954 12.3451 2.29992C12.3388 2.5703 12.2435 2.79777 12.0589 2.98233L11.4176 3.62363ZM10.7651 4.27614L2.8714 12.1698H0.856445V10.1549L8.7464 2.26494L10.7651 4.27614Z"
+                      fill="#A5308A"
+                    />
+                  </svg>
+                </button>
+              ) : (
+                <span className="text-sm text-center text-primary-black font-normal">
+                  RM {numberWithCommas(sumInsured)}
+                </span>
+              )}
+            </div>
+          </>
         )}
       </label>
     </div>

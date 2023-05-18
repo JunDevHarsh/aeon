@@ -1,23 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../store";
+import { VehicleStateType } from "./types";
 
-export type VehicleState = {
-  regNo: string;
-  make: string | null;
-  model: string | null;
-  yearOfManufacture: string;
-  variant: string | null;
-  engineNo: string;
-  engineCC: string;
-  chasisNo: string;
-  class: string;
-  region: string | null;
-  drivers: string;
-  seating: string;
-  ncd: string;
-};
-
-const initialState: VehicleState = {
+const initialState: VehicleStateType = {
   regNo: "NBS2343",
   make: "PERODUA",
   model: "AXIA",
@@ -31,25 +16,27 @@ const initialState: VehicleState = {
   drivers: "2",
   seating: "5",
   ncd: "30",
+  reconIndicator: "no",
+  periodOfCoverage: "2023-05-12"
 };
 
 export const vehicleSlice = createSlice({
   name: "vehicle",
   initialState,
   reducers: {
-    updateVehicleRegNo: (state, action: PayloadAction<string>) => {
+    addVehicleRegNo: (state, action: PayloadAction<string>) => {
       state.regNo = action.payload;
     },
     updateVehicleState: (
       state,
-      action: PayloadAction<Partial<VehicleState>>
+      action: PayloadAction<Partial<VehicleStateType>>
     ) => {
       return { ...state, ...action.payload };
     },
   },
 });
 
-export const { updateVehicleRegNo, updateVehicleState } = vehicleSlice.actions;
+export const { addVehicleRegNo, updateVehicleState } = vehicleSlice.actions;
 
 export const getVehicleRegNo = (state: RootState) => state.vehicle.regNo;
 

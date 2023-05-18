@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { numberWithCommas } from "../container/VehicleCoverage";
 
 const InputRange = ({
@@ -6,22 +6,34 @@ const InputRange = ({
   value,
   setValue,
   minValue,
+  midValue,
   maxValue,
 }: {
   type: "market" | "agreed";
   value: number;
   setValue: (type: "market" | "agreed", value: number) => void;
   minValue: number;
+  midValue: number;
   maxValue: number;
 }) => {
-  const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(type, parseInt(e.target.value));
-  };
+  const [val, setVal] = useState<number>(1);
 
-  const labelPosition = `${(
-    ((value - minValue) / (maxValue - minValue)) *
-    100
-  ).toFixed(2)}%`;
+  function updateRange(e: React.ChangeEvent<HTMLInputElement>) {
+    const { value } = e.target;
+    let numValue = Number(value);
+    let valueToUpdate: number;
+    if (numValue === 0) {
+      valueToUpdate = minValue;
+    } else if (numValue === 1) {
+      valueToUpdate = midValue;
+    } else {
+      valueToUpdate = maxValue;
+    }
+    setValue(type, valueToUpdate);
+    setVal(numValue);
+  }
+
+  const labelPosition = `${val * 50}%`;
 
   return (
     <div className="mt-4 flex flex-col items-start w-full">
@@ -32,12 +44,13 @@ const InputRange = ({
         <input
           type="range"
           name="value"
-          value={value}
-          onChange={handleSliderChange}
+          value={val}
+          // onChange={handleSliderChange}
+          onChange={updateRange}
           id="insuredValue"
-          min={minValue}
-          max={maxValue}
-          step={maxValue - minValue}
+          min={0}
+          max={2}
+          step={1}
           className="peer w-full"
         />
         <label
@@ -52,6 +65,7 @@ const InputRange = ({
           </span>
         </label>
         <div className="absolute -bottom-6 -left-6">
+          <span className="absolute -top-4 left-1/2 -translate-x-1/2 w-4 h-4 bg-primary-pink rounded-full" />
           <span className="text-sm text-center text-primary-black font-bold">
             RM {numberWithCommas(minValue)}
           </span>

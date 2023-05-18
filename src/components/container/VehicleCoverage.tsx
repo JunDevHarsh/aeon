@@ -1,10 +1,11 @@
 import { useContext } from "react";
 import SelectDropdown from "../fields/SelectDropdown";
 import InputRange from "../fields/InputRange";
+import { VehicleCoverageContext } from "../../context/VehicleCoverage";
 import {
-  VehicleCoverageContext,
-  VehicleCoverageState,
-} from "../../pages/Insurance";
+  InsuranceContext,
+  IsMVContainerVisibleTypes,
+} from "../../context/InsuranceContext";
 
 /**
  * Returns a random number between min (inclusive) and max (exclusive)
@@ -19,32 +20,33 @@ export function numberWithCommas(x: number): string {
 
 const VehicleCoverageContainer = () => {
   const {
-    store: {
-      coverage: { type, agreed, market },
-    },
-    dispatch,
+    state: { type, market, agreed },
+    setState,
   } = useContext(VehicleCoverageContext);
+  const { dispatch } = useContext(InsuranceContext);
 
   function handleSubmit() {
-    dispatch((prev: VehicleCoverageState) => ({
+    setState((prev) => ({
       ...prev,
-      isContainerVisible: false,
       selectedCoverage: {
         type: type,
         price: type === "market" ? market.price : agreed.price,
       },
     }));
+    dispatch({
+      type: IsMVContainerVisibleTypes.UpdateContainerVisibility,
+      payload: {
+        shouldVisible: false,
+      },
+    });
   }
 
   function updateSlider(type: "market" | "agreed", value: number) {
-    dispatch((prev: VehicleCoverageState) => ({
+    setState((prev) => ({
       ...prev,
-      coverage: {
-        ...prev.coverage,
-        [type]: {
-          ...prev.coverage[type],
-          price: value,
-        },
+      [type]: {
+        ...prev[type],
+        price: value,
       },
     }));
   }
@@ -67,7 +69,8 @@ const VehicleCoverageContainer = () => {
               />
             </svg>
             <p className="text-sm text-center text-primary-pink font-bold">
-              The Current market value for your vehicle is RM 14,000
+              The Current market value for your vehicle is RM
+              {numberWithCommas(market.value?.mid ? market.value.mid : 14000)}
             </p>
           </div>
           <div className="mt-4 flex flex-col items-start w-full">
@@ -85,12 +88,9 @@ const VehicleCoverageContainer = () => {
                   checked={type === "market"}
                   // onChange={(e) => updateCoverage("type", e.target.value)}
                   onChange={() =>
-                    dispatch((prev) => ({
+                    setState((prev) => ({
                       ...prev,
-                      coverage: {
-                        ...prev.coverage,
-                        type: "market",
-                      },
+                      type: "market",
                     }))
                   }
                   className="peer absolute top-0 left-0 opacity-0 -z-10"
@@ -123,16 +123,13 @@ const VehicleCoverageContainer = () => {
                   type="radio"
                   name="coverage-type"
                   id="marketValue2"
-                  value="aggreed"
+                  value="agreed"
                   checked={type === "agreed"}
                   // onChange={(e) => updateCoverage("type", e.target.value)}
                   onChange={() =>
-                    dispatch((prev) => ({
+                    setState((prev) => ({
                       ...prev,
-                      coverage: {
-                        ...prev.coverage,
-                        type: "agreed",
-                      },
+                      type: "agreed",
                     }))
                   }
                   className="peer absolute top-0 left-0 opacity-0 -z-10"
@@ -169,24 +166,21 @@ const VehicleCoverageContainer = () => {
               <SelectDropdown
                 optionList={[
                   {
-                    value: "mitsubishi asx 2wd-itx144",
-                    label: "MITSUBISHI ASX 2WD-ITX144",
+                    label: "XL T6 4D DOUBLE CAB PICK-UP 6 SP AUTO SPORTS MODE",
+                    value: "XL T6 4D DOUBLE CAB PICK-UP 6 SP AUTO SPORTS MODE",
                   },
                   {
-                    value: "mitsubishi asx",
-                    label: "MITSUBISHI ASX",
+                    label: "XL (HI-RIDER) T6 4D DOUBLE CAB PICK-U 6 SP MANUA",
+                    value: "XL (HI-RIDER) T6 4D DOUBLE CAB PICK-U 6 SP MANUA",
                   },
                 ]}
                 id="hello"
                 onChange={(val: string) =>
-                  dispatch((prev) => ({
+                  setState((prev) => ({
                     ...prev,
-                    coverage: {
-                      ...prev.coverage,
-                      market: {
-                        ...prev.coverage.market,
-                        variant: val,
-                      },
+                    market: {
+                      ...prev.market,
+                      variant: val,
                     },
                   }))
                 }
@@ -200,20 +194,13 @@ const VehicleCoverageContainer = () => {
                   </span>
                   <SelectDropdown
                     selected={agreed.type}
-                    optionList={[
-                      { label: "Suzuki", value: "suzuki" },
-                      { label: "Hero", value: "hero" },
-                    ]}
+                    optionList={[{ label: "PERODUA", value: "PERODUA" }]}
                     onChange={(val: string) =>
-                      dispatch((prev) => ({
+                      setState((prev) => ({
                         ...prev,
-                        coverage: {
-                          ...prev.coverage,
-                          agreed: {
-                            ...prev.coverage.agreed,
-                            type: val,
-                            variant: null,
-                          },
+                        agreed: {
+                          ...prev.agreed,
+                          type: val,
                         },
                       }))
                     }
@@ -228,24 +215,25 @@ const VehicleCoverageContainer = () => {
                     selected={agreed.variant}
                     optionList={[
                       {
-                        label: "MITSUBISHI ASX 2WD",
-                        value: "mitsubishi asx 2wd",
+                        label:
+                          "XL T6 4D DOUBLE CAB PICK-UP 6 SP AUTO SPORTS MODE",
+                        value:
+                          "XL T6 4D DOUBLE CAB PICK-UP 6 SP AUTO SPORTS MODE",
                       },
                       {
-                        label: "MITSUBISHI ASX 2",
-                        value: "mitsubishi asx 2",
+                        label:
+                          "XL (HI-RIDER) T6 4D DOUBLE CAB PICK-U 6 SP MANUA",
+                        value:
+                          "XL (HI-RIDER) T6 4D DOUBLE CAB PICK-U 6 SP MANUA",
                       },
                     ]}
                     id="ads"
                     onChange={(val: string) =>
-                      dispatch((prev) => ({
+                      setState((prev) => ({
                         ...prev,
-                        coverage: {
-                          ...prev.coverage,
-                          agreed: {
-                            ...prev.coverage.agreed,
-                            variant: val,
-                          },
+                        agreed: {
+                          ...prev.agreed,
+                          variant: val,
                         },
                       }))
                     }
@@ -263,6 +251,7 @@ const VehicleCoverageContainer = () => {
                   value={market.price}
                   setValue={updateSlider}
                   minValue={market.value.min}
+                  midValue={market.value.mid}
                   maxValue={market.value.max}
                 />
               )
@@ -273,27 +262,19 @@ const VehicleCoverageContainer = () => {
                   value={agreed.price}
                   setValue={updateSlider}
                   minValue={agreed.value.min}
+                  midValue={agreed.value.mid}
                   maxValue={agreed.value.max}
                 />
               )}
           <div className="mt-4 flex items-center justify-start gap-x-2 w-full">
-            {(type === "market" && market.variant) ||
-            (type === "agreed" && agreed.type && agreed.variant) ? (
-              <button
-                onClick={handleSubmit}
-                className="relative mt-4 py-2.5 px-8 w-auto bg-primary-blue rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
-              >
-                <span className="text-base text-center font-medium text-white">
-                  Submit
-                </span>
-              </button>
-            ) : (
-              <div className="relative mt-4 py-2.5 px-8 w-auto bg-primary-blue rounded-full shadow-[0_1px_2px_0_#C6E4F60D]">
-                <span className="text-base text-center font-medium text-white">
-                  Submit
-                </span>
-              </div>
-            )}
+            <button
+              onClick={handleSubmit}
+              className="relative mt-4 py-2.5 px-8 w-auto bg-primary-blue rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
+            >
+              <span className="text-base text-center font-medium text-white">
+                Submit
+              </span>
+            </button>
           </div>
         </div>
         <div className="relative max-w-sm w-full bg-[#F8F8F8] rounded-lg overflow-hidden">
@@ -308,10 +289,13 @@ const VehicleCoverageContainer = () => {
                 Market Value
               </span>
               <span className="text-base text-primary-black text-left font-normal">
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                Nostrum rerum aliquam officia. Ipsam quibusdam fuga, incidunt
-                recusandae velit rem est, dolorem laborum delectus blanditiis
-                error itaque amet sit culpa atque.
+                Market value refers to the current calculated worth of your car.
+                If you choose the market value, your car is covered for what it
+                is currently worth in the market. Say that you choose the market
+                value as the sum insured for your car, your insurer will give
+                you a payout according to the market value of your car at the
+                time of theft or loss (not the market value at the time of your
+                insurance renewal).
               </span>
             </div>
             <div className="flex flex-col items-start w-full">
@@ -319,10 +303,12 @@ const VehicleCoverageContainer = () => {
                 Agreed Value
               </span>
               <span className="text-base text-primary-black text-left font-normal">
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                Nostrum rerum aliquam officia. Ipsam quibusdam fuga, incidunt
-                recusandae velit rem est, dolorem laborum delectus blanditiis
-                error itaque amet sit culpa atque.
+                Agreed value is the value agreed by both the insurer and
+                policyholder at the time of insurance renewal. Insurers
+                determine the agreed value based on a few underwriting factors
+                and risk assessment. Say that you choose the agreed value as the
+                sum insured for your car, your insurer will give you a payout
+                exactly as the agreed value.
               </span>
             </div>
           </div>

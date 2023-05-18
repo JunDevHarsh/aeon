@@ -10,8 +10,8 @@ import Code from "../button/Code";
 // store
 import { useDispatch } from "react-redux";
 import { updateInsuranceState } from "../../store/slices/insurance";
-import { updateUserId, updateUserState } from "../../store/slices/user";
-import { updateVehicleRegNo } from "../../store/slices/vehicle";
+import { addUserID, addUserBasicInfo } from "../../store/slices/user";
+import { addVehicleRegNo } from "../../store/slices/vehicle";
 // types
 import { UserInsuranceInputs } from "./types";
 import VehicleSelector from "../fields/VehicleSelector";
@@ -62,37 +62,40 @@ const UserRegistrationForm = () => {
       mobileNumber,
       postalCode,
       vehicleRegNo,
-      dateOfBirth,
     } = data;
     // let { dateOfBirth } = data;
     // if (idType === "nric") {
-    //   const year = parseInt(idNo.slice(0, 2));
-    //   const month = parseInt(idNo.slice(2, 4));
-    //   const day = parseInt(idNo.slice(4, 6));
+    // const year = parseInt(idNo.slice(0, 2));
+    // const month = parseInt(idNo.slice(2, 4));
+    // const day = parseInt(idNo.slice(4, 6));
     //   const currentYear = new Date().getFullYear() % 100;
     //   // Check if year should belong to the 19th or 20th century
     //   const century = year > currentYear ? 1900 : 2000;
 
     //   const birthYear = century + year;
 
-    //   dateOfBirth = new Date(`${birthYear}-${month}-${day}`);
+    // dateOfBirth = new Date(`${birthYear}-${month}-${day}`);
     //   setValue("dateOfBirth", dateOfBirth);
     // }
-    // update insurance => type, vehicle
-    dispatch(updateVehicleRegNo(vehicleRegNo));
+
+    // if user Id Type is valid then update the state -> user -> id
+    if (idType !== null) {
+      dispatch(addUserID({ userIdNo: idNo, userIdType: idType }));
+    }
+    // update the state -> vehicle -> regNo
+    dispatch(addVehicleRegNo(vehicleRegNo));
     dispatch(
       updateInsuranceState({ type: insuranceType, vehicle: vehicleType })
     );
-    // update user => id => type, no
-    dispatch(updateUserId({ type: idType, no: idNo }));
+    // updatethe  state -> user
     dispatch(
-      updateUserState({
+      addUserBasicInfo({
         email,
         gender,
         maritalStatus,
         mobileNumber,
         postalCode,
-        dateOfBirth: dateOfBirth ? dateOfBirth.toISOString() : null,
+        // dateOfBirth: dateOfBirth ? dateOfBirth.toISOString() : null,
       })
     );
     navigate("/vehicle-info");
@@ -278,15 +281,16 @@ const UserRegistrationForm = () => {
                   onChange(event: React.ChangeEvent<HTMLInputElement>) {
                     // event.preventDefault();
                     let { value } = event.currentTarget;
+                    console.log(value);
                     // remove all spaces from the text
                     value = value.replace(/\s+/g, "").toUpperCase();
                     if (watchIDType === "NRIC") {
                       value = value.replace(/\D/g, "");
                       let formatValue = "";
-                      for(let i = 0; i < value.length; i++){
-                        if(i === 5 || i === 7){
+                      for (let i = 0; i < value.length; i++) {
+                        if (i === 5 || i === 7) {
                           formatValue += value[i] + "-";
-                        }else{
+                        } else {
                           formatValue += value[i];
                         }
                       }
@@ -367,7 +371,7 @@ const UserRegistrationForm = () => {
               )}
             />
           </div>
-          {watchIDType && watchIDType === "passport" && (
+          {watchIDType && watchIDType === "Passport" && (
             <>
               {/* Gender Field */}
               <div className="relative pb-2 flex flex-col gap-y-1 items-start w-full h-auto">
@@ -452,12 +456,12 @@ const UserRegistrationForm = () => {
             errors={errors.mobileNumber}
             options={{
               minLength: {
-                value: 7,
-                message: "Minimum 7 characters are required",
+                value: 9,
+                message: "Minimum 9 characters are required",
               },
               maxLength: {
-                value: 11,
-                message: "Max 11 characters are allowed",
+                value: 10,
+                message: "Max 10 characters are allowed",
               },
               required: {
                 value: true,
@@ -498,6 +502,7 @@ const UserRegistrationForm = () => {
             title="Referral Code"
             maxLength={10}
             placeholder="ASD7SFD"
+            validationList={["HG23434"]}
           />
         </div>
         {/* Submit Button Stripe */}

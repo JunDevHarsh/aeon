@@ -18,10 +18,10 @@ const AddOnPopup = ({
   updateAddOnPrice,
 }: AddOnProps) => {
   const [value, setValue] = useState<string>(defaultValue ?? "");
-  const hasError = Number(value) < Number(defaultValue);
+  // const hasError = Number(value) < Number(defaultValue);
 
   function handleOnSubmit(id: string, price: string) {
-    if (value === "" || hasError) return;
+    if (value === "") return;
     updateAddOnPrice(id, price);
   }
 
@@ -72,19 +72,14 @@ const AddOnPopup = ({
                 return setValue(value);
               }}
               placeholder="Placeholder"
-              className={`py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium border border-solid rounded outline 
-              outline-1 outline-transparent ${
-                hasError
-                  ? "border-[#e57398] placeholder:text-[#e57398] "
-                  : "focus-visible:outline-primary-pink border-[#CFD0D7] focus-visible:border-primary-pink"
-              }`}
+              className="py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium border border-solid rounded outline outline-1 outline-transparent focus-visible:outline-primary-pink border-[#CFD0D7] focus-visible:border-primary-pink"
             />
-            {Number(value) < Number(defaultValue) && (
+            {Number(value) === 0 && (
               <span
                 role="alert"
                 className="absolute bottom-0.5 left-0 px-6 text-sm text-left font-medium text-[#e57398]"
               >
-                Sum insured value should be or more than RM {defaultValue}
+                Sum insured value should be or more than RM 0
               </span>
             )}
           </div>

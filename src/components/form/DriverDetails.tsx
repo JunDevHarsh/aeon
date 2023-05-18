@@ -5,7 +5,10 @@ import InputTextField from "../fields/InputText";
 import SelectDropdown from "../fields/SelectDropdown";
 import MobileNumberField from "../fields/MobileNumber";
 import { useContext } from "react";
-import { DriverTypes, MultiStepFormContext } from "../../context/MultiFormContext";
+import {
+  DriverTypes,
+  MultiStepFormContext,
+} from "../../context/MultiFormContext";
 import { DriverDetails } from "../../context/types";
 
 type Inputs = {
@@ -26,9 +29,20 @@ type Inputs = {
 };
 
 const DriverDetailsForm = () => {
-  const { dateOfBirth, id, gender, maritalStatus } = useSelector(
-    (state: RootState) => state.user
-  );
+  const {
+    dateOfBirth,
+    id,
+    gender,
+    maritalStatus,
+    email,
+    address,
+    city,
+    drivingExp,
+    mobileNumber,
+    name,
+    nationality,
+    postalCode,
+  } = useSelector((state: RootState) => state.user);
   const {
     store: { driverDetails },
     dispatch,
@@ -42,7 +56,20 @@ const DriverDetailsForm = () => {
     formState: { errors },
   } = useForm<Inputs>({
     defaultValues: {
-      ...driverDetails,
+      email,
+      city,
+      drivingExp,
+      mobileNumber,
+      name,
+      postalCode,
+      address1: address.address1,
+      address2: address.address2,
+      address3: address.address3,
+      country: nationality,
+      occupation: driverDetails.occupation,
+      nationality: driverDetails.nationality,
+      race: driverDetails.race,
+      state: driverDetails.state,
     },
   });
 

@@ -57,7 +57,7 @@ const MobileNumberField = ({
       {errors && (
         <span
           role="alert"
-          className="absolute bottom-0 left-0 text-sm text-left font-medium text-[#e57398]"
+          className="absolute bottom-0 left-0 text-sm text-left font-medium text-red-600"
         >
           {errors.message}
         </span>

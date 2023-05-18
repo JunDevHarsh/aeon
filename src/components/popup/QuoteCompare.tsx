@@ -1,8 +1,11 @@
 import React, { useContext, useState } from "react";
 import { Coverage, QuotePlansType } from "../container/QuoteListings";
-import { InsuranceContext, InsuranceProviderTypes } from "../../context/InsuranceContext";
-import { VehicleCoverageContext } from "../../pages/Insurance";
-import { MultiFormStepTypes, StepContext } from "../../context/StepContext";
+import {
+  CurentStepTypes,
+  InsuranceContext,
+  InsuranceProviderTypes,
+  IsMVContainerVisibleTypes,
+} from "../../context/InsuranceContext";
 
 type QuoteComparePopupProps = {
   selectedQuotes: QuotePlansType[];
@@ -53,10 +56,6 @@ const QuoteComparePopup = ({
 }: QuoteComparePopupProps) => {
   const [showDifference, setShowDifference] = useState<boolean>(false);
   const { dispatch } = useContext(InsuranceContext);
-  const { dispatch: updateVehicleCoverage } = useContext(
-    VehicleCoverageContext
-  );
-  const { dispatch: updateCurrentStep } = useContext(StepContext);
 
   const quoteCoverages: Coverage[] =
     getUniqueCoveragesFromPlans(selectedQuotes);
@@ -75,14 +74,16 @@ const QuoteComparePopup = ({
           price: quotePlan.price,
         },
       });
-      updateVehicleCoverage((prev) => ({
-        ...prev,
-        isContainerVisible: !prev.isContainerVisible,
-      }));
-      updateCurrentStep({
-        type: MultiFormStepTypes.UpdateCurrentStep,
+      dispatch({
+        type: CurentStepTypes.UpdateCurrentStep,
         payload: {
           newStep: 2,
+        },
+      });
+      dispatch({
+        type: IsMVContainerVisibleTypes.UpdateContainerVisibility,
+        payload: {
+          shouldVisible: true,
         },
       });
     }
@@ -169,10 +170,10 @@ const QuoteComparePopup = ({
                   key={item.id}
                   className="flex flex-col items-center justify-start w-[210px] gap-y-2"
                 >
-                  <div className="relative py-2.5 px-5 flex flex-col items-start justify-between gap-y-2 w-full h-[136px] bg-[#F4F4F4] rounded-lg">
+                  <div className="relative py-2.5 px-5 flex flex-col items-center justify-between gap-y-2 w-full h-[136px] bg-[#F4F4F4] rounded-lg">
                     <div className="flex items-start justify-between w-full h-auto">
                       <img
-                        src={item.companyImgHref}
+                        src={`/src/assets/images/providers/${item.companyRelImgHref}.png`}
                         alt={`${item.companyName}-logo`}
                         className="h-8 w-auto"
                       />
@@ -192,8 +193,8 @@ const QuoteComparePopup = ({
                         </svg>
                       </button>
                     </div>
-                    <p className="text-base text-left text-primary-black font-bold">
-                      RM {item.price}/Year
+                    <p className="text-[25px] text-center text-primary-black font-bold">
+                      RM {item.price}
                     </p>
                     <button
                       onClick={() => handleSelectedQuote(item.id)}

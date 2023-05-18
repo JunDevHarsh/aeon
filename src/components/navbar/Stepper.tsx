@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import Stepper from "../Stepper";
-import { StepContext } from "../../context/StepContext";
+import { InsuranceContext } from "../../context/InsuranceContext";
 
 const steps: string[] = [
   "Plan Selection",
@@ -12,7 +12,7 @@ const steps: string[] = [
 const StepperNavbar = () => {
   const {
     state: { currentStep },
-  } = useContext(StepContext);
+  } = useContext(InsuranceContext);
 
   return (
     <div className="flex items-center justify-center w-full" role="navigation">

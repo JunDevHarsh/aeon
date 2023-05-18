@@ -7,9 +7,27 @@ export type CurrentStepState = {
   currentStep: number;
 };
 
+export type VehicleCoverage = {
+  type: "market" | "agreed";
+  market: {
+    min: number;
+    mid: number;
+    max: number;
+    selected: number;
+  };
+  agreed: {
+    min: number;
+    mid: number;
+    max: number;
+    selected: number;
+  };
+};
+
 // Insurance State
 export type InsuranceState = {
   provider: ProviderState | null;
+  currentStep: number;
+  isMVContainerVisible: boolean;
 };
 
 // Provider State

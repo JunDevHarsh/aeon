@@ -7,57 +7,85 @@ import {
   AddOnsTypes,
   MultiStepFormContext,
 } from "../../context/MultiFormContext";
-import { AddOns, AdditionalDriverDetails } from "../../context/types";
+import { AdditionalDriverDetails } from "../../context/types";
 import AddOnPopup from "../popup/AddOn";
+import { AddOnType, AddOnsContext } from "../../context/AddOnContext";
 
-// const regEx = {
-//   passport: {
-//     pattern: /^[A-Z]{1}[0-9]{8}$/,
-//     errorMessage: "For e.g. A12365498",
-//   },
-//   nric: {
-//     pattern: /^\d{6}-\d{2}-\d{4}$/,
-//     errorMessage: "For e.g. 050505-12-2321",
-//   },
-//   company: {
-//     pattern: /^[0-9]{7}-[A-Z]/g,
-//     errorMessage: "For e.g. 1234567-J",
-//   },
-// };
-
-//
-const defaultAddOns: AddOns[] = [
+const defaultAddOnsState: AddOnType[] = [
   {
     id: "addon-1",
     title: "Cover for Windscreens",
     description: "Cover for Windscreens, Windows And Sunroof",
-    isSelected: true,
-    isEditable: false,
-    price: 23,
-    imgName: "WindScreen",
+    isSelected: false,
+    isEditable: true,
+    price: 30,
+    sumInsured: 14000,
+    localImgName: "WindScreenIcon",
   },
   {
     id: "addon-2",
     title: "Towing and Cleaning",
     description: "Towing and Cleaning due to Water Damage",
     isSelected: false,
-    isEditable: true,
-    price: 32,
-    imgName: "Towing",
+    isEditable: false,
+    price: 40,
+    localImgName: "TowingIcon",
+    sumInsured: 0,
+  },
+  {
+    id: "addon-3",
+    title: "Driver's Personal Accident",
+    description: "Driver's Personal Accident",
+    isSelected: false,
+    isEditable: false,
+    price: 34,
+    localImgName: "CarAccidentIcon",
+    sumInsured: 0,
+  },
+  {
+    id: "addon-4",
+    title: "Strike, Riot & Civil Commotion",
+    description: "Strike, Riot & Civil Commotion",
+    isSelected: false,
+    isEditable: false,
+    price: 23,
+    localImgName: "CarOilIcon",
+    sumInsured: 0,
+  },
+  {
+    id: "addon-5",
+    title: "Inclusion of Special Perils",
+    description: "Inclusion of Special Perils",
+    isSelected: false,
+    isEditable: false,
+    price: 53,
+    localImgName: "CarRainIcon",
+    sumInsured: 0,
+  },
+  {
+    id: "addon-6",
+    title: "Accident Repair Allowance",
+    description: "Accident Repair Allowance",
+    isSelected: false,
+    isEditable: false,
+    price: 28,
+    localImgName: "CarProperty1Icon",
+    sumInsured: 0,
   },
 ];
 
 let prevValue: string = "";
 
 const AddOnsContainer = () => {
-  // const {
-  //   state: { addDriverDetails },
-  //   dispatch,
-  // } = useContext(InsuranceContext);
   const {
-    store: { addOns, addDriverDetails },
+    store: { addDriverDetails },
     dispatch,
   } = useContext(MultiStepFormContext);
+  // addons context
+  const {
+    state: { addOns: addOnState },
+    dispatch: updateAddOnsState,
+  } = useContext(AddOnsContext);
   const [addOnPopup, handleAddOnPopup] = useState<{
     id: string;
     isVisible: boolean;
@@ -70,12 +98,12 @@ const AddOnsContainer = () => {
     defaultValue: "",
   });
 
-  function toggleAddOnsById(id: string) {
-    dispatch({
-      type: AddOnsTypes.SelectionToggleById,
-      payload: { id: id },
-    });
-  }
+  // function toggleAddOnsById(id: string) {
+  //   dispatch({
+  //     type: AddOnsTypes.SelectionToggleById,
+  //     payload: { id: id },
+  //   });
+  // }
 
   function updateDriverDetails(
     id: string,
@@ -110,14 +138,23 @@ const AddOnsContainer = () => {
       },
     });
   }
+  // update the addOns list in AddOnContext
+  function toggleAddById(id: string) {
+    const updatedAddOns = addOnState.map((addOn) =>
+      addOn.id === id ? { ...addOn, isSelected: !addOn.isSelected } : addOn
+    );
+    const isUpdated = updatedAddOns.find((addOn) => addOn.isSelected);
+    if (isUpdated) {
+      updateAddOnsState({ addOns: updatedAddOns, isEdited: true });
+    } else {
+      updateAddOnsState({ addOns: updatedAddOns, isEdited: false });
+    }
+  }
 
   useEffect(() => {
-    if (addOns.length === 0) {
+    if (addOnState.length === 0) {
       const timeout = setTimeout(() => {
-        dispatch({
-          type: AddOnsTypes.IncludeAddOns,
-          payload: { addOns: defaultAddOns },
-        });
+        updateAddOnsState((prev) => ({ ...prev, addOns: defaultAddOnsState }));
       }, 1000);
       return () => clearTimeout(timeout);
     }
@@ -132,7 +169,7 @@ const AddOnsContainer = () => {
           defaultValue={addOnPopup.defaultValue}
           closeAddOnPopup={closeAddOnPopup}
           updateAddOnPrice={updateAddOnPrice}
-          toggleAddOnsById={toggleAddOnsById}
+          toggleAddOnsById={toggleAddById}
         />
       )}
       <div className="flex flex-col items-start max-w-[39rem] w-full">
@@ -141,18 +178,18 @@ const AddOnsContainer = () => {
             Additional Add Ons
           </h2>
           <div className="mt-4 grid grid-cols-3 items-start justify-between gap-4 w-full">
-            {addOns.length === 0
+            {addOnState.length === 0
               ? [...Array(6)].map((_, index) => (
                   <div
                     className="animate-pulse relative w-[200px] h-[184px] bg-gray-300 rounded-lg"
                     key={`addon-skeleton-${index}`}
                   />
                 ))
-              : addOns.map((addOn) => (
+              : addOnState.map((addOn) => (
                   <AddOnsCard
                     key={addOn.id}
                     {...addOn}
-                    updateBenefitList={toggleAddOnsById}
+                    updateBenefitList={toggleAddById}
                     openAddOnPopup={openAddOnPopup}
                   />
                 ))}

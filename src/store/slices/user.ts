@@ -1,30 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../store";
+import { UserBasicInfoInputs, UserIdInputs, UserStateType } from "./types";
 
-type UserId = {
-  type: string | null;
-  no: string;
-};
-
-type UserState = {
-  id: UserId;
-  name: string;
-  maritalStatus: string | null;
-  gender: "male" | "female";
-  mobileNumber: string;
-  email: string;
-  postalCode: string;
-  dateOfBirth: string | null;
-  drivingExp: string;
-  address: {
-    city: string | null;
-    nationality: string | null;
-    state: string | null;
-    residence: string;
-  };
-};
-
-const initialState: UserState = {
+const initialState: UserStateType = {
   id: {
     type: "NRIC",
     no: "070212-12-1231",
@@ -38,37 +16,29 @@ const initialState: UserState = {
   dateOfBirth: "2007-02-12T00:00:00.000Z",
   drivingExp: "2",
   address: {
-    city: "Kuala Terengganu",
-    nationality: "Malaysia",
-    state: "Terengganu",
-    residence: "",
+    address1: "",
+    address2: "",
+    address3: "",
   },
+  city: "Kuala Terengganu",
+  nationality: "Malaysia",
+  state: "Terengganu",
 };
 
 export const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    updateUserId: (state, action: PayloadAction<UserId>) => {
-      const { no, type } = action.payload;
-      if (no) {
-        state.id.no = no;
-      }
-      if (type) {
-        state.id.type = type;
-      }
+    // it will update the user ID field
+    addUserID: (state, action: PayloadAction<UserIdInputs>) => {
+      const { userIdNo, userIdType } = action.payload;
+      state.id = {
+        no: userIdNo,
+        type: userIdType,
+      };
     },
-    updateUserState: (
-      state,
-      action: PayloadAction<{
-        maritalStatus: string | null;
-        gender?: "male" | "female";
-        mobileNumber: string;
-        email: string;
-        postalCode: string;
-        dateOfBirth?: string | null;
-      }>
-    ) => {
+    // it will update the basic user state's properties
+    addUserBasicInfo: (state, action: PayloadAction<UserBasicInfoInputs>) => {
       return { ...state, ...action.payload };
     },
   },
@@ -76,6 +46,6 @@ export const userSlice = createSlice({
 
 export const getInsuranceInfo = (state: RootState) => state.insurance;
 
-export const { updateUserId, updateUserState } = userSlice.actions;
+export const { addUserID, addUserBasicInfo } = userSlice.actions;
 
 export default userSlice.reducer;
