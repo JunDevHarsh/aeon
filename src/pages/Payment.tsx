@@ -40,7 +40,7 @@ const PaymentPage = () => {
     }
   }
 
-  function makePayment(amount: number) {
+  function makePayment(amount: string) {
     return new Promise((res, _) => {
       setTimeout(() => {
         res({ transactionId: "KJHKH432", amount: amount });
@@ -66,7 +66,7 @@ const PaymentPage = () => {
   if (paymentStatus.status === "success") {
     return (
       <PaymentSuccessfulContainer
-        amountPaid={amount.toString()}
+        amountPaid={amount}
         transactionId={paymentStatus.transactionId}
       />
     );
