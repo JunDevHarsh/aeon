@@ -42,24 +42,22 @@ const SummaryInfoCard = () => {
 
   const selectedAddOns = addOns.filter((addOn) => addOn.isSelected);
 
-  const providerPrice: number = provider?.price ? Number(provider.price) : 0;
+  const providerPrice = provider?.price ? Number(provider.price) : 0;
 
-  const updatedNCD: number = Number(
-    ((providerPrice * parseInt(ncd)) / 100).toFixed(2)
-  );
-  const grossPremium = Number(
-    (
-      providerPrice -
-      updatedNCD +
-      selectedAddOns.reduce((acc, curr) => (acc += curr.price), 0)
-    ).toFixed(2)
-  );
+  const updatedNCD = ((providerPrice * Number(ncd)) / 100).toFixed(2);
+  const grossPremium = (
+    providerPrice -
+    Number(updatedNCD) +
+    selectedAddOns.reduce((acc, curr) => (acc += curr.price), 0)
+  ).toFixed(2);
   const updateFinalPriceToStore = useDispatch();
-  // const discount = (grossPremium * 10) / 100;
-  const discount = Number(((grossPremium * promoCode) / 100).toFixed(2));
-  const subTotal = Number((grossPremium - discount).toFixed(2));
-  const serviceTax = Number(((subTotal * 6) / 100).toFixed(2));
-  const totalAmount = Number((subTotal + serviceTax + 10).toFixed(2));
+  const discount = ((Number(grossPremium) * Number(promoCode)) / 100).toFixed(
+    2
+  );
+  const subTotal = (Number(grossPremium) - Number(discount)).toFixed(2);
+  const serviceTax = ((Number(subTotal) * 6) / 100).toFixed(2);
+  const totalAmount = (Number(subTotal) + Number(serviceTax) + 10).toFixed(2);
+  console.log(totalAmount);
 
   return (
     <div className="relative flex flex-col items-center justify-between max-w-sm w-full h-auto rounded-[20px] shadow-container overflow-hidden">
@@ -129,15 +127,15 @@ const SummaryInfoCard = () => {
               Premium
             </span>
             <span className="text-base text-left text-primary-black font-medium w-1/2">
-              RM {providerPrice ?? 671.67}
+              RM {providerPrice.toFixed(2) ?? 671.67}
             </span>
           </div>
           <div className="flex items-center justify-between w-full">
             <span className="text-base text-left text-primary-black font-bold w-1/2">
-              NCD({(ncd) ?? 30}%)
+              NCD({ncd ?? 30}%)
             </span>
             <span className="text-base text-left text-primary-black font-medium w-1/2">
-              RM {updatedNCD.toFixed(2)}
+              RM {updatedNCD}
             </span>
           </div>
         </div>
@@ -216,7 +214,7 @@ const SummaryInfoCard = () => {
               Stamp Duty
             </span>
             <span className="text-base text-left text-primary-black font-medium w-1/2">
-              RM 10
+              RM 10.00
             </span>
           </div>
         </div>
@@ -235,7 +233,7 @@ const SummaryInfoCard = () => {
             Total Amount
           </span>
           <span className="text-xl text-left text-primary-black font-bold w-1/2">
-            RM {totalAmount.toFixed(2)}
+            RM {totalAmount}
           </span>
         </div>
         <div className="mt-4 flex items-center justify-start gap-x-4 w-full">
@@ -267,7 +265,10 @@ const SummaryInfoCard = () => {
           ) : currentStep === 4 ? (
             <button
               onClick={() => {
-                updateFinalPriceToStore(updateFinalPrice(totalAmount));
+                console.log(totalAmount);
+                updateFinalPriceToStore(
+                  updateFinalPrice(totalAmount)
+                );
                 navigate("/payment");
               }}
               className="relative py-2 px-6 min-w-[120px] w-auto bg-primary-blue rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"

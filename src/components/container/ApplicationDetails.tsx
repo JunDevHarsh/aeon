@@ -34,7 +34,7 @@ const ApplicationDetailsContainer = () => {
         <h2 className="text-xl text-center text-primary-black font-bold">
           Vehicle Details
         </h2>
-        <div className="px-6 py-4 grid grid-cols-3 gap-4 w-full bg-[#fcf6ff] rounded-lg">
+        <div className="mt-2 px-6 py-4 grid grid-cols-3 gap-4 w-full bg-[#fcf6ff] rounded-lg">
           <div className="flex flex-col items-start w-auto">
             <span className="text-base text-left text-primary-black font-bold">
               Car Registration No
@@ -93,11 +93,11 @@ const ApplicationDetailsContainer = () => {
           </div>
         </div>
       </div>
-      <div className="flex flex-col items-start w-full">
+      <div className="mt-2 flex flex-col items-start w-full">
         <h2 className="text-xl text-center text-primary-black font-bold">
           Insured Details
         </h2>
-        <div className="px-6 py-4 grid grid-cols-3 gap-4 w-full bg-[#fcf6ff] rounded-lg">
+        <div className="mt-2 px-6 py-4 grid grid-cols-3 gap-4 w-full bg-[#fcf6ff] rounded-lg">
           <div className="flex flex-col items-start w-auto">
             <span className="text-base text-left text-primary-black font-bold">
               Name
@@ -205,63 +205,67 @@ const ApplicationDetailsContainer = () => {
         </div>
       </div>
       {driverInfo.length !== 0 && (
-        <div className="flex flex-col items-start w-full">
+        <div className="mt-2 flex flex-col items-start w-full">
           <h2 className="text-xl text-center text-primary-black font-bold">
             Additional Driver Details
           </h2>
-
-          {driverInfo.map((detail, index) => (
-            <div key={detail.id} className="relative mt-2 w-full">
-              <h3 className="text-lg text-left text-primary-black font-bold">
-                Additional Driver {index + 1}
-              </h3>
-              <div className="px-6 py-2 grid grid-cols-3 gap-4 w-full rounded-lg">
-                <div className="flex flex-col items-start w-auto">
-                  <span className="text-base text-left text-primary-black font-bold">
-                    Name
-                  </span>
-                  <span className="text-base text-left text-primary-black font-normal">
-                    {detail.name}
-                  </span>
-                </div>
-                <div className="flex flex-col items-start w-auto">
-                  <span className="text-base text-left text-primary-black font-bold">
-                    Relationship
-                  </span>
-                  <span className="text-base text-left text-primary-black font-normal">
-                    {detail.relationship}
-                  </span>
-                </div>
-                <div className="flex flex-col items-start w-auto">
-                  <span className="text-base text-left text-primary-black font-bold">
-                    ID Type
-                  </span>
-                  <span className="text-base text-left text-primary-black font-normal">
-                    {detail.idType}
-                  </span>
-                </div>
-                <div className="flex flex-col items-start w-auto">
-                  <span className="text-base text-left text-primary-black font-bold">
-                    ID No.
-                  </span>
-                  <span className="text-base text-left text-primary-black font-normal">
-                    {detail.idNo}
-                  </span>
-                </div>
-                <div className="flex flex-col items-start w-auto">
-                  <span className="text-base text-left text-primary-black font-bold">
-                    Nationality
-                  </span>
-                  <span className="text-base text-left text-primary-black font-normal">
-                    {detail.nationality}
-                  </span>
+          <div className="flex flex-col items-start justify-start gap-y-2 w-full">
+            {driverInfo.map((detail, index) => (
+              <div
+                key={detail.id}
+                className="relative mt-2 w-full bg-[#fcf6ff] rounded-lg"
+              >
+                <h3 className="px-4 pt-3 text-lg text-left text-primary-black font-bold">
+                  Additional Driver {index + 1}
+                </h3>
+                <div className="px-6 py-2 grid grid-cols-3 gap-4 w-full rounded-lg">
+                  <div className="flex flex-col items-start w-auto">
+                    <span className="text-base text-left text-primary-black font-bold">
+                      Name
+                    </span>
+                    <span className="text-base text-left text-primary-black font-normal">
+                      {detail.name}
+                    </span>
+                  </div>
+                  <div className="flex flex-col items-start w-auto">
+                    <span className="text-base text-left text-primary-black font-bold">
+                      Relationship
+                    </span>
+                    <span className="text-base text-left text-primary-black font-normal">
+                      {detail.relationship}
+                    </span>
+                  </div>
+                  <div className="flex flex-col items-start w-auto">
+                    <span className="text-base text-left text-primary-black font-bold">
+                      ID Type
+                    </span>
+                    <span className="text-base text-left text-primary-black font-normal">
+                      {detail.idType}
+                    </span>
+                  </div>
+                  <div className="flex flex-col items-start w-auto">
+                    <span className="text-base text-left text-primary-black font-bold">
+                      ID No.
+                    </span>
+                    <span className="text-base text-left text-primary-black font-normal">
+                      {detail.idNo}
+                    </span>
+                  </div>
+                  <div className="flex flex-col items-start w-auto">
+                    <span className="text-base text-left text-primary-black font-bold">
+                      Nationality
+                    </span>
+                    <span className="text-base text-left text-primary-black font-normal">
+                      {detail.nationality}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
-      <div className="flex items-center justify-start w-full">
+      <div className="mt-4 flex items-center justify-start w-full">
         <div className="relative flex items-center justify-center">
           <label
             htmlFor="roadTax"

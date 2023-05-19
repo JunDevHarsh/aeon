@@ -17,7 +17,7 @@ const initialState: InsuranceStateType = {
     companyName: "Allianz",
     price: 609.35,
   },
-  finalPrice: 0,
+  finalPrice: "",
   currentStep: 1,
 };
 
@@ -55,9 +55,9 @@ export const insuranceSlice = createSlice({
     ) => {
       state.coverage = action.payload;
     },
-    updateFinalPrice: (state, action: PayloadAction<number>) => {
+    updateFinalPrice: (state, action: PayloadAction<string>) => {
       state.finalPrice = action.payload;
-    }
+    },
   },
 });
 
@@ -71,7 +71,7 @@ export const {
   updateCurrentStep,
   updateInsuranceProvider,
   updateInsuranceCoverage,
-  updateFinalPrice
+  updateFinalPrice,
 } = insuranceSlice.actions;
 
 export default insuranceSlice.reducer;

@@ -87,5 +87,5 @@ export type InsuranceStateType = {
   coverage: CoverageStateType | null;
   referralCode: string | null;
   currentStep: number;
-  finalPrice: number;
+  finalPrice: string;
 };
