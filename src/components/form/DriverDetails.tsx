@@ -104,7 +104,7 @@ const DriverDetailsForm = () => {
             name="name"
             register={register}
             errors={errors.name}
-            placeholder="UserName"
+            placeholder="Name"
             options={{
               required: {
                 value: true,
