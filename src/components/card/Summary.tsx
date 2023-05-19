@@ -57,7 +57,7 @@ const SummaryInfoCard = () => {
   const updateFinalPriceToStore = useDispatch();
   // const discount = (grossPremium * 10) / 100;
   const discount = Number(((grossPremium * promoCode) / 100).toFixed(2));
-  const subTotal = Number((grossPremium - discount).toFixed());
+  const subTotal = Number((grossPremium - discount).toFixed(2));
   const serviceTax = Number(((subTotal * 6) / 100).toFixed(2));
   const totalAmount = Number((subTotal + serviceTax + 10).toFixed(2));
 
@@ -134,10 +134,10 @@ const SummaryInfoCard = () => {
           </div>
           <div className="flex items-center justify-between w-full">
             <span className="text-base text-left text-primary-black font-bold w-1/2">
-              NCD({ncd ?? 30}%)
+              NCD({(ncd) ?? 30}%)
             </span>
             <span className="text-base text-left text-primary-black font-medium w-1/2">
-              RM {updatedNCD}
+              RM {updatedNCD.toFixed(2)}
             </span>
           </div>
         </div>
@@ -169,7 +169,7 @@ const SummaryInfoCard = () => {
                   {addOn.title}
                 </span>
                 <span className="text-base text-left text-primary-black font-medium w-1/2">
-                  RM {addOn.price}
+                  RM {addOn.price.toFixed(2)}
                 </span>
               </div>
             ))
@@ -235,7 +235,7 @@ const SummaryInfoCard = () => {
             Total Amount
           </span>
           <span className="text-xl text-left text-primary-black font-bold w-1/2">
-            RM {totalAmount}
+            RM {totalAmount.toFixed(2)}
           </span>
         </div>
         <div className="mt-4 flex items-center justify-start gap-x-4 w-full">

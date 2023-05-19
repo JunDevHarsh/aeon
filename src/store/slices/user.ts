@@ -11,6 +11,8 @@ const initialState: UserStateType = {
   maritalStatus: "Single",
   gender: "male",
   mobileNumber: "1123987854",
+  occupation: "Teacher",
+  race: "Chinese",
   email: "jack.123@gmail.com",
   postalCode: "55000",
   dateOfBirth: "2007-02-12T00:00:00.000Z",
@@ -41,11 +43,19 @@ export const userSlice = createSlice({
     addUserBasicInfo: (state, action: PayloadAction<UserBasicInfoInputs>) => {
       return { ...state, ...action.payload };
     },
+    // update user state
+    updateUserStateInfo: (
+      state,
+      action: PayloadAction<Partial<UserStateType>>
+    ) => {
+      return { ...state, ...action.payload };
+    },
   },
 });
 
 export const getInsuranceInfo = (state: RootState) => state.insurance;
 
-export const { addUserID, addUserBasicInfo } = userSlice.actions;
+export const { addUserID, addUserBasicInfo, updateUserStateInfo } =
+  userSlice.actions;
 
 export default userSlice.reducer;

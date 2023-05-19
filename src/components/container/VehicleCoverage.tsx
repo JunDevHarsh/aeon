@@ -69,8 +69,8 @@ const VehicleCoverageContainer = () => {
               />
             </svg>
             <p className="text-sm text-center text-primary-pink font-bold">
-              The Current market value for your vehicle is RM
-              {numberWithCommas(market.value?.mid ? market.value.mid : 14000)}
+              The Current market value for your vehicle is RM{" "}
+              {numberWithCommas(14000)}
             </p>
           </div>
           <div className="mt-4 flex flex-col items-start w-full">
@@ -188,24 +188,13 @@ const VehicleCoverageContainer = () => {
               />
             ) : (
               <div className="flex flex-col items-start gap-y-4 w-full">
-                <div className="relative flex flex-col items-start gap-y-2 w-full h-auto">
-                  <span className="text-lg text-center text-primary-black font-semibold">
+                <div className="relative pb-5 flex flex-col items-start gap-y-2 w-full h-auto">
+                  <span className="text-base text-center text-primary-black font-semibold">
                     Car Type
                   </span>
-                  <SelectDropdown
-                    selected={agreed.type}
-                    optionList={[{ label: "PERODUA", value: "PERODUA" }]}
-                    onChange={(val: string) =>
-                      setState((prev) => ({
-                        ...prev,
-                        agreed: {
-                          ...prev.agreed,
-                          type: val,
-                        },
-                      }))
-                    }
-                    id="carType"
-                  />
+                  <span className="py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium cursor-default border border-solid border-[#CFD0D7] rounded">
+                    {agreed.type}
+                  </span>
                 </div>
                 <div className="relative flex flex-col items-start gap-y-2 w-full h-auto">
                   <span className="text-lg text-center text-primary-black font-semibold">

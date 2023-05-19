@@ -38,7 +38,7 @@ const initialMultiStepFormState: MultiStepFormState = {
 export enum AddOnsTypes {
   SelectionToggleById = "SELECTION_TOGGLE_BY_ID",
   IncludeAddOns = "INCLUDE_ADD_ONS",
-  UpdateAddOnPrice = "UPDATE_ADD_ON_PRICE"
+  UpdateAddOnPrice = "UPDATE_ADD_ON_PRICE",
 }
 
 export enum AddDriverTypes {
@@ -62,7 +62,7 @@ export type AddOnsPayload = {
   [AddOnsTypes.UpdateAddOnPrice]: {
     id: string;
     price: number;
-  }
+  };
 };
 
 export type AddDriverDetailsPayload = {
@@ -96,7 +96,9 @@ export type DriverDetailsActions =
 /*---------------MultiForm Context---------------*/
 export const MultiStepFormContext = createContext<{
   store: MultiStepFormState;
-  dispatch: React.Dispatch<AddOnsActions | AddDriverActions | DriverDetailsActions>;
+  dispatch: React.Dispatch<
+    AddOnsActions | AddDriverActions | DriverDetailsActions
+  >;
 }>({
   store: initialMultiStepFormState,
   dispatch: () => null,

@@ -1,4 +1,4 @@
-import React, { createContext, useReducer } from "react";
+import React, { createContext, useReducer, useEffect } from "react";
 import { ActionMap, InsuranceState } from "./types";
 import {
   IsMVContainerVisibleReducer,
@@ -92,6 +92,10 @@ const mainReducer = (
 
 const InsuranceContextProvider = ({ children }: InsuranceContextProps) => {
   const [state, dispatch] = useReducer(mainReducer, initialInsuranceState);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [state.currentStep, state.isMVContainerVisible]);
   return (
     <InsuranceContext.Provider value={{ state, dispatch }}>
       {children}

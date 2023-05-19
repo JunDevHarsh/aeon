@@ -278,13 +278,13 @@ const DriverDetailsForm = () => {
                   }}
                   selected={value}
                   error={error}
-                  placeholder="CHI"
+                  placeholder="Chinese"
                   optionList={[
-                    { label: "CHINESE", value: "Chinese" },
-                    { label: "EURASIAN", value: "Eurasian" },
-                    { label: "MALAY", value: "Malay" },
-                    { label: "INDIAN", value: "Indian" },
-                    { label: "OTHERS", value: "Others" },
+                    { label: "Chinese", value: "Chinese" },
+                    { label: "Eurasian", value: "Eurasian" },
+                    { label: "Malay", value: "Malay" },
+                    { label: "Indian", value: "Indian" },
+                    { label: "Others", value: "Others" },
                   ]}
                 />
               )}

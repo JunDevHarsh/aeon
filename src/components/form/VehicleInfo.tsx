@@ -7,6 +7,7 @@ import SelectDropdown from "../fields/SelectDropdown";
 // import CheckboxWithTextField from "../fields/CheckboxWithText";
 import FixedInputTextField from "../fields/FixedInputText";
 import { VehicleStateType } from "../../store/slices/types";
+import { updateUserStateInfo } from "../../store/slices/user";
 
 interface VehicleInfoStateType extends VehicleStateType {
   dateOfBirth: string;
@@ -22,9 +23,6 @@ const VehicleInfoForm = ({
   const vehicleState: VehicleStateType = useSelector(
     (state: RootState) => state.vehicle
   );
-  const { dateOfBirth, gender, maritalStatus } = useSelector(
-    (state: RootState) => state.user
-  );
   const {
     watch,
     register,
@@ -34,17 +32,16 @@ const VehicleInfoForm = ({
     clearErrors,
     formState: { errors },
   } = useForm<VehicleInfoStateType>({
-    defaultValues: {
-      ...vehicleState,
-      dateOfBirth: dateOfBirth || "2007-02-23",
-      gender,
-      maritalStatus,
-    },
+    defaultValues: vehicleState,
   });
   const dispatch = useDispatch();
 
-  const onSubmit: SubmitHandler<VehicleStateType> = (val: VehicleStateType) => {
-    dispatch(updateVehicleState(val));
+  const onSubmit: SubmitHandler<VehicleInfoStateType> = (
+    val: VehicleInfoStateType
+  ) => {
+    const { dateOfBirth, maritalStatus, gender, ...vehicleRestState } = val;
+    dispatch(updateVehicleState(vehicleRestState));
+    dispatch(updateUserStateInfo({ dateOfBirth, maritalStatus, gender }));
     setShowLoading((prev) => !prev);
   };
 
@@ -62,7 +59,7 @@ const VehicleInfoForm = ({
           value={vehicleState.regNo}
         />
         {/* Vehicle Make Field  */}
-        <div className="relative pb-5 flex flex-col items-start gap-y-1 w-auto h-auto">
+        {/* <div className="relative pb-5 flex flex-col items-start gap-y-1 w-auto h-auto">
           <label
             htmlFor="vehicleMake"
             className="text-base text-center text-primary-black font-semibold"
@@ -88,9 +85,17 @@ const VehicleInfoForm = ({
               />
             )}
           />
+        </div> */}
+        <div className="relative pb-5 flex flex-col items-start gap-y-1 w-full h-auto">
+          <span className="text-base text-center text-primary-black font-semibold">
+            Vehicle Make*
+          </span>
+          <span className="py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium cursor-default border border-solid border-[#CFD0D7] rounded">
+            {watch("make")}
+          </span>
         </div>
         {/* Vehicle Model Field  */}
-        <div className="relative pb-5 flex flex-col items-start gap-y-1 w-auto h-auto">
+        {/* <div className="relative pb-5 flex flex-col items-start gap-y-1 w-auto h-auto">
           <label
             htmlFor="vehicleModel"
             className="text-base text-center text-primary-black font-semibold"
@@ -121,6 +126,14 @@ const VehicleInfoForm = ({
               />
             )}
           />
+        </div> */}
+        <div className="relative pb-5 flex flex-col items-start gap-y-1 w-full h-auto">
+          <span className="text-base text-center text-primary-black font-semibold">
+            Vehicle Model*
+          </span>
+          <span className="py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium cursor-default border border-solid border-[#CFD0D7] rounded">
+            {watch("model")}
+          </span>
         </div>
         {/* Vehicle Variant Field  */}
         <div className="relative pb-5 flex flex-col items-start gap-y-1 w-auto h-auto">
@@ -292,102 +305,6 @@ const VehicleInfoForm = ({
                 />
                 <span className="text-sm text-center text-dark-1 font-normal">
                   No
-                </span>
-              </label>
-            </div>
-          </div>
-        </div>
-        {/* Date of Birth Field */}
-        <FixedInputTextField
-          title="Date of Birth"
-          value={watch("dateOfBirth").slice(0, 10)}
-        />
-        {/* Marital Status Field */}
-        <div className="relative pb-5 flex flex-col items-start gap-y-1 flex-[1_1_40%] w-auto h-auto">
-          <label
-            htmlFor="selectMaritalStatus"
-            className="text-base text-center text-primary-black font-semibold"
-          >
-            Marital Status
-          </label>
-          <Controller
-            control={control}
-            name="maritalStatus"
-            rules={{
-              validate: (val) => val !== null || "Select an option",
-            }}
-            render={({ field: { value }, fieldState: { error } }) => (
-              <SelectDropdown
-                id="selectMaritalStatus"
-                onChange={(val: string) => (
-                  setValue("maritalStatus", val), clearErrors("maritalStatus")
-                )}
-                placeholder="Single"
-                selected={value}
-                error={error}
-                optionList={[
-                  { label: "Single", value: "Single" },
-                  { label: "Married", value: "Married" },
-                  { label: "Divorced", value: "Divorced" },
-                  { label: "Widowed", value: "Widowed" },
-                ]}
-              />
-            )}
-          />
-        </div>
-        {/* Gender Field */}
-        <div className="relative pb-2 flex flex-col gap-y-1 items-start w-full h-auto">
-          <span className="text-base text-center text-primary-black font-semibold">
-            Gender
-          </span>
-          <div className="flex items-center justify-start gap-x-2 w-full">
-            <div className="relative flex items-center justify-center w-auto">
-              <input
-                id="genderMale"
-                type="radio"
-                value="male"
-                className="peer absolute opacity-0"
-                checked={watch("gender") === "male"}
-                {...register("gender")}
-              />
-              <label
-                htmlFor="genderMale"
-                className="px-1.5 flex items-center gap-x-2 border-2 border-solid border-transparent peer-focus-visible:border-primary-black rounded cursor-pointer"
-              >
-                <span
-                  className={`inline-block w-2.5 h-2.5 rounded-full ${
-                    watch("gender") === "male"
-                      ? "bg-primary-black shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
-                      : "bg-white shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
-                  }`}
-                />
-                <span className="text-sm text-center text-dark-1 font-normal">
-                  Male
-                </span>
-              </label>
-            </div>
-            <div className="relative flex items-center justify-center w-auto">
-              <input
-                id="genderFemale"
-                type="radio"
-                value="female"
-                className="peer absolute opacity-0"
-                checked={watch("gender") === "female"}
-                {...register("gender")}
-              />
-              <label
-                htmlFor="genderFemale"
-                className="px-1.5 flex items-center gap-x-2 border-2 border-solid border-transparent peer-focus-visible:border-primary-black rounded cursor-pointer"
-              >
-                <span
-                  className={`inline-block w-2.5 h-2.5 rounded-full ${
-                    watch("gender") === "female"
-                      ? "bg-primary-black shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
-                      : "bg-white shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
-                  }`}
-                />
-                <span className="text-sm text-center text-dark-1 font-normal">
-                  Female
                 </span>
               </label>
             </div>

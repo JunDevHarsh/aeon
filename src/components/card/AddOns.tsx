@@ -85,7 +85,7 @@ const AddOnsCard: React.FC<AddOnsCardProps> = ({
         <p className="text-base text-center text-primary-black font-bold">
           {title}
         </p>
-        {isSelected && (
+        {isSelected && isEditable && (
           <>
             <div className="block h-[2px] w-2/3 bg-[#D9D9D9]" />
             <div className="flex items-center justify-start gap-x-2 w-full">
@@ -95,7 +95,9 @@ const AddOnsCard: React.FC<AddOnsCardProps> = ({
               {isEditable ? (
                 <button
                   className="flex items-center justify-center w-auto"
-                  onClick={() => openAddOnPopup(id, title, sumInsured.toString())}
+                  onClick={() =>
+                    openAddOnPopup(id, title, sumInsured.toString())
+                  }
                 >
                   <span className="text-sm text-center text-primary-black font-normal">
                     RM {numberWithCommas(sumInsured)}

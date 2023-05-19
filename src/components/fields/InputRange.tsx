@@ -21,19 +21,19 @@ const InputRange = ({
   function updateRange(e: React.ChangeEvent<HTMLInputElement>) {
     const { value } = e.target;
     let numValue = Number(value);
-    let valueToUpdate: number;
-    if (numValue === 0) {
-      valueToUpdate = minValue;
-    } else if (numValue === 1) {
-      valueToUpdate = midValue;
-    } else {
-      valueToUpdate = maxValue;
-    }
-    setValue(type, valueToUpdate);
+    // let valueToUpdate: number;
+    // if (numValue === 14000) {
+    //   valueToUpdate = minValue;
+    // } else if (numValue === 1) {
+    //   valueToUpdate = midValue;
+    // } else {
+    //   valueToUpdate = maxValue;
+    // }
+    setValue(type, numValue);
     setVal(numValue);
   }
 
-  const labelPosition = `${val * 50}%`;
+  const labelPosition = `${((value - minValue) / 2000) * 50}%`;
 
   return (
     <div className="mt-4 flex flex-col items-start w-full">
@@ -44,13 +44,13 @@ const InputRange = ({
         <input
           type="range"
           name="value"
-          value={val}
+          value={value}
           // onChange={handleSliderChange}
           onChange={updateRange}
           id="insuredValue"
-          min={0}
-          max={2}
-          step={1}
+          min={minValue}
+          max={maxValue}
+          step={2000}
           className="peer w-full"
         />
         <label

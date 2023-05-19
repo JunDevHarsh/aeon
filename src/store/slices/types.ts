@@ -7,6 +7,8 @@ export type UserStateType = {
   mobileNumber: string; // Mobile Number
   email: string; // Email
   postalCode: string; // Postal Code
+  race: string | null;
+  occupation: string | null;
   gender: "male" | "female"; // Gender
   dateOfBirth: string | null; // Date Of Birth
   drivingExp: string; // Driviing Experience

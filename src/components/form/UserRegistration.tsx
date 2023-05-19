@@ -6,7 +6,6 @@ import InputTextField from "../fields/InputText";
 import SelectDropdown from "../fields/SelectDropdown";
 import MobileNumberField from "../fields/MobileNumber";
 import DateOfBirthField from "../fields/DateOfBirth";
-import Code from "../button/Code";
 // store
 import { useDispatch } from "react-redux";
 import { updateInsuranceState } from "../../store/slices/insurance";
@@ -15,6 +14,7 @@ import { addVehicleRegNo } from "../../store/slices/vehicle";
 // types
 import { UserInsuranceInputs } from "./types";
 import VehicleSelector from "../fields/VehicleSelector";
+import ReferralCodeButton from "../button/ReferralCode";
 
 let prevValue: string = "";
 
@@ -496,14 +496,8 @@ const UserRegistrationForm = () => {
               },
             }}
           />
-
-          <Code
-            textToDisplay="I have a referral code"
-            title="Referral Code"
-            maxLength={10}
-            placeholder="ASD7SFD"
-            validationList={["HG23434"]}
-          />
+          {/* Referral Code Button */}
+          <ReferralCodeButton validationList={["HG23434"]} />
         </div>
         {/* Submit Button Stripe */}
         <div className="mt-4 flex flex-col items-center justify-center gap-y-2.5 w-full">
