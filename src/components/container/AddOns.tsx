@@ -242,7 +242,7 @@ const AddOnsContainer = () => {
                   id={`addDriverDetailsName-${driverDetails.id}`}
                   type="text"
                   value={driverDetails.name}
-                  placeholder="UserName"
+                  placeholder="Name"
                   onChange={(e) =>
                     updateDriverDetails(driverDetails.id, {
                       name: e.target.value.toUpperCase(),
