@@ -123,7 +123,7 @@ const QuoteListingPlanCard = ({
         <div className="pb-4 md:pb-0 flex flex-col items-start w-full md:w-[60%] border-r-0 md:border-r border-b md:border-b-0 border-solid border-gray-300">
           <div className="flex items-center justify-start gap-x-2 w-auto">
             <img
-              src={`/src/assets/images/providers/${companyRelImgHref}.png`}
+              src={`/providers/${companyRelImgHref}.png`}
               alt={companyName + "img"}
               className="h-10 w-auto"
             />

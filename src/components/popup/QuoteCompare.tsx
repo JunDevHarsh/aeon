@@ -173,7 +173,7 @@ const QuoteComparePopup = ({
                   <div className="relative py-2.5 px-5 flex flex-col items-center justify-between gap-y-2 w-full h-[136px] bg-[#F4F4F4] rounded-lg">
                     <div className="flex items-start justify-between w-full h-auto">
                       <img
-                        src={`/src/assets/images/providers/${item.companyRelImgHref}.png`}
+                        src={`/providers/${item.companyRelImgHref}.png`}
                         alt={`${item.companyName}-logo`}
                         className="h-8 w-auto"
                       />
