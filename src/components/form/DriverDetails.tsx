@@ -29,22 +29,27 @@ type Inputs = {
 };
 
 const DriverDetailsForm = () => {
+  const { dateOfBirth, id, gender, maritalStatus } = useSelector(
+    (state: RootState) => state.user
+  );
   const {
-    dateOfBirth,
-    id,
-    gender,
-    maritalStatus,
-    email,
-    address,
-    city,
-    drivingExp,
-    mobileNumber,
-    name,
-    nationality,
-    postalCode,
-  } = useSelector((state: RootState) => state.user);
-  const {
-    store: { driverDetails },
+    store: {
+      driverDetails: {
+        name,
+        address1,
+        address2,
+        address3,
+        city,
+        drivingExp,
+        email,
+        mobileNumber,
+        nationality,
+        occupation,
+        postalCode,
+        race,
+        state,
+      },
+    },
     dispatch,
   } = useContext(MultiStepFormContext);
 
@@ -56,20 +61,20 @@ const DriverDetailsForm = () => {
     formState: { errors },
   } = useForm<Inputs>({
     defaultValues: {
-      email,
+      email: email,
       city,
       drivingExp,
       mobileNumber,
-      name,
-      postalCode,
-      address1: address.address1,
-      address2: address.address2,
-      address3: address.address3,
+      name: name,
+      postalCode: postalCode,
+      address1: address1,
+      address2: address2,
+      address3: address3,
       country: nationality,
-      occupation: driverDetails.occupation,
-      nationality: driverDetails.nationality,
-      race: driverDetails.race,
-      state: driverDetails.state,
+      occupation: occupation,
+      nationality: nationality,
+      race: race,
+      state: state,
     },
   });
 

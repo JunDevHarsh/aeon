@@ -15,7 +15,8 @@ const defaultAddOnsState: AddOnType[] = [
   {
     id: "addon-1",
     title: "Cover for Windscreens",
-    description: "Cover for Windscreens, Windows And Sunroof",
+    description:
+      "Cover for Windscreens, Windows and Sunroof covers the cost to repair or replace any glass in the windscreen, window or sunroof (including the cost of lamination/tinting film, if any) of your car that is accidentally damaged. ",
     isSelected: false,
     isEditable: true,
     price: 30,
@@ -35,7 +36,8 @@ const defaultAddOnsState: AddOnType[] = [
   {
     id: "addon-3",
     title: "Driver's Personal Accident",
-    description: "Driver's Personal Accident",
+    description:
+      "Driver and Passengers' Personal Accident covers you and your passengers while travelling  in your car.",
     isSelected: false,
     isEditable: false,
     price: 34,
@@ -45,7 +47,8 @@ const defaultAddOnsState: AddOnType[] = [
   {
     id: "addon-4",
     title: "Strike, Riot & Civil Commotion",
-    description: "Strike, Riot & Civil Commotion",
+    description:
+      "Strike, Riot and Civil Commotion covers for loss or damage to your car caused by various kinds of strikes, riots and civil commotions.",
     isSelected: false,
     isEditable: false,
     price: 23,
@@ -55,7 +58,8 @@ const defaultAddOnsState: AddOnType[] = [
   {
     id: "addon-5",
     title: "Inclusion of Special Perils",
-    description: "Inclusion of Special Perils",
+    description:
+      "Inclusion of Special Perils covers loss or damage to your car caused by flood, typhoon, hurricane, storm, tempest, volcanic eruption, earthquake, landslide, landslip, subsidence or sinking of the soil / earth or other convulsions of nature.",
     isSelected: false,
     isEditable: false,
     price: 53,

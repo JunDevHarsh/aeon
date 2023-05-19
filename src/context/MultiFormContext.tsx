@@ -11,6 +11,8 @@ import {
   addOnsReducer,
   driverDetailsReducer,
 } from "./reducers";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
 
 /*---------------Initial State---------------*/
 const initialMultiStepFormState: MultiStepFormState = {
@@ -119,7 +121,19 @@ const MultiFormContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [store, dispatch] = useReducer(mainReducer, initialMultiStepFormState);
+  const {
+    user: { email, mobileNumber, postalCode, drivingExp },
+  } = useSelector((state: RootState) => state);
+  const [store, dispatch] = useReducer(mainReducer, {
+    ...initialMultiStepFormState,
+    driverDetails: {
+      ...initialMultiStepFormState.driverDetails,
+      email: email,
+      mobileNumber: mobileNumber,
+      postalCode: postalCode,
+      drivingExp: drivingExp,
+    },
+  });
 
   return (
     <MultiStepFormContext.Provider value={{ store, dispatch }}>
