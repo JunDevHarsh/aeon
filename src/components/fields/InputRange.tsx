@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { numberWithCommas } from "../container/VehicleCoverage";
 
 const InputRange = ({
@@ -6,7 +6,6 @@ const InputRange = ({
   value,
   setValue,
   minValue,
-  midValue,
   maxValue,
 }: {
   type: "market" | "agreed";
@@ -16,7 +15,6 @@ const InputRange = ({
   midValue: number;
   maxValue: number;
 }) => {
-  const [val, setVal] = useState<number>(1);
 
   function updateRange(e: React.ChangeEvent<HTMLInputElement>) {
     const { value } = e.target;
@@ -30,7 +28,6 @@ const InputRange = ({
     //   valueToUpdate = maxValue;
     // }
     setValue(type, numValue);
-    setVal(numValue);
   }
 
   const labelPosition = `${((value - minValue) / 2000) * 50}%`;

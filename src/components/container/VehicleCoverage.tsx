@@ -226,7 +226,7 @@ const VehicleCoverageContainer = () => {
                         },
                       }))
                     }
-                    placeholder="MITSUBISHI ASX 2WD-ITX144"
+                    placeholder="Select Car Variant"
                   />
                 </div>
               </div>
