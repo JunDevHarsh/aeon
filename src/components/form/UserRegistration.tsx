@@ -126,16 +126,16 @@ const UserRegistrationForm = () => {
       />
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="relative mt-6 w-full px-6"
+        className="relative mt-6 w-full px-2 md:px-6"
       >
         <div className="grid grid-cols-1 md:grid-cols-2 items-start gap-x-4 w-full">
           {/* Insurance Type Field */}
-          <div className="relative pb-2 flex flex-col gap-y-1 items-start w-full h-auto">
-            <span className="text-base text-center text-primary-black font-semibold">
+          <div className="relative pb-3 flex flex-col items-start w-full h-auto">
+            <span className="mb-1 text-base text-center text-primary-black font-semibold">
               Type*
             </span>
-            <div className="flex items-center justify-start gap-x-2 w-full">
-              <div className="relative flex items-center justify-center w-auto">
+            <div className="flex items-center justify-start w-full">
+              <div className="mr-2 relative flex items-center justify-center w-auto">
                 <input
                   id="insuranceTypeNew"
                   type="radio"
@@ -146,10 +146,10 @@ const UserRegistrationForm = () => {
                 />
                 <label
                   htmlFor="insuranceTypeNew"
-                  className="px-1.5 flex items-center gap-x-2 border-2 border-solid border-transparent peer-focus-visible:border-primary-black rounded cursor-pointer"
+                  className="px-1.5 flex items-center border-2 border-solid border-transparent peer-focus-visible:border-primary-black rounded cursor-pointer"
                 >
                   <span
-                    className={`inline-block w-2.5 h-2.5 rounded-full ${
+                    className={`mr-2 inline-block w-2.5 h-2.5 rounded-full ${
                       watch("insuranceType") === "new"
                         ? "bg-primary-black shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
                         : "bg-white shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
@@ -171,10 +171,10 @@ const UserRegistrationForm = () => {
                 />
                 <label
                   htmlFor="insuranceTypeRenewal"
-                  className="px-1.5 flex items-center gap-x-2 border-2 border-solid border-transparent peer-focus-visible:border-primary-black rounded cursor-pointer"
+                  className="px-1.5 flex items-center border-2 border-solid border-transparent peer-focus-visible:border-primary-black rounded cursor-pointer"
                 >
                   <span
-                    className={`inline-block w-2.5 h-2.5 rounded-full ${
+                    className={`mr-2 inline-block w-2.5 h-2.5 rounded-full ${
                       watch("insuranceType") === "renewal"
                         ? "bg-primary-black shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
                         : "bg-white shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
@@ -211,11 +211,11 @@ const UserRegistrationForm = () => {
             }}
           />
           {/* ID Type and ID No. Field */}
-          <div className="flex items-center justify-between gap-x-2 w-full">
-            <div className="relative pb-5 flex flex-col items-start gap-y-1 flex-[1_1_40%] w-auto h-auto">
+          <div className="flex flex-col mobile-m:flex-row items-start justify-between w-full">
+            <div className="relative pb-5 flex flex-col items-start flex-1 mobile-m:flex-[1_1_40%] w-full mobile-m:w-auto h-auto">
               <label
                 htmlFor="selectIdType"
-                className="text-base text-center text-primary-black font-semibold"
+                className="mb-1 text-base text-center text-primary-black font-semibold"
               >
                 ID Type*
               </label>
@@ -249,7 +249,7 @@ const UserRegistrationForm = () => {
                 )}
               />
             </div>
-            <div className="flex items-center flex-[1_1_60%] w-auto">
+            <div className="ml-0 mobile-m:ml-1 flex items-center flex-1 mobile-m:flex-[1_1_60%] w-full">
               <InputTextField
                 label="ID/Company Reg No."
                 name="idNo"
@@ -339,10 +339,10 @@ const UserRegistrationForm = () => {
             }}
           />
           {/* Marital Status Field */}
-          <div className="relative pb-5 flex flex-col items-start gap-y-1 flex-[1_1_40%] w-auto h-auto">
+          <div className="relative pb-5 flex flex-col items-start w-full h-auto">
             <label
               htmlFor="selectMaritalStatus"
-              className="text-base text-center text-primary-black font-semibold"
+              className="mb-1 text-base text-center text-primary-black font-semibold"
             >
               Marital Status*
             </label>
@@ -374,12 +374,12 @@ const UserRegistrationForm = () => {
           {watchIDType && watchIDType === "Passport" && (
             <>
               {/* Gender Field */}
-              <div className="relative pb-2 flex flex-col gap-y-1 items-start w-full h-auto">
-                <span className="text-base text-center text-primary-black font-semibold">
+              <div className="mb-1 md:mb-0 relative pb-2 flex flex-col items-start w-full h-auto">
+                <span className="mb-1 text-base text-center text-primary-black font-semibold">
                   Gender*
                 </span>
-                <div className="flex items-center justify-start gap-x-2 w-full">
-                  <div className="relative flex items-center justify-center w-auto">
+                <div className="flex items-center justify-start w-full">
+                  <div className="mr-2 relative flex items-center justify-center w-auto">
                     <input
                       id="genderMale"
                       type="radio"
@@ -390,10 +390,10 @@ const UserRegistrationForm = () => {
                     />
                     <label
                       htmlFor="genderMale"
-                      className="px-1.5 flex items-center gap-x-2 border-2 border-solid border-transparent peer-focus-visible:border-primary-black rounded cursor-pointer"
+                      className="px-1.5 flex items-center border-2 border-solid border-transparent peer-focus-visible:border-primary-black rounded cursor-pointer"
                     >
                       <span
-                        className={`inline-block w-2.5 h-2.5 rounded-full ${
+                        className={`mr-2 inline-block w-2.5 h-2.5 rounded-full ${
                           watch("gender") === "male"
                             ? "bg-primary-black shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
                             : "bg-white shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
@@ -415,10 +415,10 @@ const UserRegistrationForm = () => {
                     />
                     <label
                       htmlFor="genderFemale"
-                      className="px-1.5 flex items-center gap-x-2 border-2 border-solid border-transparent peer-focus-visible:border-primary-black rounded cursor-pointer"
+                      className="px-1.5 flex items-center border-2 border-solid border-transparent peer-focus-visible:border-primary-black rounded cursor-pointer"
                     >
                       <span
-                        className={`inline-block w-2.5 h-2.5 rounded-full ${
+                        className={`mr-2 inline-block w-2.5 h-2.5 rounded-full ${
                           watch("gender") === "female"
                             ? "bg-primary-black shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
                             : "bg-white shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
@@ -500,8 +500,8 @@ const UserRegistrationForm = () => {
           <ReferralCodeButton validationList={["HG23434"]} />
         </div>
         {/* Submit Button Stripe */}
-        <div className="mt-4 flex flex-col items-center justify-center gap-y-2.5 w-full">
-          <div className="py-1.5 px-2 flex items-center justify-center w-auto bg-[#2ECC7133] rounded">
+        <div className="mt-4 flex flex-col items-center justify-center w-full">
+          <div className="mb-2.5 py-1.5 px-2 flex items-center justify-center w-auto bg-[#2ECC7133] rounded">
             <svg
               width="21"
               height="20"
@@ -520,7 +520,7 @@ const UserRegistrationForm = () => {
           </div>
           <button
             type="submit"
-            className="relative py-3 px-4 flex items-center justify-center gap-x-2 max-w-[250px] w-full h-auto bg-primary-blue rounded-full"
+            className="relative py-3 px-4 flex items-center justify-center max-w-[250px] w-full h-auto bg-primary-blue rounded-full"
           >
             <svg
               width="20"
@@ -534,7 +534,7 @@ const UserRegistrationForm = () => {
                 fill="#fff"
               />
             </svg>
-            <span className="text-base text-center text-white font-medium">
+            <span className="ml-2 text-base text-center text-white font-medium">
               Submit
             </span>
           </button>
