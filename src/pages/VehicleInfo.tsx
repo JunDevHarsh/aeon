@@ -16,17 +16,21 @@ const VehicleInfoPage = () => {
   }, [showLoading]);
 
   return (
-    <div className="mx-auto py-8 max-w-4xl w-full h-auto">
-      {showLoading ? (
-        <LoadingAnimation />
-      ) : (
-        <div className="py-8 px-16 w-full bg-white rounded-2xl shadow-[0_8px_10px_0_#00000024]">
-          <div className="block w-full">
-            <h2 className="text-3xl text-center font-bold">Vehicle Details</h2>
+    <div className="relative mx-auto max-w-5xl w-full">
+      <div className="block py-6 px-4 lg:pl-8 pr-4 w-full">
+        {showLoading ? (
+          <LoadingAnimation />
+        ) : (
+          <div className="block py-8 px-4 md:px-16 w-full bg-white rounded-2xl shadow-[0_8px_10px_0_#00000024]">
+            <div className="block w-full">
+              <h2 className="text-2xl sm:text-3xl text-center font-bold">
+                Vehicle Details
+              </h2>
+            </div>
+            <VehicleInfoForm setShowLoading={setShowLoading} />
           </div>
-          <VehicleInfoForm setShowLoading={setShowLoading} />
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
