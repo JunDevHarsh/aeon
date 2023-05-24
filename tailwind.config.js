@@ -3,6 +3,11 @@ export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
+      screens: {
+        "mobile-s": "320px",
+        "mobile-m": "375px",
+        "mobile-l": "420px"
+      },
       colors: {
         primary: {
           pink: "#A5308A",
