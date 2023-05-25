@@ -106,9 +106,9 @@ const Header = () => {
           )}
 
           <nav className="hidden sm:flex items-center justify-center w-auto">
-            <ul className="flex items-center justify-center w-auto gap-x-8 h-full">
+            <ul className="flex items-center justify-center w-auto h-full">
               {menuList.map((item, index) => (
-                <li className="w-auto" key={`header-item-${index + 1}`}>
+                <li className="w-auto first:ml-0 ml-8" key={`header-item-${index + 1}`}>
                   <Link
                     to={item.path}
                     className="text-base text-center text-black font-bold"
