@@ -257,7 +257,7 @@ const VehicleInfoForm = ({
           <span className="text-base text-center text-primary-black font-semibold">
             Recon Indicator
           </span>
-          <div className="flex items-center justify-start gap-x-2 w-full">
+          <div className="flex items-center justify-start w-full">
             <div className="relative flex items-center justify-center w-auto">
               <input
                 id="reconIndicatorYes"
@@ -269,7 +269,7 @@ const VehicleInfoForm = ({
               />
               <label
                 htmlFor="reconIndicatorYes"
-                className="px-1.5 flex items-center gap-x-2 border-2 border-solid border-transparent peer-focus-visible:border-primary-black rounded cursor-pointer"
+                className="px-1.5 flex items-center border-2 border-solid border-transparent peer-focus-visible:border-primary-black rounded cursor-pointer"
               >
                 <span
                   className={`inline-block w-2.5 h-2.5 rounded-full ${
@@ -278,12 +278,12 @@ const VehicleInfoForm = ({
                       : "bg-white shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
                   }`}
                 />
-                <span className="text-sm text-center text-dark-1 font-normal">
+                <span className="ml-2 text-sm text-center text-dark-1 font-normal">
                   Yes
                 </span>
               </label>
             </div>
-            <div className="relative flex items-center justify-center w-auto">
+            <div className="ml-2 relative flex items-center justify-center w-auto">
               <input
                 id="reconIndicatorNo"
                 type="radio"
@@ -294,7 +294,7 @@ const VehicleInfoForm = ({
               />
               <label
                 htmlFor="reconIndicatorNo"
-                className="px-1.5 flex items-center gap-x-2 border-2 border-solid border-transparent peer-focus-visible:border-primary-black rounded cursor-pointer"
+                className="px-1.5 flex items-center border-2 border-solid border-transparent peer-focus-visible:border-primary-black rounded cursor-pointer"
               >
                 <span
                   className={`inline-block w-2.5 h-2.5 rounded-full ${
@@ -303,7 +303,7 @@ const VehicleInfoForm = ({
                       : "bg-white shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
                   }`}
                 />
-                <span className="text-sm text-center text-dark-1 font-normal">
+                <span className="ml-2 text-sm text-center text-dark-1 font-normal">
                   No
                 </span>
               </label>
@@ -325,8 +325,8 @@ const VehicleInfoForm = ({
         /> */}
       </div>
       {/* Submit Form */}
-      <div className="mt-4 flex flex-col items-center justify-center gap-y-2.5 w-full">
-        <div className="py-1.5 px-2 flex items-center justify-center w-auto bg-[#2ECC7133] rounded">
+      <div className="mt-4 flex flex-col items-center justify-center w-full">
+        <div className="py-1.5 px-2 mr-2.5 mb-2 flex items-center justify-center w-auto bg-[#2ECC7133] rounded">
           <svg
             width={21}
             height={20}
@@ -345,7 +345,7 @@ const VehicleInfoForm = ({
         </div>
         <button
           type="submit"
-          className="relative py-3 px-4 flex items-center justify-center gap-x-2 max-w-[250px] w-full h-auto bg-primary-blue rounded-full"
+          className="relative py-3 px-4 flex items-center justify-center max-w-[250px] w-full h-auto bg-primary-blue rounded-full"
         >
           <svg
             width="20"
@@ -359,7 +359,7 @@ const VehicleInfoForm = ({
               fill="#fff"
             />
           </svg>
-          <span className="text-base text-center text-white font-medium">
+          <span className="ml-2 text-base text-center text-white font-medium">
             Submit
           </span>
         </button>
