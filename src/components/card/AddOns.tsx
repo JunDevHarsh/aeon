@@ -39,7 +39,7 @@ const AddOnsCard: React.FC<AddOnsCardProps> = ({
 }) => {
   const uid = useId();
   const ImageToDisplay = Images[localImgName];
-  console.log(customImgName);
+  console.log(ImageToDisplay);
 
   return (
     <div className="relative w-[200px] h-[184px]">
