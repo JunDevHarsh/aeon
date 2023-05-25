@@ -2,7 +2,6 @@ import React, { ChangeEvent, useState } from "react";
 
 type CodeProps = {
   title: string;
-  textToDisplay: string;
   placeholder?: string;
   maxLength?: number;
   validationList: Array<string>;
@@ -11,7 +10,6 @@ type CodeProps = {
 
 const Code: React.FC<CodeProps> = ({
   title,
-  textToDisplay,
   placeholder = "Placeholder",
   maxLength = 10,
   validationList,
@@ -25,11 +23,6 @@ const Code: React.FC<CodeProps> = ({
     error: null,
     isValid: false,
   });
-  const [showButton, setShowButton] = useState<boolean>(false);
-
-  function toggleShowButton() {
-    setShowButton(!showButton);
-  }
 
   function handleOnChange(e: ChangeEvent<HTMLInputElement>) {
     const value = e.target.value.toUpperCase();
@@ -58,66 +51,48 @@ const Code: React.FC<CodeProps> = ({
 
   return (
     <div className="flex items-center justify-start max-w-[365px] w-full h-auto">
-      {showButton ? (
-        <div className="relative px-2.5 pt-1.5 pb-6 flex flex-col items-start justify-center gap-y-2 w-full h-auto bg-[#EEF4FF] rounded">
-          <label
-            htmlFor="code"
-            className="text-base text-center text-primary-black font-semibold"
-          >
-            {title}
-          </label>
-          {/* {state.isValid ? (
-            <div className="pt-2 pb-1 px-2 w-full text-sm text-left text-primary-pink bg-white border border-solid border-primary-pink">
-              {code}
-            </div>
-          ) : ( */}
-          <div className="flex items-center justify-center w-full">
-            <input
-              type="text"
-              id="code"
-              value={code}
-              onChange={handleOnChange}
-              disabled={state.isValid}
-              aria-disabled={state.isValid}
-              placeholder={placeholder}
-              maxLength={maxLength}
-              className={`pt-2 pb-1 px-2 w-full text-sm text-left text-primary-black border border-solid ${
-                state.error
-                  ? "border-red-600 placeholder:text-red-600"
-                  : "border-[#CFD0D7] placeholder:text-[#9ca9b9]"
-              }`}
-            />
-            <button
-              type="button"
-              onClick={handleOnClick}
-              className={`px-4 py-1.5 text-sm text-center text-white ${
-                state.isValid ? "bg-gray-400" : "bg-[#4B5EAA]"
-              } font-semibold`}
-            >
-              Apply
-            </button>
-          </div>
-          {/* )} */}
-          {state.error && (
-            <span
-              className="absolute bottom-0 left-0 px-4 text-sm text-left font-medium text-red-600"
-              role="alert"
-            >
-              {state.error}
-            </span>
-          )}
-        </div>
-      ) : (
-        <div className="relative py-6 block w-full">
+      <div className="relative px-2.5 pt-1.5 pb-6 flex flex-col items-start justify-center gap-y-2 w-full h-auto bg-[#EEF4FF] rounded">
+        <label
+          htmlFor="code"
+          className="text-base text-center text-primary-black font-semibold"
+        >
+          {title}
+        </label>
+        <div className="flex items-center justify-center w-full">
+          <input
+            type="text"
+            id="code"
+            value={code}
+            onChange={handleOnChange}
+            disabled={state.isValid}
+            aria-disabled={state.isValid}
+            placeholder={placeholder}
+            maxLength={maxLength}
+            className={`pt-2 pb-1 px-2 w-full text-sm text-left text-primary-black border border-solid ${
+              state.error
+                ? "border-red-600 placeholder:text-red-600"
+                : "border-[#CFD0D7] placeholder:text-[#9ca9b9]"
+            }`}
+          />
           <button
             type="button"
-            className="text-base text-center text-primary-pink font-medium"
-            onClick={toggleShowButton}
+            onClick={handleOnClick}
+            className={`px-4 py-1.5 text-sm text-center text-white ${
+              state.isValid ? "bg-gray-400" : "bg-[#4B5EAA]"
+            } font-semibold`}
           >
-            {textToDisplay}
+            Apply
           </button>
         </div>
-      )}
+        {state.error && (
+          <span
+            className="absolute bottom-0 left-0 px-4 text-sm text-left font-medium text-red-600"
+            role="alert"
+          >
+            {state.error}
+          </span>
+        )}
+      </div>
     </div>
   );
 };

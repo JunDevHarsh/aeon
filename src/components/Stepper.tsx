@@ -26,12 +26,12 @@ const Stepper: React.FC<StepperProps> = ({ title, count, turn, status }) => {
               status === "pending"
                 ? "text-[#BDBDBD] shadow-c-grey-white"
                 : "text-primary-pink shadow-c-pink-white"
-            } font-medium bg-white rounded-full z-[1]`}
+            } font-medium bg-white rounded-full`}
           >
             {count}
           </span>
         ) : (
-          <span className="inline-block w-5 h-5 outline outline-2 outline-white z-[1]">
+          <span className="inline-block w-5 h-5 outline outline-2 outline-white">
             <svg
               width="20"
               height="20"

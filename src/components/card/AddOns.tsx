@@ -8,6 +8,7 @@ interface AddOnsCardProps {
   isSelected: boolean;
   isEditable: boolean;
   description: string;
+  customImgName: string;
   localImgName:
     | "BodyInjuryIcon"
     | "CarAccidentIcon"
@@ -30,6 +31,7 @@ const AddOnsCard: React.FC<AddOnsCardProps> = ({
   isEditable,
   description,
   // price,
+  customImgName,
   sumInsured,
   localImgName,
   updateBenefitList,
@@ -37,6 +39,7 @@ const AddOnsCard: React.FC<AddOnsCardProps> = ({
 }) => {
   const uid = useId();
   const ImageToDisplay = Images[localImgName];
+  console.log(customImgName);
 
   return (
     <div className="relative w-[200px] h-[184px]">
@@ -56,7 +59,9 @@ const AddOnsCard: React.FC<AddOnsCardProps> = ({
       <label
         htmlFor={uid}
         className={`p-2 flex flex-col items-center justify-start h-full border border-solid ${
-          isSelected ? "border-[#3b5eaa]" : "border-[#BCBCBC]"
+          isSelected
+            ? "border-transparent shadow-add-selected"
+            : "border-[#bcbcbc] shadow-none"
         } rounded-lg cursor-pointer outline outline-2 outline-transparent peer-focus-visible/checkbox:outline-primary-black`}
       >
         <div className="group/info absolute top-1 right-2 h-4 w-4 cursor-pointer">
@@ -80,7 +85,12 @@ const AddOnsCard: React.FC<AddOnsCardProps> = ({
           </div>
         </div>
         <div className="w-auto h-auto">
-          <ImageToDisplay pathColor={isSelected ? "#4B5EAA" : "#BCBCBC"} />
+          {/* <ImageToDisplay pathColor={isSelected ? "#4B5EAA" : "#BCBCBC"} /> */}
+          <img
+            src={`/${customImgName}.png`}
+            alt="addon-img"
+            className="max-w-[100px] w-full h-auto"
+          />
         </div>
         <p className="text-base text-center text-primary-black font-bold">
           {title}

@@ -155,14 +155,14 @@ const QuoteListingsContainer = () => {
           updateSelectedQuotePlans={updateSelectedQuotePlans}
         />
       )}
-      <div className="relative px-4 py-3 flex items-center justify-center gap-4 w-full bg-[#F8F8F8] rounded-[10px]">
-        <div className="flex flex-col md:flex-row items-center justify-center gap-4 w-auto">
+      <div className="relative px-4 py-3 flex flex-col md:flex-row items-center justify-center w-full bg-[#F8F8F8] rounded-[10px]">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-auto">
           {/* Plan Type multi search field */}
-          <div className="flex items-center justify-center w-auto">
-            <span className="text-lg text-center text-primary-black font-bold whitespace-nowrap">
+          <div className="flex flex-col md:flex-row items-start justify-center w-auto">
+            <span className="mb-1 text-lg text-center text-primary-black font-bold whitespace-nowrap">
               Plan Type
             </span>
-            <div className="inline-block ml-4 max-w-[365px] w-full">
+            <div className="ml-0  md:ml-2 inline-block max-w-[365px] w-full">
               <SelectMultiSearch
                 defaultOptionList={defaultPlanTypeOptions}
                 selectedOptions={quoteFilter.type}
@@ -171,44 +171,46 @@ const QuoteListingsContainer = () => {
             </div>
           </div>
           {/* Sort plan field */}
-          <div className="flex items-center gap-x-4 w-auto">
-            <div className="flex items-center gap-x-1">
-              <svg
-                width="25"
-                height="16"
-                viewBox="0 0 25 16"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M0.5 16V14H8.5V16H0.5ZM0.5 9V7H16.5V9H0.5ZM0.5 2V0H24.5V2H0.5Z"
-                  fill="#272727"
+          <div className="flex flex-row items-center justify-between w-auto">
+            <div className="flex flex-col md:flex-row items-start gap-x-4 w-auto">
+              <div className="mb-1 flex items-center">
+                <svg
+                  width="25"
+                  height="16"
+                  viewBox="0 0 25 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M0.5 16V14H8.5V16H0.5ZM0.5 9V7H16.5V9H0.5ZM0.5 2V0H24.5V2H0.5Z"
+                    fill="#272727"
+                  />
+                </svg>
+                <span className="ml-2.5 text-lg text-center text-primary-black font-bold whitespace-nowrap">
+                  Sort By
+                </span>
+              </div>
+              <div className="relative min-w-[150px]">
+                <SelectDropdown
+                  id="sortPrice"
+                  selected={quoteFilter.sort}
+                  optionList={defaultSortOptions}
+                  onChange={setSortValueToFilter}
+                  placeholder="Low to High"
                 />
-              </svg>
-              <span className="ml-2 text-lg text-center text-primary-black font-bold whitespace-nowrap">
-                Sort By
+              </div>
+            </div>
+            <button
+              className="relative px-2 flex items-center justify-center w-auto"
+              onClick={handleShouldComparePopup}
+            >
+              {/* <LeftRightArrowIcon /> */}
+              <span className="ml-2 text-lg text-center text-primary-blue font-bold">
+                Compare
               </span>
-            </div>
-            <div className="relative min-w-[150px]">
-              <SelectDropdown
-                id="sortPrice"
-                selected={quoteFilter.sort}
-                optionList={defaultSortOptions}
-                onChange={setSortValueToFilter}
-                placeholder="Low to High"
-              />
-            </div>
+            </button>
           </div>
         </div>
-        <button
-          className="relative px-2 flex items-center justify-center w-auto"
-          onClick={handleShouldComparePopup}
-        >
-          {/* <LeftRightArrowIcon /> */}
-          <span className="ml-2 text-lg text-center text-primary-blue font-bold">
-            Compare
-          </span>
-        </button>
       </div>
       <div className="mt-8 flex flex-col items-center justify-start gap-y-4 w-full h-auto">
         {quotesToDisply.length === 0 ? (

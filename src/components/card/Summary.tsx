@@ -55,12 +55,11 @@ const SummaryInfoCard = () => {
     2
   );
   const subTotal = (Number(grossPremium) - Number(discount)).toFixed(2);
-  const serviceTax = ((Number(subTotal) * 6) / 100).toFixed(2);
+  const serviceTax = ((Number(grossPremium) * 6) / 100).toFixed(2);
   const totalAmount = (Number(subTotal) + Number(serviceTax) + 10).toFixed(2);
-  console.log(totalAmount);
 
   return (
-    <div className="relative flex flex-col items-center justify-between max-w-sm w-full h-auto rounded-[20px] shadow-container overflow-hidden">
+    <div className="mt-8 md:mt-0 ml-0 md:ml-8 relative flex flex-col items-center justify-between max-w-sm w-full h-auto rounded-[20px] shadow-container overflow-hidden">
       <div className="inline-block p-2 w-full bg-[#283CC6]">
         <h3 className="text-xl text-center text-white font-bold">Summary</h3>
       </div>
@@ -220,7 +219,6 @@ const SummaryInfoCard = () => {
         </div>
         <div className="relative my-2 w-full">
           <Code
-            textToDisplay="I have a promo code"
             title="Promo Code"
             placeholder="DFS3432"
             validationList={["ADSN12"]}
@@ -266,9 +264,7 @@ const SummaryInfoCard = () => {
             <button
               onClick={() => {
                 console.log(totalAmount);
-                updateFinalPriceToStore(
-                  updateFinalPrice(totalAmount)
-                );
+                updateFinalPriceToStore(updateFinalPrice(totalAmount));
                 navigate("/payment");
               }}
               className="relative py-2 px-6 min-w-[120px] w-auto bg-primary-blue rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"

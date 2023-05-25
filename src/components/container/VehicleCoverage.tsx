@@ -53,7 +53,7 @@ const VehicleCoverageContainer = () => {
 
   return (
     <div className="relative py-10 px-4 flex items-center justify-center w-full">
-      <div className="relative py-10 px-10 mx-auto flex items-start justify-center gap-x-8 max-w-5xl w-full bg-white rounded-xl shadow-container">
+      <div className="relative py-10 px-10 mx-auto flex flex-col md:flex-row items-center md:items-start justify-center max-w-5xl w-full bg-white rounded-xl shadow-container">
         <div className="flex flex-col items-start max-w-md w-full">
           <div className="p-2 flex items-center justify-start w-auto bg-[#FDC9F1] rounded-lg">
             <svg
@@ -70,16 +70,16 @@ const VehicleCoverageContainer = () => {
             </svg>
             <p className="text-sm text-center text-primary-pink font-bold">
               The Current market value for your vehicle is RM{" "}
-              {numberWithCommas(14000)}
+              {numberWithCommas(market.price)}
             </p>
           </div>
           <div className="mt-4 flex flex-col items-start w-full">
             <h2 className="text-base text-center text-primary-black font-bold">
               Select your preferred coverage type
             </h2>
-            <div className="mt-2 flex items-center justify-start gap-4 w-full">
+            <div className="mt-2 flex flex-col mobile-l:flex-row items-center justify-start w-full">
               {/* Market value */}
-              <div className="relative inline-block w-auto">
+              <div className="relative inline-block w-full mobile-l:w-auto">
                 <input
                   type="radio"
                   name="coverage-type"
@@ -97,7 +97,7 @@ const VehicleCoverageContainer = () => {
                 />
                 <label
                   htmlFor="marketValue1"
-                  className={`relative px-4 py-4 flex flex-col items-start justify-center w-[157px] h-[82px] border border-solid rounded-xl outline outline-2 outline-transparent peer-focus-visible:outline-primary-black cursor-pointer ${
+                  className={`relative px-4 py-4 flex flex-col items-start justify-center w-full mobile-l:w-[157px] h-[82px] border border-solid rounded-xl outline outline-2 outline-transparent peer-focus-visible:outline-primary-black cursor-pointer ${
                     type === "market"
                       ? "border-[#4B5EAA] text-primary-blue"
                       : "border-transparent text-primary-black"
@@ -118,7 +118,7 @@ const VehicleCoverageContainer = () => {
                 </label>
               </div>
               {/* Agreed Value */}
-              <div className="relative inline-block w-auto">
+              <div className="mt-4 mobile-l:mt-0 ml-0 mobile-l:ml-4 relative inline-block w-full mobile-l:w-auto">
                 <input
                   type="radio"
                   name="coverage-type"
@@ -136,7 +136,7 @@ const VehicleCoverageContainer = () => {
                 />
                 <label
                   htmlFor="marketValue2"
-                  className={`relative px-3 py-4 flex flex-col items-start justify-center w-[157px] h-[82px] border border-solid rounded-xl outline outline-2 outline-transparent peer-focus-visible:outline-primary-black cursor-pointer ${
+                  className={`relative px-3 py-4 flex flex-col items-start justify-center w-full mobile-l:w-[157px] h-[82px] border border-solid rounded-xl outline outline-2 outline-transparent peer-focus-visible:outline-primary-black cursor-pointer ${
                     type === "agreed"
                       ? "border-[#4B5EAA] text-primary-blue"
                       : "border-transparent text-primary-black"
@@ -232,29 +232,16 @@ const VehicleCoverageContainer = () => {
               </div>
             )}
           </div>
-          {type === "market"
-            ? market.variant &&
-              market.value && (
-                <InputRange
-                  type="market"
-                  value={market.price}
-                  setValue={updateSlider}
-                  minValue={market.value.min}
-                  midValue={market.value.mid}
-                  maxValue={market.value.max}
-                />
-              )
-            : agreed.variant &&
-              agreed.value && (
-                <InputRange
-                  type="agreed"
-                  value={agreed.price}
-                  setValue={updateSlider}
-                  minValue={agreed.value.min}
-                  midValue={agreed.value.mid}
-                  maxValue={agreed.value.max}
-                />
-              )}
+          {type === "agreed" && agreed.variant && agreed.value && (
+            <InputRange
+              type="agreed"
+              value={agreed.price}
+              setValue={updateSlider}
+              minValue={agreed.value.min}
+              midValue={agreed.value.mid}
+              maxValue={agreed.value.max}
+            />
+          )}
           <div className="mt-4 flex items-center justify-start gap-x-2 w-full">
             <button
               onClick={handleSubmit}
@@ -266,7 +253,7 @@ const VehicleCoverageContainer = () => {
             </button>
           </div>
         </div>
-        <div className="relative max-w-sm w-full bg-[#F8F8F8] rounded-lg overflow-hidden">
+        <div className="ml-0 md:ml-8 mt-8 md:mt-0 relative max-w-sm w-full bg-[#F8F8F8] rounded-lg overflow-hidden shadow-container">
           <div className="py-2 flex items-center justify-center w-full bg-[#283CC6]">
             <h3 className="text-xl text-center text-white font-bold">
               Summary

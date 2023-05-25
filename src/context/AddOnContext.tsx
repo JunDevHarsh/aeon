@@ -17,6 +17,7 @@ export type AddOnType = {
     | "CarOilIcon"
     | "CarProperty1Icon"
     | "CarRainIcon";
+  customImgName: string;
 };
 
 type AddOnsState = {

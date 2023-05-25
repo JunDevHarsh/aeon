@@ -26,6 +26,7 @@ export default {
         unselected: "0 0 0 2px #fff, 0 0 0 4px #272727",
         "c-grey-white": "0 0 0 2px #BDBDBD, 0 0 0 4px #FFFFFF",
         "c-pink-white": "0 0 0 2px #A530BA, 0 0 0 4px #FFFFFF",
+        "add-selected": "0 0 2px 1.5px #283cc6"
       },
     },
   },

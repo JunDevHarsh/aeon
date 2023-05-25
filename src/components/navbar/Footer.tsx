@@ -120,8 +120,7 @@ const Footer = () => {
       <div className="block py-1 px-2 w-full bg-secondary-pink">
         <div className="mx-auto flex items-center justify-center max-w-7xl w-full">
           <p className="text-sm text-center text-white font-normal tracking-wide">
-            Copyright &#169; 2023 AEON Insurance Brokers 199601040414
-            &#x2768;412767-V&#x2769;. All Rights Reserved.
+            Copyright &#169; 2023 ÆON INSURANCE BROKERS &#x2768;M&#x2769; SDN. BHD. All Rights Reserved.
           </p>
         </div>
       </div>

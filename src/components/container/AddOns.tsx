@@ -22,6 +22,7 @@ const defaultAddOnsState: AddOnType[] = [
     price: 30,
     sumInsured: 14000,
     localImgName: "WindScreenIcon",
+    customImgName: "windscreen",
   },
   {
     id: "addon-2",
@@ -31,6 +32,7 @@ const defaultAddOnsState: AddOnType[] = [
     isEditable: false,
     price: 40,
     localImgName: "TowingIcon",
+    customImgName: "unlimited_towing",
     sumInsured: 0,
   },
   {
@@ -42,6 +44,7 @@ const defaultAddOnsState: AddOnType[] = [
     isEditable: false,
     price: 34,
     localImgName: "CarAccidentIcon",
+    customImgName: "driver_personal_accident",
     sumInsured: 0,
   },
   {
@@ -53,6 +56,7 @@ const defaultAddOnsState: AddOnType[] = [
     isEditable: false,
     price: 23,
     localImgName: "CarOilIcon",
+    customImgName: "riot",
     sumInsured: 0,
   },
   {
@@ -64,6 +68,7 @@ const defaultAddOnsState: AddOnType[] = [
     isEditable: false,
     price: 53,
     localImgName: "CarRainIcon",
+    customImgName: "riot",
     sumInsured: 0,
   },
   {
@@ -74,6 +79,7 @@ const defaultAddOnsState: AddOnType[] = [
     isEditable: false,
     price: 28,
     localImgName: "CarProperty1Icon",
+    customImgName: "accident_repair_allowance",
     sumInsured: 0,
   },
 ];
@@ -181,7 +187,7 @@ const AddOnsContainer = () => {
           <h2 className="text-2xl text-left text-primary-black font-bold">
             Additional Add Ons
           </h2>
-          <div className="mt-4 grid grid-cols-3 items-start justify-between gap-4 w-full">
+          <div className="mt-4 grid grid-cols-1 min-[475px]:grid-cols-2 md:grid-cols-3 items-center justify-center gap-4 w-full">
             {addOnState.length === 0
               ? [...Array(6)].map((_, index) => (
                   <div

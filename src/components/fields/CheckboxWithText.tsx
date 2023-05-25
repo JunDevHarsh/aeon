@@ -46,7 +46,7 @@ const CheckboxWithTextField: React.FC<CheckboxWithTextProps> = ({
         ) : (
           <span className="inline-block w-[19px] h-[18px] bg-white border border-solid border-primary-blue rounded-sm cursor-pointer peer-focus-visible:outline" />
         )}
-        <span className="ml-1 text-base text-center text-primary-black font-normal">
+        <span className="ml-1 text-sm mobile-l:text-base text-left text-primary-black font-normal">
           {text}
         </span>
       </label>
