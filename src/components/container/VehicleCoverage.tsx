@@ -187,17 +187,17 @@ const VehicleCoverageContainer = () => {
                 selected={market.variant}
               />
             ) : (
-              <div className="flex flex-col items-start gap-y-4 w-full">
-                <div className="relative pb-5 flex flex-col items-start gap-y-2 w-full h-auto">
-                  <span className="text-base text-center text-primary-black font-semibold">
+              <div className="flex flex-col items-start w-full">
+                <div className="relative pb-5 flex flex-col items-start w-full h-auto">
+                  <span className="mb-2 text-base text-center text-primary-black font-semibold">
                     Car Type
                   </span>
                   <span className="py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium cursor-default border border-solid border-[#CFD0D7] rounded">
                     {agreed.type}
                   </span>
                 </div>
-                <div className="relative flex flex-col items-start gap-y-2 w-full h-auto">
-                  <span className="text-lg text-center text-primary-black font-semibold">
+                <div className="relative flex flex-col items-start w-full h-auto">
+                  <span className="mb-2 text-lg text-center text-primary-black font-semibold">
                     Car Variant
                   </span>
                   <SelectDropdown
