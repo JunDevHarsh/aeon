@@ -53,7 +53,7 @@ const VehicleCoverageContainer = () => {
 
   return (
     <div className="relative py-10 px-4 flex items-center justify-center w-full">
-      <div className="relative py-10 px-10 mx-auto flex flex-col md:flex-row items-center md:items-start justify-center max-w-5xl w-full bg-white rounded-xl shadow-container">
+      <div className="relative py-10 px-10 mx-auto flex flex-col md:flex-row items-center md:items-start justify-center max-w-lg md:max-w-5xl w-full bg-white rounded-xl shadow-container">
         <div className="flex flex-col items-start max-w-md w-full">
           <div className="p-2 flex items-center justify-start w-auto bg-[#FDC9F1] rounded-lg">
             <svg
