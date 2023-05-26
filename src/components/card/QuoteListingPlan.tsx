@@ -91,7 +91,7 @@ const QuoteListingPlanCard = ({
   return (
     <div
       id={companyId}
-      className="relative px-4 mobile-l:px-6 sm:px-10 md:px-16 py-10 mt-4 first:mt-0 max-w-[1100px] w-full h-auto bg-white rounded-[10px] border border-solid border-primary-blue shadow-[0_8px_10px_0_#00000024]"
+      className="relative px-4 mobile-l:px-6 sm:px-10 lg:px-12 pt-10 pb-4 mt-4 first:mt-0 max-w-[1100px] w-full h-auto bg-white rounded-[10px] border border-solid border-primary-blue shadow-[0_8px_10px_0_#00000024]"
     >
       {/* Plan is trending */}
       {isTrending && (
@@ -167,7 +167,7 @@ const QuoteListingPlanCard = ({
               />
             </div>
           )}
-           <button
+          <button
             className="mt-2 mx-auto flex items-center w-auto"
             onClick={() => updateListSize(listSize, coverages.length)}
           >
@@ -194,28 +194,30 @@ const QuoteListingPlanCard = ({
             </span>
           </button>
         </div>
-        <div className="pt-4 md:pt-0 flex items-center h-full w-full md:w-[35%]">
-          <div className="flex flex-col items-start justify-start w-auto h-full">
-            <div className="flex items-center justify-center w-auto">
+        <div className="pt-4 md:pt-0 lg:ml-auto flex items-center h-full w-full md:w-[40%]">
+          <div className="ml-0 md:ml-4 lg:ml-auto flex flex-col items-center justify-start w-full h-full">
+            <div className="mx-auto flex items-center justify-center w-full lg:w-auto">
               <span className="text-3xl text-center text-primary-black font-bold">
                 RM {price}
               </span>
             </div>
-            <div className="mt-4 mb-2 flex items-center justify-start gap-x-4">
+            <div className="mt-4 flex flex-col lg:flex-row items-center justify-start w-full lg:w-auto">
               <button
                 onClick={handleSelectedQuotePlan}
-                className="relative py-1 px-3.5 w-auto bg-primary-blue rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
+                className="relative mt-2 lg:mt-0 py-1 px-3.5 w-full lg:w-auto order-2 lg:order-1 bg-primary-blue rounded-md lg:rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
               >
                 <span className="text-xl text-center font-medium text-white">
                   Buy Now
                 </span>
               </button>
-              <CheckboxWithTextField
-                id={id}
-                text="Add To Comparison"
-                isSelected={isSelected}
-                updateIsSelected={updateSelectedQuotePlans}
-              />
+              <div className="ml-0 lg:ml-2 relative flex items-center justify-center w-full lg:w-auto order-1 lg:order-2">
+                <CheckboxWithTextField
+                  id={id}
+                  text="Add To Comparison"
+                  isSelected={isSelected}
+                  updateIsSelected={updateSelectedQuotePlans}
+                />
+              </div>
             </div>
           </div>
         </div>
