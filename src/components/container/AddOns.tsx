@@ -187,7 +187,7 @@ const AddOnsContainer = () => {
           <h2 className="text-2xl text-left text-primary-black font-bold">
             Additional Add Ons
           </h2>
-          <div className="mt-4 grid grid-cols-1 min-[475px]:grid-cols-2 md:grid-cols-3 items-center justify-center gap-4 w-full">
+          <div className="mt-4 grid grid-cols-1 min-[475px]:grid-cols-2 md:grid-cols-1 min-[957px]:grid-cols-2 xl:grid-cols-3 items-center justify-center gap-4 w-full">
             {addOnState.length === 0
               ? [...Array(6)].map((_, index) => (
                   <div

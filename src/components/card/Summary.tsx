@@ -69,11 +69,11 @@ const SummaryInfoCard = () => {
             <span className="text-base text-left text-primary-black font-bold w-1/2">
               Coverage Period
             </span>
-            <span className="text-base text-left text-primary-black font-medium w-1/2">
+            <span className="text-base text-right text-primary-black font-medium w-1/2">
               19/01/23 - 19/01/24
             </span>
           </div>
-          <div className="flex items-center justify-between w-full">
+          <div className="flex items-start justify-between w-full">
             <span className="text-base text-left text-primary-black font-bold w-1/2">
               Sum Insured <br />
               {`(${
@@ -83,7 +83,7 @@ const SummaryInfoCard = () => {
                 "Market"
               } Value)`}
             </span>
-            <div className="flex items-center justify-start w-1/2">
+            <div className="flex items-center justify-end w-1/2">
               <span className="text-base text-left text-primary-black font-medium">
                 RM {numberWithCommas(selectedCoverage?.price ?? 1200)}
               </span>
@@ -125,7 +125,7 @@ const SummaryInfoCard = () => {
             <span className="text-base text-left text-primary-black font-bold w-1/2">
               Premium
             </span>
-            <span className="text-base text-left text-primary-black font-medium w-1/2">
+            <span className="text-base text-right text-primary-black font-medium w-1/2">
               RM {providerPrice.toFixed(2) ?? 671.67}
             </span>
           </div>
@@ -133,7 +133,7 @@ const SummaryInfoCard = () => {
             <span className="text-base text-left text-primary-black font-bold w-1/2">
               NCD({ncd ?? 30}%)
             </span>
-            <span className="text-base text-left text-primary-black font-medium w-1/2">
+            <span className="text-base text-right text-primary-black font-medium w-1/2">
               RM {updatedNCD}
             </span>
           </div>
@@ -160,12 +160,12 @@ const SummaryInfoCard = () => {
             selectedAddOns.map((addOn) => (
               <div
                 key={`add-benefit-${addOn.id}`}
-                className="flex items-center justify-between w-full"
+                className="flex items-start justify-between w-full"
               >
                 <span className="text-base text-left text-primary-black font-bold w-1/2">
                   {addOn.title}
                 </span>
-                <span className="text-base text-left text-primary-black font-medium w-1/2">
+                <span className="text-base text-right text-primary-black font-medium w-1/2">
                   RM {addOn.price.toFixed(2)}
                 </span>
               </div>
@@ -178,7 +178,7 @@ const SummaryInfoCard = () => {
             <span className="text-base text-left text-primary-black font-bold w-1/2">
               Gross Premium
             </span>
-            <span className="text-base text-left text-primary-black font-medium w-1/2">
+            <span className="text-base text-right text-primary-black font-medium w-1/2">
               RM {grossPremium}
             </span>
           </div>
@@ -187,7 +187,7 @@ const SummaryInfoCard = () => {
               <span className="text-base text-left text-primary-black font-bold w-1/2">
                 Discount {`${promoCode}%`}
               </span>
-              <span className="text-base text-left text-primary-black font-medium w-1/2">
+              <span className="text-base text-right text-primary-black font-medium w-1/2">
                 RM {discount}
               </span>
             </div>
@@ -196,7 +196,7 @@ const SummaryInfoCard = () => {
             <span className="text-base text-left text-primary-black font-bold w-1/2">
               Sub Total
             </span>
-            <span className="text-base text-left text-primary-black font-medium w-1/2">
+            <span className="text-base text-right text-primary-black font-medium w-1/2">
               RM {subTotal}
             </span>
           </div>
@@ -204,7 +204,7 @@ const SummaryInfoCard = () => {
             <span className="text-base text-left text-primary-black font-bold w-1/2">
               Service Tax (6%)
             </span>
-            <span className="text-base text-left text-primary-black font-medium w-1/2">
+            <span className="text-base text-right text-primary-black font-medium w-1/2">
               RM {serviceTax}
             </span>
           </div>
@@ -212,7 +212,7 @@ const SummaryInfoCard = () => {
             <span className="text-base text-left text-primary-black font-bold w-1/2">
               Stamp Duty
             </span>
-            <span className="text-base text-left text-primary-black font-medium w-1/2">
+            <span className="text-base text-right text-primary-black font-medium w-1/2">
               RM 10.00
             </span>
           </div>
@@ -230,11 +230,11 @@ const SummaryInfoCard = () => {
           <span className="text-xl text-left text-primary-black font-bold w-1/2">
             Total Amount
           </span>
-          <span className="text-xl text-left text-primary-black font-bold w-1/2">
+          <span className="text-xl text-right text-primary-black font-bold w-1/2">
             RM {totalAmount}
           </span>
         </div>
-        <div className="mt-4 flex items-center justify-start gap-x-4 w-full">
+        <div className="mt-4 flex items-center justify-center w-full">
           <button
             onClick={() =>
               updateInsuranceState({
@@ -244,7 +244,7 @@ const SummaryInfoCard = () => {
                 },
               })
             }
-            className="relative py-2 px-6 min-w-[120px] w-auto bg-primary-blue rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
+            className="relative mr-4 py-2 px-6 min-w-[120px] w-auto bg-primary-blue rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
           >
             <span className="text-base text-center font-medium text-white">
               Previous
