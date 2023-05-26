@@ -1,6 +1,6 @@
 import { useId } from "react";
 import { numberWithCommas } from "../container/VehicleCoverage";
-import * as Images from "../../assets/icons/addOns";
+// import * as Images from "../../assets/icons/addOns";
 
 interface AddOnsCardProps {
   id: string;
@@ -33,12 +33,12 @@ const AddOnsCard: React.FC<AddOnsCardProps> = ({
   // price,
   customImgName,
   sumInsured,
-  localImgName,
+  // localImgName,
   updateBenefitList,
   openAddOnPopup,
 }) => {
   const uid = useId();
-  const ImageToDisplay = Images[localImgName];
+  // const ImageToDisplay = Images[localImgName];
   
   return (
     <div className="relative mx-auto w-[200px] h-[184px]">
