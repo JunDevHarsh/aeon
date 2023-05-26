@@ -188,8 +188,8 @@ const VehicleCoverageContainer = () => {
               />
             ) : (
               <div className="flex flex-col items-start w-full">
-                <div className="relative pb-5 flex flex-col items-start w-full h-auto">
-                  <span className="mb-2 text-base text-center text-primary-black font-semibold">
+                <div className="relative pb-4 flex flex-col items-start w-full h-auto">
+                  <span className="mb-2 text-lg text-center text-primary-black font-semibold">
                     Car Type
                   </span>
                   <span className="py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium cursor-default border border-solid border-[#CFD0D7] rounded">
