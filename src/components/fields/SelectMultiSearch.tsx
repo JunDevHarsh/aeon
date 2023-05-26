@@ -147,7 +147,7 @@ const SelectMultiSearch: React.FC<SelectMultiSearchProps> = ({
   }
 
   return (
-    <div className="relative max-w-[245px] min-w-[245px] w-full">
+    <div className="relative max-w-none lg:max-w-[254px] lg:min-w-[254px] w-full">
       <button
         onClick={() => shouldMenuVisible((prev) => !prev)}
         className={`relative pl-2.5 py-1.5 w-full bg-white border border-solid border-[#CFD0D7] outline-2 outline focus-visible:outline-primary-pink rounded transition-[outline] duration-100 overflow-hidden ${

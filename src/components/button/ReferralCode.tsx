@@ -66,7 +66,7 @@ const ReferralCodeButton: React.FC<CodeProps> = ({ validationList }) => {
             onChange={handleOnChange}
             disabled={isValid}
             aria-disabled={isValid}
-            placeholder=""
+            placeholder="HG23434"
             maxLength={10}
             className={`pt-2 pb-1 px-2 w-full text-sm text-left text-primary-black border border-solid ${
               error

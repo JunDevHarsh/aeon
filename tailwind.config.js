@@ -6,7 +6,8 @@ export default {
       screens: {
         "mobile-s": "320px",
         "mobile-m": "375px",
-        "mobile-l": "420px"
+        "mobile-l": "420px",
+        "mobile-xl": "475px"
       },
       colors: {
         primary: {

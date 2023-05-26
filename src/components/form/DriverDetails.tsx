@@ -93,7 +93,7 @@ const DriverDetailsForm = () => {
     <div className="relative max-w-xl w-full">
       <div className="inline-block w-full">
         <h2 className="text-2xl text-left text-primary-black font-bold">
-          Driver Details
+          Insured Details
         </h2>
       </div>
       <form onSubmit={handleSubmit(onSubmit)} className="relative mt-4 w-full">
@@ -181,7 +181,7 @@ const DriverDetailsForm = () => {
           />
           {/* Email Field */}
           <InputTextField
-            label="Email"
+            label="Email Address"
             name="email"
             register={register}
             errors={errors.email}

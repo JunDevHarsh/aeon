@@ -91,7 +91,7 @@ const QuoteListingPlanCard = ({
   return (
     <div
       id={companyId}
-      className="relative px-4 mobile-l:px-6 sm:px-10 md:px-16 py-10 max-w-[1100px] w-full h-auto bg-white rounded-[10px] border border-solid border-primary-blue shadow-[0_8px_10px_0_#00000024]"
+      className="relative px-4 mobile-l:px-6 sm:px-10 md:px-16 py-10 mt-4 first:mt-0 max-w-[1100px] w-full h-auto bg-white rounded-[10px] border border-solid border-primary-blue shadow-[0_8px_10px_0_#00000024]"
     >
       {/* Plan is trending */}
       {isTrending && (

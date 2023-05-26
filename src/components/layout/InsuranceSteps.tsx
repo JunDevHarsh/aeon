@@ -21,7 +21,7 @@ const InsuranceStepsLayout = () => {
           ) : (
             <div className="relative mx-auto py-10 px-4 w-full">
               <div className="relative mx-auto max-w-6xl w-full">
-                <div className="py-8 px-4 sm:px-12 flex flex-col items-center justify-center gap-y-4 w-full bg-white rounded-[20px] shadow-container">
+                <div className="py-8 px-4 sm:px-12 flex flex-col items-center justify-center w-full bg-white rounded-[20px] shadow-container">
                   {/* Current step navbar */}
                   <StepperNavbar />
                   {currentStep === 1 ? (

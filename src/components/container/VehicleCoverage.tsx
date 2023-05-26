@@ -255,8 +255,8 @@ const VehicleCoverageContainer = () => {
         </div>
         <div className="ml-0 md:ml-8 mt-8 md:mt-0 relative max-w-sm w-full bg-[#F8F8F8] rounded-lg overflow-hidden shadow-container">
           <div className="py-2 flex items-center justify-center w-full bg-[#283CC6]">
-            <h3 className="text-xl text-center text-white font-bold">
-              Summary
+            <h3 className="text-xl text-center text-white font-semibold">
+              Description
             </h3>
           </div>
           <div className="p-6 flex flex-col items-start justify-start gap-y-4 w-full">

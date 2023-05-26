@@ -28,7 +28,7 @@ const PaymentSuccessfulContainer = ({
             Thank you for your payment. Your policy will be sent shortly via
             email
           </p>
-          <div className="relative my-8 flex flex-col items-start gap-y-2 max-w-sm w-full">
+          <div className="relative my-8 p-4 flex flex-col items-start max-w-sm bg-[#fcf6ff] w-full rounded">
             <div className="flex items-center w-full">
               <span className="text-lg text-center text-primary-black font-bold">
                 Amount Paid:
@@ -37,7 +37,7 @@ const PaymentSuccessfulContainer = ({
                 RM {amountPaid}
               </span>
             </div>
-            <div className="flex items-center w-full">
+            <div className="mt-2 flex items-center w-full">
               <span className="text-lg text-center text-primary-black font-bold">
                 Transaction Number:
               </span>

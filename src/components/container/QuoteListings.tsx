@@ -155,14 +155,14 @@ const QuoteListingsContainer = () => {
           updateSelectedQuotePlans={updateSelectedQuotePlans}
         />
       )}
-      <div className="relative px-4 py-3 flex flex-col md:flex-row items-center justify-center w-full bg-[#F8F8F8] rounded-[10px]">
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-auto">
+      <div className="relative mt-4 px-4 py-3 flex flex-col md:flex-row items-center justify-center w-full bg-[#F8F8F8] rounded-[10px]">
+        <div className="flex flex-col sm:flex-row items-start lg:items-center justify-center max-w-none sm:max-w-xl lg:max-w-3xl w-full">
           {/* Plan Type multi search field */}
-          <div className="flex flex-col md:flex-row items-start justify-center w-auto">
+          <div className="flex flex-col lg:flex-row items-start justify-center w-full sm:w-[45%] md:w-50%">
             <span className="mb-1 text-lg text-center text-primary-black font-bold whitespace-nowrap">
               Plan Type
             </span>
-            <div className="ml-0  md:ml-2 inline-block max-w-[365px] w-full">
+            <div className="ml-0 lg:ml-2 inline-block w-full">
               <SelectMultiSearch
                 defaultOptionList={defaultPlanTypeOptions}
                 selectedOptions={quoteFilter.type}
@@ -171,8 +171,8 @@ const QuoteListingsContainer = () => {
             </div>
           </div>
           {/* Sort plan field */}
-          <div className="flex flex-row items-center justify-between w-auto">
-            <div className="flex flex-col md:flex-row items-start gap-x-4 w-auto">
+          <div className="ml-0 sm:ml-2 md:ml-4 mt-2 sm:mt-0 flex flex-row items-end lg:items-center justify-between w-full sm:w-[55%] md:w-50%">
+            <div className="flex flex-col lg:flex-row items-start lg:items-center flex-[1_1_80%] mobile-l:flex-[1_1_60%] sm:flex-auto w-full">
               <div className="mb-1 flex items-center">
                 <svg
                   width="25"
@@ -190,7 +190,7 @@ const QuoteListingsContainer = () => {
                   Sort By
                 </span>
               </div>
-              <div className="relative min-w-[150px]">
+              <div className="ml-0 lg:ml-2 relative min-w-0 md:min-w-[154px] w-full">
                 <SelectDropdown
                   id="sortPrice"
                   selected={quoteFilter.sort}
@@ -201,18 +201,31 @@ const QuoteListingsContainer = () => {
               </div>
             </div>
             <button
-              className="relative px-2 flex items-center justify-center w-auto"
+              className="relative mb-1.5 lg:mb-0 flex items-center justify-center flex-[1_1_20%] mobile-l:flex-[1_1_40%] sm:flex-auto w-full"
               onClick={handleShouldComparePopup}
             >
+              <svg
+                width="30"
+                height="30"
+                viewBox="0 0 30 30"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10.0761 24.6666L8.80737 23.3979L12.4626 19.7427H2.91675V17.9302H12.4626L8.80737 14.275L10.0761 13.0062L15.9063 18.8364L10.0761 24.6666ZM19.924 16.9937L14.0938 11.1635L19.924 5.33331L21.1928 6.60206L17.5376 10.2573H27.0834V12.0698H17.5376L21.1928 15.725L19.924 16.9937Z"
+                  fill="#4B5EAA"
+                />
+              </svg>
+
               {/* <LeftRightArrowIcon /> */}
-              <span className="ml-2 text-lg text-center text-primary-blue font-bold">
+              <span className="hidden mobile-l:inline ml-0 mobile-l:ml-1 text-lg text-center text-primary-blue font-bold">
                 Compare
               </span>
             </button>
           </div>
         </div>
       </div>
-      <div className="mt-8 flex flex-col items-center justify-start gap-y-4 w-full h-auto">
+      <div className="mt-8 flex flex-col items-center justify-start w-full h-auto">
         {quotesToDisply.length === 0 ? (
           // quote skeleton
           <div className="relative w-full">

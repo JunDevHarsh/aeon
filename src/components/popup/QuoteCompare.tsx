@@ -194,7 +194,7 @@ const QuoteComparePopup = ({
                       </button>
                     </div>
                     <p className="text-[25px] text-center text-primary-black font-bold">
-                      RM {item.price}
+                      RM {item.price}/Year
                     </p>
                     <button
                       onClick={() => handleSelectedQuote(item.id)}

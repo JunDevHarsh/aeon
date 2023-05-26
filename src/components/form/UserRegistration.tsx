@@ -476,7 +476,7 @@ const UserRegistrationForm = () => {
           />
           {/* Email Field */}
           <InputTextField
-            label="Email"
+            label="Email Address"
             name="email"
             register={register}
             errors={errors.email}
