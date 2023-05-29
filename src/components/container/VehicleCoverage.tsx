@@ -14,8 +14,12 @@ import {
 //   return Math.round(Math.random() * (max - min) + min);
 // }
 
+// export function numberWithCommas(x: number): string {
+//   return x.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+// }
+
 export function numberWithCommas(x: number): string {
-  return x.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+  return x.toLocaleString();
 }
 
 const VehicleCoverageContainer = () => {
