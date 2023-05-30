@@ -59,17 +59,17 @@ const SummaryInfoCard = () => {
   const totalAmount = (Number(subTotal) + Number(serviceTax) + 10).toFixed(2);
 
   return (
-    <div className="mt-8 md:mt-0 ml-0 md:ml-8 relative flex flex-col items-center justify-between max-w-sm w-full h-auto rounded-[20px] shadow-container overflow-hidden">
+    <div className="mt-8 lg:mt-0 ml-0 lg:ml-8 relative flex flex-col items-center justify-between mobile-l:min-w-[360px] sm:min-w-[375px] max-w-sm w-full h-auto rounded-[20px] shadow-container overflow-hidden">
       <div className="inline-block p-2 w-full bg-[#283CC6]">
         <h3 className="text-xl text-center text-white font-bold">Summary</h3>
       </div>
       <div className="relative py-4 px-6 flex flex-col items-center justify-center w-full bg-[#F8F8F8]">
         <div className="flex flex-col items-center gap-y-1 w-full">
-          <div className="flex items-center justify-between w-full">
+          <div className="flex items-start justify-between w-full">
             <span className="text-base text-left text-primary-black font-bold w-1/2">
               Coverage Period
             </span>
-            <span className="text-base text-right text-primary-black font-medium w-1/2">
+            <span className="text-base text-right whitespace-nowrap text-primary-black font-medium w-1/2">
               19/01/23 - 19/01/24
             </span>
           </div>
@@ -174,7 +174,7 @@ const SummaryInfoCard = () => {
         </div>
         <div className="inline-block my-3 w-full h-[1px] bg-[#bcbcbc]" />
         <div className="flex flex-col items-start gap-y-1 w-full">
-          <div className="flex items-center justify-between w-full">
+          <div className="flex items-start justify-between w-full">
             <span className="text-base text-left text-primary-black font-bold w-1/2">
               Gross Premium
             </span>
@@ -183,7 +183,7 @@ const SummaryInfoCard = () => {
             </span>
           </div>
           {promoCode !== 0 && (
-            <div className="flex items-center justify-between w-full">
+            <div className="flex items-start justify-between w-full">
               <span className="text-base text-left text-primary-black font-bold w-1/2">
                 Discount {`${promoCode}%`}
               </span>
@@ -192,7 +192,7 @@ const SummaryInfoCard = () => {
               </span>
             </div>
           )}
-          <div className="flex items-center justify-between w-full">
+          <div className="flex items-start justify-between w-full">
             <span className="text-base text-left text-primary-black font-bold w-1/2">
               Sub Total
             </span>
@@ -200,7 +200,7 @@ const SummaryInfoCard = () => {
               RM {subTotal}
             </span>
           </div>
-          <div className="flex items-center justify-between w-full">
+          <div className="flex items-start justify-between w-full">
             <span className="text-base text-left text-primary-black font-bold w-1/2">
               Service Tax (6%)
             </span>
@@ -208,7 +208,7 @@ const SummaryInfoCard = () => {
               RM {serviceTax}
             </span>
           </div>
-          <div className="flex items-center justify-between w-full">
+          <div className="flex items-start justify-between w-full">
             <span className="text-base text-left text-primary-black font-bold w-1/2">
               Stamp Duty
             </span>
@@ -234,7 +234,7 @@ const SummaryInfoCard = () => {
             RM {totalAmount}
           </span>
         </div>
-        <div className="mt-4 flex items-center justify-center w-full">
+        <div className="mt-4 flex flex-col mobile-xl:flex-row items-center justify-center w-full">
           <button
             onClick={() =>
               updateInsuranceState({
@@ -244,9 +244,9 @@ const SummaryInfoCard = () => {
                 },
               })
             }
-            className="relative mr-4 py-2 px-6 min-w-[120px] w-auto bg-primary-blue rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
+            className="relative mt-2 mobile-xl:mt-0 mr-0 mobile-xl:mr-2 py-2 px-6 order-2 mobile-xl:order-1 min-w-[120px] w-full mobile-xl:w-auto bg-white mobile-xl:bg-primary-blue border-2 mobile-xl:border-0 border-solid border-primary-blue mobile-xl:border-transparent rounded mobile-xl:rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
           >
-            <span className="text-base text-center font-medium text-white">
+            <span className="text-base text-center font-medium text-primary-blue mobile-xl:text-white">
               Previous
             </span>
           </button>
@@ -254,7 +254,7 @@ const SummaryInfoCard = () => {
           {isEdited ? (
             <button
               onClick={() => dispatch((prev) => ({ ...prev, isEdited: false }))}
-              className="relative py-2 px-6 min-w-[120px] w-auto bg-primary-blue rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
+              className="relative py-2 px-6 min-w-[120px] order-1 mobile-xl:order-2 w-full mobile-xl:w-auto bg-primary-blue rounded mobile-xl:rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
             >
               <span className="text-base text-center font-medium text-white">
                 Update Quote
@@ -263,11 +263,10 @@ const SummaryInfoCard = () => {
           ) : currentStep === 4 ? (
             <button
               onClick={() => {
-                console.log(totalAmount);
                 updateFinalPriceToStore(updateFinalPrice(totalAmount));
                 navigate("/payment");
               }}
-              className="relative py-2 px-6 min-w-[120px] w-auto bg-primary-blue rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
+              className="relative py-2 px-6 min-w-[120px] order-1 mobile-xl:order-2 w-full mobile-xl:w-auto bg-primary-blue rounded mobile-xl:rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
             >
               <span className="text-base text-center font-medium text-white">
                 Pay Now
@@ -283,7 +282,7 @@ const SummaryInfoCard = () => {
                   },
                 })
               }
-              className="relative py-2 px-6 min-w-[120px] w-auto bg-primary-blue rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
+              className="relative py-2 px-6 min-w-[120px] order-1 mobile-xl:order-2 w-full mobile-xl:w-auto bg-primary-blue rounded mobile-xl:rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
             >
               <span className="text-base text-center font-medium text-white">
                 {currentStep === 3 ? "Proceed To Confirm" : "Next"}

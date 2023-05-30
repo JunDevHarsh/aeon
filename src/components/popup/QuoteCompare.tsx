@@ -92,7 +92,8 @@ const QuoteComparePopup = ({
   return (
     <div className="fixed top-0 left-0 right-0 bottom-0 w-screen min-h-screen h-full bg-gradient-to-b from-[rgba(0,0,0,0.7)] to-[rgba(0,0,0,0.7)] z-[11] overflow-auto">
       <div className="relative p-10 flex items-center justify-center w-full h-auto">
-        <div className="relative p-8 max-w-6xl w-auto h-auto bg-white rounded-lg">
+        <div className="relative flex items-center justify-center max-w-6xl w-auto h-auto overflow-auto">
+        <div className="relative p-8 w-full h-auto bg-white rounded-lg">
           {/* Close button */}
           <div className="absolute top-2 right-2 w-auto h-auto">
             <button
@@ -120,8 +121,8 @@ const QuoteComparePopup = ({
             </h3>
           </div>
           {/*  */}
-          <div className="mt-8 flex items-start justify-start w-full gap-x-2">
-            <div className="flex flex-col items-start justify-start gap-y-2 w-[358px]">
+          <div className="mt-8 flex items-start justify-start w-full gap-x-2 overflow-auto">
+            <div className="flex flex-col items-start justify-start gap-y-2 min-w-[245px] w-[358px]">
               <div className="flex flex-col items-start justify-end  w-full h-[136px]">
                 <div className="flex items-center justify-start w-full">
                   <div className="relative flex items-center w-auto">
@@ -168,7 +169,7 @@ const QuoteComparePopup = ({
               {selectedQuotes.map((item) => (
                 <div
                   key={item.id}
-                  className="flex flex-col items-center justify-start w-[210px] gap-y-2"
+                  className="flex flex-col items-center justify-start min-w-[210px] gap-y-2"
                 >
                   <div className="relative py-2.5 px-5 flex flex-col items-center justify-between gap-y-2 w-full h-[136px] bg-[#F4F4F4] rounded-lg">
                     <div className="flex items-start justify-between w-full h-auto">
@@ -193,7 +194,7 @@ const QuoteComparePopup = ({
                         </svg>
                       </button>
                     </div>
-                    <p className="text-[25px] text-center text-primary-black font-bold">
+                    <p className="text-[22px] text-center text-primary-black font-bold">
                       RM {item.price}/Year
                     </p>
                     <button
@@ -254,6 +255,7 @@ const QuoteComparePopup = ({
               ))}
             </div>
           </div>
+        </div>
         </div>
       </div>
     </div>

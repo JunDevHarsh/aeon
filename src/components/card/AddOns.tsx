@@ -41,7 +41,7 @@ const AddOnsCard: React.FC<AddOnsCardProps> = ({
   // const ImageToDisplay = Images[localImgName];
   
   return (
-    <div className="relative mx-auto w-[200px] h-[184px]">
+    <div className="relative w-full h-[184px]">
       <input
         type="checkbox"
         name="addOns"

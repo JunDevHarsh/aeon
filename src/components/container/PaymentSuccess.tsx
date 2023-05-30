@@ -21,27 +21,27 @@ const PaymentSuccessfulContainer = ({
               className="w-full h-auto"
             />
           </div>
-          <h2 className="text-4xl text-center text-primary-black font-bold">
+          <h2 className="text-2xl mobile-xl:text-4xl text-center text-primary-black font-bold">
             Transaction Successful
           </h2>
           <p className="mt-2 text-base text-center text-primary-black font-medium">
             Thank you for your payment. Your policy will be sent shortly via
             email
           </p>
-          <div className="relative my-8 p-4 flex flex-col items-start max-w-sm bg-[#fcf6ff] w-full rounded">
-            <div className="flex items-center w-full">
+          <div className="relative my-8 px-0 py-4 mobile-xl:px-4 flex flex-col items-start max-w-sm bg-[#fcf6ff] w-full rounded">
+            <div className="flex flex-col mobile-xl:flex-row items-center justify-center w-full">
               <span className="text-lg text-center text-primary-black font-bold">
                 Amount Paid:
               </span>
-              <span className="ml-2 text-lg text-center text-primary-black font-medium">
+              <span className="ml-0 mobile-xl:ml-2 text-lg text-center text-primary-black font-medium">
                 RM {amountPaid}
               </span>
             </div>
-            <div className="mt-2 flex items-center w-full">
+            <div className="mt-2 flex flex-col mobile-xl:flex-row items-center justify-center w-full">
               <span className="text-lg text-center text-primary-black font-bold">
                 Transaction Number:
               </span>
-              <span className="ml-2 text-lg text-center text-primary-black font-medium">
+              <span className="ml-0 mobile-xl:ml-2 text-lg text-center text-primary-black font-medium">
                 {transactionId}
               </span>
             </div>
@@ -51,7 +51,7 @@ const PaymentSuccessfulContainer = ({
             easy to use interface for you to manage your policies. Track claims
             send us enquiries whenever required
           </p>
-          <div className="mt-4 flex items-center justify-center flex-wrap gap-4 w-full">
+          <div className="mt-4 flex flex-col sm:flex-row items-center justify-center w-full">
             <Link
               to="/portal-login"
               title="Goto Portal Login"
@@ -78,7 +78,7 @@ const PaymentSuccessfulContainer = ({
               to="/"
               title="Goto Homepage"
               aria-label="Go to Home"
-              className="relative py-4 px-6 flex items-center justify-center w-auto h-auto bg-primary-blue rounded-full"
+              className="relative mt-4 sm:mt-0 ml-0 sm:ml-4 py-4 px-6 flex items-center justify-center w-auto h-auto bg-primary-blue rounded-full"
             >
               <svg
                 width="20"

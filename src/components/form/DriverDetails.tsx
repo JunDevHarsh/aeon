@@ -97,7 +97,7 @@ const DriverDetailsForm = () => {
         </h2>
       </div>
       <form onSubmit={handleSubmit(onSubmit)} className="relative mt-4 w-full">
-        <div className="grid grid-cols-1 mobile-xl:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-x-4 w-full">
+        <div className="grid grid-cols-1 mobile-xl:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 gap-x-4 w-full">
           {/* Name field */}
           <InputTextField
             label="Name(as per NRIC)"

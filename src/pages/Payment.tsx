@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
 
 interface PaymentStatusType {
+  price: string;
   loading: boolean;
   status: "success" | "failed" | null;
   transactionId: string;
@@ -15,6 +16,7 @@ interface PaymentStatusType {
 const PaymentPage = () => {
   const amount = useSelector((state: RootState) => state.insurance.finalPrice);
   const [paymentStatus, setPaymentStatus] = useState<PaymentStatusType>({
+    price: "",
     loading: false,
     status: null,
     transactionId: "",
@@ -23,9 +25,10 @@ const PaymentPage = () => {
   async function handleOnClick() {
     setPaymentStatus((prev) => ({ ...prev, loading: true }));
     try {
-      const res: any = await makePayment(amount);
+      const res: any = await makePayment(amount || "400");
       const transId = res.transactionId;
       setPaymentStatus((_) => ({
+        price: res.amount,
         loading: false,
         status: "success",
         transactionId: transId,
@@ -66,7 +69,7 @@ const PaymentPage = () => {
   if (paymentStatus.status === "success") {
     return (
       <PaymentSuccessfulContainer
-        amountPaid={amount}
+        amountPaid={paymentStatus.price}
         transactionId={paymentStatus.transactionId}
       />
     );
@@ -84,7 +87,7 @@ const PaymentPage = () => {
           <img
             src={PaymentProvidersImg}
             alt="payment-provider-images"
-            className="w-full h-auto"
+            className="w-full min-h-[calc(100vh-224px)] h-auto"
           />
         </div>
       </div>
