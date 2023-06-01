@@ -3,7 +3,9 @@ import {
   AddOns,
   AdditionalDriverDetails,
   DriverDetails,
+  InsurerQuoteStateType,
   ProviderState,
+  QuotesFilterType,
 } from "./types";
 import {
   CurentStepTypes,
@@ -21,6 +23,12 @@ import {
   DriverDetailsActions,
   DriverTypes,
 } from "./MultiFormContext";
+import {
+  QuoteFilterAction,
+  QuoteFilterTypes,
+  QuotesAction,
+  QuotesTypes,
+} from "./QuoteListing";
 
 export const currentStepReducer = (
   state: number,
@@ -170,6 +178,50 @@ export const driverDetailsReducer = (
         ...payload.updatedValues,
       };
       return updatedDriverDetails;
+    }
+    default:
+      return state;
+  }
+};
+
+/*---------------Quote Listing Reducer---------------*/
+export const quoteFilterReducer = (
+  state: QuotesFilterType,
+  action: QuoteFilterAction | QuotesAction
+) => {
+  const { type, payload } = action;
+  switch (type) {
+    case QuoteFilterTypes.UpdateFilterSort: {
+      const updatedState = {
+        ...state,
+        sort: payload.value,
+      };
+      return updatedState;
+    }
+    case QuoteFilterTypes.UpdateFilterPlan: {
+      const updatedState = {
+        ...state,
+        plan: payload.list,
+      };
+      return updatedState;
+    }
+    default:
+      return state;
+  }
+};
+
+export const quotesReducer = (
+  state: InsurerQuoteStateType[],
+  action: QuotesAction | QuoteFilterAction
+) => {
+  const { type, payload } = action;
+  switch (type) {
+    case QuotesTypes.ToggleQuoteSelection: {
+      const { id } = payload;
+      const updatedState = state.map((item) =>
+        item.id === id ? { ...item, isSelected: !item.isSelected } : item
+      );
+      return updatedState;
     }
     default:
       return state;
