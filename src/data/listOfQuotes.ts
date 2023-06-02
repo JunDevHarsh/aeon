@@ -6,7 +6,7 @@ export type InsurerQuoteType = {
   imgUrl: string;
   price: number;
   popular: boolean;
-  coverages: string[];
+  benefits: string[];
 };
 
 export const listOfQuotes: InsurerQuoteType[] = [
@@ -18,7 +18,7 @@ export const listOfQuotes: InsurerQuoteType[] = [
     imgUrl: "",
     price: 671.67,
     popular: true,
-    coverages: [
+    benefits: [
       "Third party body injury and death",
       "Third party property loss or damage",
       "Driver's Personal Accident",
@@ -36,7 +36,7 @@ export const listOfQuotes: InsurerQuoteType[] = [
     imgUrl: "",
     price: 671.67,
     popular: false,
-    coverages: [
+    benefits: [
       "Driver's Personal Accident",
       "Legal liability to passengers",
       "6 months warranty on repairs",

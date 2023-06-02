@@ -22,7 +22,7 @@ type QuoteListingPlanProps = {
   isSelected: boolean;
   updateSelectedQuotePlans: (selectedQuoteId: string) => void;
   // coverages: Coverage[];
-  coverages: Array<string>
+  benefits: Array<string>
 };
 
 const MAX_LIST_LIMIT = 4; // default max limit for displaying list
@@ -31,7 +31,7 @@ const QuoteListingPlanCard = ({
   id,
   insurerId,
   insurerName,
-  coverages,
+  benefits,
   popular,
   imgUrl,
   isSelected,
@@ -39,7 +39,7 @@ const QuoteListingPlanCard = ({
   price,
 }: QuoteListingPlanProps) => {
   const [listSize, setListSize] = useState<number>(
-    coverages.length < MAX_LIST_LIMIT ? coverages.length : MAX_LIST_LIMIT
+    benefits.length < MAX_LIST_LIMIT ? benefits.length : MAX_LIST_LIMIT
   ); // limit for displaying list of coverages, default is 4
   const [showDownloadButton, setShowDownloadButton] = useState<boolean>(false);
   const { dispatch } = useContext(InsuranceContext);
@@ -51,7 +51,7 @@ const QuoteListingPlanCard = ({
       setListSize(updatedSize);
       return;
     } else {
-      const coverageSize = coverages.length;
+      const coverageSize = benefits.length;
       return size < MAX_LIST_LIMIT
         ? setListSize(coverageSize)
         : setListSize(MAX_LIST_LIMIT);
@@ -130,12 +130,12 @@ const QuoteListingPlanCard = ({
           </div>
           {/* List of coverages */}
           <ul className="mt-4 flex flex-col items-start justify-between w-auto h-auto">
-            {coverages
+            {benefits
               .slice(
                 0,
-                coverages.length > listSize ? listSize : coverages.length
+                benefits.length > listSize ? listSize : benefits.length
               )
-              .map((coverage, index) => (
+              .map((benefit, index) => (
                 <li
                   key={`benefit-of-${insurerName}-${index}`}
                   className="mb-2 last:mb-0 flex items-start justify-start"
@@ -154,7 +154,7 @@ const QuoteListingPlanCard = ({
                     />
                   </svg>
                   <span className="ml-1.5 text-base text-left text-primary-black font-medium">
-                    {coverage}
+                    {benefit}
                   </span>
                 </li>
               ))}
@@ -170,7 +170,7 @@ const QuoteListingPlanCard = ({
           )}
           <button
             className="mt-2 mx-auto flex items-center w-auto"
-            onClick={() => updateListSize(listSize, coverages.length)}
+            onClick={() => updateListSize(listSize, benefits.length)}
           >
             <span
               className={`flex items-center justify-center w-auto bg-white rounded-full ${

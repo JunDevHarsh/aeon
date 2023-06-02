@@ -52,7 +52,7 @@ const defaultQuotes: InsurerQuoteStateType[] = [
     price: 671.67,
     popular: true,
     isSelected: false,
-    coverages: [
+    benefits: [
       "Third party body injury and death",
       "Third party property loss or damage",
       "Driver's Personal Accident",
@@ -71,7 +71,7 @@ const defaultQuotes: InsurerQuoteStateType[] = [
     price: 700,
     popular: false,
     isSelected: false,
-    coverages: [
+    benefits: [
       "Driver's Personal Accident",
       "Legal liability to passengers",
       "6 months warranty on repairs",
@@ -87,7 +87,7 @@ const defaultQuotes: InsurerQuoteStateType[] = [
     price: 709,
     popular: false,
     isSelected: false,
-    coverages: [
+    benefits: [
       "Third party body injury and death",
       "Driver's Personal Accident",
       "Full special perils",

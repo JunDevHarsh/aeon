@@ -10,6 +10,7 @@ import {
   QuotesTypes,
 } from "../../context/QuoteListing";
 import { InsurerQuoteStateType } from "../../context/types";
+import QuoteComparisonPopup from "../popup/QuoteComparison";
 
 export interface PlanType {
   value: string;
@@ -155,6 +156,13 @@ const QuoteListingsContainer = () => {
           title={warngingPopup.title}
           description={warngingPopup.description}
           setShowWarningPopup={setWarningPopup}
+        />
+      )}
+      {isComparePopupVisible && (
+        <QuoteComparisonPopup
+          selectedQuotes={filterSelectedQuotes}
+          updateSelectedQuotePlans={updateSelectedQuotePlans}
+          shouldComparePopupVisible={shouldComparePopupVisible}
         />
       )}
       {/* {isComparePopupVisible && (
