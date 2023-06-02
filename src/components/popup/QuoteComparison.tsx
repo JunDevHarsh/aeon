@@ -190,7 +190,7 @@ const QuoteComparisonPopup = ({
                       </svg>
                     </button>
                   </div>
-                  <p className="text-[22px] text-center text-primary-black font-bold">
+                  <p className="my-2 text-2xl text-center text-primary-black font-bold">
                     RM {selectedQuote.price}/Year
                   </p>
                   <button
