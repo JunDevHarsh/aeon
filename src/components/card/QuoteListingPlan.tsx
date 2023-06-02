@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { Coverage } from "../container/QuoteListings";
+// import { Coverage } from "../container/QuoteListings";
 import FileDownloadButton from "../button/FileDownload";
 import CheckboxWithTextField from "../fields/CheckboxWithText";
 import {
@@ -13,33 +13,33 @@ import { updateInsuranceProvider } from "../../store/slices/insurance";
 
 type QuoteListingPlanProps = {
   id: string;
-  companyId: string;
-  companyName: string;
+  insurerId: string;
+  insurerName: string;
   planType: string;
-  companyImgHref: string;
-  companyRelImgHref: string;
-  price: string;
-  isTrending: boolean;
+  imgUrl: string;
+  price: number;
+  popular: boolean;
   isSelected: boolean;
   updateSelectedQuotePlans: (selectedQuoteId: string) => void;
-  coverages: Coverage[];
+  // coverages: Coverage[];
+  benefits: Array<string>
 };
 
 const MAX_LIST_LIMIT = 4; // default max limit for displaying list
 
 const QuoteListingPlanCard = ({
   id,
-  companyId,
-  companyRelImgHref,
-  companyName,
-  coverages,
-  isTrending,
+  insurerId,
+  insurerName,
+  benefits,
+  popular,
+  imgUrl,
   isSelected,
   updateSelectedQuotePlans,
   price,
 }: QuoteListingPlanProps) => {
   const [listSize, setListSize] = useState<number>(
-    coverages.length < MAX_LIST_LIMIT ? coverages.length : MAX_LIST_LIMIT
+    benefits.length < MAX_LIST_LIMIT ? benefits.length : MAX_LIST_LIMIT
   ); // limit for displaying list of coverages, default is 4
   const [showDownloadButton, setShowDownloadButton] = useState<boolean>(false);
   const { dispatch } = useContext(InsuranceContext);
@@ -51,7 +51,7 @@ const QuoteListingPlanCard = ({
       setListSize(updatedSize);
       return;
     } else {
-      const coverageSize = coverages.length;
+      const coverageSize = benefits.length;
       return size < MAX_LIST_LIMIT
         ? setListSize(coverageSize)
         : setListSize(MAX_LIST_LIMIT);
@@ -62,16 +62,16 @@ const QuoteListingPlanCard = ({
     updateInsuranceStore(
       updateInsuranceProvider({
         price: Number(price),
-        companyId: companyId,
-        companyName: companyName,
+        companyId: insurerId,
+        companyName: insurerName,
       })
     );
     dispatch({
       type: InsuranceProviderTypes.UpdateInsuranceProvider,
       payload: {
-        companyId: companyId,
-        companyName: companyName,
-        price: price,
+        companyId: insurerId,
+        companyName: insurerName,
+        price: price.toString(),
       },
     });
     dispatch({
@@ -90,11 +90,11 @@ const QuoteListingPlanCard = ({
 
   return (
     <div
-      id={companyId}
+      id={insurerId}
       className="relative px-4 mobile-l:px-6 sm:px-10 lg:px-12 pt-10 pb-4 mt-4 first:mt-0 max-w-[1100px] w-full h-auto bg-white rounded-[10px] border border-solid border-primary-blue shadow-[0_8px_10px_0_#00000024]"
     >
       {/* Plan is trending */}
-      {isTrending && (
+      {popular && (
         <div className="absolute top-1 sm:top-2 right-1 sm:right-2">
           <div className="py-1.5 px-2.5 flex items-center justify-center w-auto bg-primary-pink rounded-full md:rounded-lg">
             <svg
@@ -118,8 +118,8 @@ const QuoteListingPlanCard = ({
         <div className="pb-4 md:pb-0 flex flex-col items-start w-full md:w-[60%] border-r-0 md:border-r border-b md:border-b-0 border-solid border-gray-300">
           <div className="flex flex-col mobile-l:flex-row items-start mobile-l:items-center justify-start w-auto">
             <img
-              src={`/providers/${companyRelImgHref}.png`}
-              alt={companyName + "img"}
+              src={`/providers/${imgUrl}.png`}
+              alt={insurerName + "img"}
               className="h-10 w-auto"
             />
             <div className="ml-0 mobile-l:ml-2 mt-2 mobile-l:mt-0 relative px-1.5 py-1.5 flex items-center justify-center w-auto bg-[#F2D3FF] rounded">
@@ -130,15 +130,15 @@ const QuoteListingPlanCard = ({
           </div>
           {/* List of coverages */}
           <ul className="mt-4 flex flex-col items-start justify-between w-auto h-auto">
-            {coverages
+            {benefits
               .slice(
                 0,
-                coverages.length > listSize ? listSize : coverages.length
+                benefits.length > listSize ? listSize : benefits.length
               )
-              .map((coverage) => (
+              .map((benefit, index) => (
                 <li
-                  key={`benefit-of-${companyName}-${coverage.id}`}
-                  className="mb-2 last:mb-0 flex items-center justify-start"
+                  key={`benefit-of-${insurerName}-${index}`}
+                  className="mb-2 last:mb-0 flex items-start justify-start"
                 >
                   <svg
                     width="20"
@@ -146,6 +146,7 @@ const QuoteListingPlanCard = ({
                     viewBox="0 0 20 20"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
+                    className="mt-[3px]"
                   >
                     <path
                       d="M8.525 14.55L15.6 7.475L14.45 6.35L8.525 12.275L5.525 9.275L4.4 10.4L8.525 14.55ZM10 20C8.63333 20 7.34167 19.7375 6.125 19.2125C4.90833 18.6875 3.84583 17.9708 2.9375 17.0625C2.02917 16.1542 1.3125 15.0917 0.7875 13.875C0.2625 12.6583 0 11.3667 0 10C0 8.61667 0.2625 7.31667 0.7875 6.1C1.3125 4.88333 2.02917 3.825 2.9375 2.925C3.84583 2.025 4.90833 1.3125 6.125 0.7875C7.34167 0.2625 8.63333 0 10 0C11.3833 0 12.6833 0.2625 13.9 0.7875C15.1167 1.3125 16.175 2.025 17.075 2.925C17.975 3.825 18.6875 4.88333 19.2125 6.1C19.7375 7.31667 20 8.61667 20 10C20 11.3667 19.7375 12.6583 19.2125 13.875C18.6875 15.0917 17.975 16.1542 17.075 17.0625C16.175 17.9708 15.1167 18.6875 13.9 19.2125C12.6833 19.7375 11.3833 20 10 20Z"
@@ -153,7 +154,7 @@ const QuoteListingPlanCard = ({
                     />
                   </svg>
                   <span className="ml-1.5 text-base text-left text-primary-black font-medium">
-                    {coverage.body}
+                    {benefit}
                   </span>
                 </li>
               ))}
@@ -169,7 +170,7 @@ const QuoteListingPlanCard = ({
           )}
           <button
             className="mt-2 mx-auto flex items-center w-auto"
-            onClick={() => updateListSize(listSize, coverages.length)}
+            onClick={() => updateListSize(listSize, benefits.length)}
           >
             <span
               className={`flex items-center justify-center w-auto bg-white rounded-full ${

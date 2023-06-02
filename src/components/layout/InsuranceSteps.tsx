@@ -6,6 +6,7 @@ import StepperNavbar from "../navbar/Stepper";
 import VehicleCoverageProvider from "../../context/VehicleCoverage";
 import InsuranceContainerLayout from "./InsuranceContainer";
 import VehicleCoverageContainer from "../container/VehicleCoverage";
+import QuoteListingProvider from "../../context/QuoteListing";
 
 const InsuranceStepsLayout = () => {
   const {
@@ -25,7 +26,9 @@ const InsuranceStepsLayout = () => {
                   {/* Current step navbar */}
                   <StepperNavbar />
                   {currentStep === 1 ? (
-                    <QuoteListingsContainer />
+                    <QuoteListingProvider>
+                      <QuoteListingsContainer />
+                    </QuoteListingProvider>
                   ) : (
                     <InsuranceContainerLayout currentStep={currentStep} />
                   )}

@@ -1,15 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import SelectMultiSearch from "../fields/SelectMultiSearch";
 import SelectDropdown from "../fields/SelectDropdown";
 import QuoteListingPlanCard from "../card/QuoteListingPlan";
-import QuoteComparePopup from "../popup/QuoteCompare";
+// import QuoteComparePopup from "../popup/QuoteCompare";
 import DefaultPopup, { WarningPopupType } from "../popup/Default";
-import { quotes } from "../../data/quotes";
-
-type FilterType = {
-  sort: string | null;
-  type: PlanType[];
-};
+import {
+  QuoteFilterTypes,
+  QuoteListingContext,
+  QuotesTypes,
+} from "../../context/QuoteListing";
+import { InsurerQuoteStateType } from "../../context/types";
+import QuoteComparisonPopup from "../popup/QuoteComparison";
 
 export interface PlanType {
   value: string;
@@ -57,14 +58,9 @@ const defaultPlanTypeOptions: PlanType[] = [
 ];
 
 const QuoteListingsContainer = () => {
-  // state for managing the filter and sort
-  const [quoteFilter, updateQuoteFilter] = useState<FilterType>({
-    sort: null,
-    type: defaultPlanTypeOptions,
-  });
   // state for managing the list of quote plans
   // fetched from the agiliux backend system
-  const [quotePlans, updateQuotePlans] = useState<QuotePlansType[]>(quotes);
+  // const [quotePlans, updateQuotePlans] = useState<QuotePlansType[]>(quotes);
   const [isComparePopupVisible, shouldComparePopupVisible] =
     useState<boolean>(false);
   const [warngingPopup, setWarningPopup] = useState<WarningPopupType>({
@@ -72,49 +68,64 @@ const QuoteListingsContainer = () => {
     title: null,
     description: null,
   });
+
+  const {
+    state: { filter, quotes: insurerQuotes },
+    dispatch,
+  } = useContext(QuoteListingContext);
+
   // update the type property of the filter
   const setTypeOfFilter = (updatedFilterTypes: PlanType[]) => {
-    updateQuoteFilter((prev) => ({ ...prev, type: updatedFilterTypes }));
+    // updateQuoteFilter((prev) => ({ ...prev, type: updatedFilterTypes }));
+    dispatch({
+      type: QuoteFilterTypes.UpdateFilterPlan,
+      payload: {
+        list: updatedFilterTypes,
+      },
+    });
   };
 
   // update the sort property of the filter
   const setSortValueToFilter = (val: string) => {
-    updateQuoteFilter((prev) => ({ ...prev, sort: val }));
+    // updateQuoteFilter((prev) => ({ ...prev, sort: val }));
+    dispatch({
+      type: QuoteFilterTypes.UpdateFilterSort,
+      payload: { value: val },
+    });
   };
 
   // function to update selected quotes when user
   // try to compare different plans
   function updateSelectedQuotePlans(selectedQuoteId: string) {
-    const updatedQuotePlans = quotePlans.map((quotePlan) =>
-      quotePlan.id === selectedQuoteId
-        ? { ...quotePlan, isSelected: !quotePlan.isSelected }
-        : quotePlan
-    );
-    updateQuotePlans(updatedQuotePlans);
+    dispatch({
+      type: QuotesTypes.ToggleQuoteSelection,
+      payload: { id: selectedQuoteId },
+    });
+    // updateQuotePlans(updatedQuotePlans);
   }
 
   useEffect(() => {
     if (isComparePopupVisible) {
-      const quotes = quotePlans.filter((quote) => quote.isSelected);
+      const quotes = insurerQuotes.filter((quote) => quote.isSelected);
       if (quotes.length < 2) {
         shouldComparePopupVisible(false);
       }
     }
-  }, [quotePlans]);
+  }, [insurerQuotes]);
 
   // filter quotes based on user search selection i.e.
   // if user has searching for third-party or comprehensive plans
-  const filterQuotePlansType = quotePlans.filter((quotePlan) =>
-    quoteFilter.type
+  const filterQuotePlansType = insurerQuotes.filter((quotePlan) =>
+    filter.plan
       .filter((a) => a.isSelected)
       .map((b) => b.value)
       .includes(quotePlan.planType)
   );
 
   const quotesToDisply =
-    filterQuotePlansType.length === 0 ? quotePlans : filterQuotePlansType;
+    filterQuotePlansType.length === 0 ? insurerQuotes : filterQuotePlansType;
 
-  const filterSelectedQuotes: QuotePlansType[] = quotesToDisply.filter(
+  const filterSelectedQuotes: InsurerQuoteStateType[] = quotesToDisply.filter(
     (quote) => quote.isSelected
   );
 
@@ -148,13 +159,20 @@ const QuoteListingsContainer = () => {
         />
       )}
       {isComparePopupVisible && (
+        <QuoteComparisonPopup
+          selectedQuotes={filterSelectedQuotes}
+          updateSelectedQuotePlans={updateSelectedQuotePlans}
+          shouldComparePopupVisible={shouldComparePopupVisible}
+        />
+      )}
+      {/* {isComparePopupVisible && (
         <QuoteComparePopup
           selectedQuotes={filterSelectedQuotes}
           isComparePopupVisible={isComparePopupVisible}
           shouldComparePopupVisible={shouldComparePopupVisible}
           updateSelectedQuotePlans={updateSelectedQuotePlans}
         />
-      )}
+      )} */}
       <div className="relative mt-4 px-4 py-3 flex flex-col md:flex-row items-center justify-center w-full bg-[#F8F8F8] rounded-[10px]">
         <div className="flex flex-col sm:flex-row items-start lg:items-center justify-center max-w-none sm:max-w-xl lg:max-w-3xl w-full">
           {/* Plan Type multi search field */}
@@ -165,7 +183,7 @@ const QuoteListingsContainer = () => {
             <div className="ml-0 lg:ml-2 inline-block w-full">
               <SelectMultiSearch
                 defaultOptionList={defaultPlanTypeOptions}
-                selectedOptions={quoteFilter.type}
+                selectedOptions={filter.plan}
                 setSelectedOptions={setTypeOfFilter}
               />
             </div>
@@ -193,7 +211,8 @@ const QuoteListingsContainer = () => {
               <div className="ml-0 lg:ml-2 relative min-w-0 md:min-w-[154px] w-full">
                 <SelectDropdown
                   id="sortPrice"
-                  selected={quoteFilter.sort}
+                  // selected={quoteFilter.sort}
+                  selected={filter.sort}
                   optionList={defaultSortOptions}
                   onChange={setSortValueToFilter}
                   placeholder="Low to High"
@@ -240,44 +259,23 @@ const QuoteListingsContainer = () => {
           quotesToDisply
             // sort the quote based on pricing
             .sort((a, b) => {
-              if (quoteFilter.sort) {
-                const sortValue: string = quoteFilter.sort;
+              if (filter.sort) {
+                const sortValue: string = filter.sort;
                 if (sortValue === "high-to-low") {
-                  return parseInt(b.price) - parseInt(a.price);
+                  // return parseInt(b.price) - parseInt(a.price);
+                  return b.price - a.price;
                 }
               }
-              return parseInt(a.price) - parseInt(b.price);
+              return a.price - b.price;
             })
-            .map((broker) => {
-              const {
-                companyId,
-                companyImgHref,
-                companyName,
-                companyRelImgHref,
-                coverages,
-                id,
-                price,
-                isTrending,
-                isSelected,
-                planType,
-              } = broker;
-              const cov: Coverage[] = Object.values(coverages);
+            .map((quote) => {
               return (
                 <QuoteListingPlanCard
-                  key={id}
+                  key={quote.id}
                   {...{
-                    companyId,
-                    companyImgHref,
-                    companyRelImgHref,
-                    companyName,
-                    id,
-                    price,
-                    coverages: cov,
-                    planType,
-                    isTrending,
-                    isSelected,
-                    updateSelectedQuotePlans,
+                    ...quote,
                   }}
+                  updateSelectedQuotePlans={updateSelectedQuotePlans}
                 />
               );
             })

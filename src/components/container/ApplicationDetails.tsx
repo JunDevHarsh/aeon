@@ -98,11 +98,11 @@ const ApplicationDetailsContainer = () => {
           Insured Details
         </h2>
         <div className="mt-2 px-6 py-4 grid grid-cols-1 mobile-xl:grid-cols-2 md:grid-cols-3 gap-4 w-full bg-[#fcf6ff] rounded-lg">
-          <div className="flex flex-col items-start w-auto">
+          <div className="flex flex-col items-start w-full">
             <span className="text-base text-left text-primary-black font-bold">
               Name
             </span>
-            <span className="text-base text-left text-primary-black font-normal">
+            <span className="text-base text-left text-primary-black font-normal w-full break-words">
               {name || "Usertest"}
             </span>
           </div>
@@ -122,19 +122,19 @@ const ApplicationDetailsContainer = () => {
               {dateOfBirth?.slice(0, 10) || "09/09/1994"}
             </span>
           </div>
-          <div className="flex flex-col items-start w-auto">
+          <div className="flex flex-col items-start w-full">
             <span className="text-base text-left text-primary-black font-bold">
               Mobile No.
             </span>
-            <span className="text-base text-left text-primary-black font-normal">
+            <span className="text-base text-left text-primary-black font-normal w-full break-words">
               +60 {mobileNumber || "12345687"}
             </span>
           </div>
-          <div className="flex flex-col items-start w-auto">
+          <div className="flex flex-col items-start w-full">
             <span className="text-base text-left text-primary-black font-bold">
               Email
             </span>
-            <span className="text-base text-left text-primary-black font-normal">
+            <span className="text-base text-left text-primary-black font-normal w-full break-words">
               {email || "ajay@gmail.com"}
             </span>
           </div>
@@ -170,27 +170,27 @@ const ApplicationDetailsContainer = () => {
               {driverDetails.nationality || "Malaysia"}
             </span>
           </div>
-          <div className="flex flex-col items-start w-auto">
+          <div className="flex flex-col items-start w-full">
             <span className="text-base text-left text-primary-black font-bold">
               Address
             </span>
-            <span className="text-base text-left text-primary-black font-normal">
+            <span className="text-base text-left text-primary-black font-normal w-full break-words">
               {driverDetails.address1 || "376, Jalan Merak 16"}
             </span>
           </div>
-          <div className="flex flex-col items-start w-auto">
+          <div className="flex flex-col items-start w-full">
             <span className="text-base text-left text-primary-black font-bold">
               State
             </span>
-            <span className="text-base text-left text-primary-black font-normal">
+            <span className="text-base text-left text-primary-black font-normal w-full break-words">
               {driverDetails.state || "Negeri Sembilan"}
             </span>
           </div>
-          <div className="flex flex-col items-start w-auto">
+          <div className="flex flex-col items-start w-full">
             <span className="text-base text-left text-primary-black font-bold">
               City
             </span>
-            <span className="text-base text-left text-primary-black font-normal">
+            <span className="text-base text-left text-primary-black font-normal w-full break-words">
               {driverDetails.city || "Seremban"}Seremban
             </span>
           </div>
@@ -219,11 +219,11 @@ const ApplicationDetailsContainer = () => {
                   Additional Driver {index + 1}
                 </h3>
                 <div className="px-6 py-2 grid grid-cols-1 mobile-xl:grid-cols-2 md:grid-cols-3 gap-4 w-full rounded-lg">
-                  <div className="flex flex-col items-start w-auto">
+                  <div className="flex flex-col items-start w-full">
                     <span className="text-base text-left text-primary-black font-bold">
                       Name
                     </span>
-                    <span className="text-base text-left text-primary-black font-normal">
+                    <span className="text-base text-left text-primary-black font-normal w-full break-words">
                       {detail.name}
                     </span>
                   </div>

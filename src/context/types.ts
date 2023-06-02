@@ -2,6 +2,8 @@
 ---------------Types---------------
 */
 
+import { InsurerQuoteType } from "../data/listOfQuotes";
+
 // CurrentStep State
 export type CurrentStepState = {
   currentStep: number;
@@ -99,3 +101,37 @@ export type ActionMap<M extends { [index: string]: any }> = {
         payload: M[Key];
       };
 };
+
+
+/*
+--------------------------------------------------
+----------QuoteListing Context Types--------------
+--------------------------------------------------
+*/
+
+// type for props
+export type QuoteListingPropType = {
+  children: React.ReactNode;
+}
+
+export interface InsurerQuoteStateType extends InsurerQuoteType {
+  isSelected: boolean;
+}
+
+// type for context
+export type QuoteListingStateType = {
+  quotes: InsurerQuoteStateType[];
+  filter: QuotesFilterType;
+}
+
+// type for sort dropdown
+export type QuotesFilterType = {
+  sort: string | null;
+  plan: QuotesFilterPlanType[];
+}
+
+export type QuotesFilterPlanType = {
+  value: string;
+  label: string;
+  isSelected: boolean;
+}
