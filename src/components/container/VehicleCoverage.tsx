@@ -6,6 +6,8 @@ import {
   InsuranceContext,
   IsMVContainerVisibleTypes,
 } from "../../context/InsuranceContext";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store/store";
 
 /**
  * Returns a random number between min (inclusive) and max (exclusive)
@@ -27,6 +29,11 @@ const VehicleCoverageContainer = () => {
     state: { type, market, agreed },
     setState,
   } = useContext(VehicleCoverageContext);
+  const vehicleInfo = useSelector((state: RootState) => state.vehicle);
+  const variantOptionList = vehicleInfo.nvicList.map((variant) => ({
+    label: variant.vehicleVariant,
+    value: variant.vehicleVariant,
+  }));
   const { dispatch } = useContext(InsuranceContext);
 
   function handleSubmit() {
@@ -74,7 +81,7 @@ const VehicleCoverageContainer = () => {
             </svg>
             <p className="text-sm text-center text-primary-pink font-bold">
               The Current market value for your vehicle is RM{" "}
-              {numberWithCommas(market.price)}
+              {numberWithCommas(14000)}
             </p>
           </div>
           <div className="mt-4 flex flex-col items-start w-full">
@@ -168,16 +175,17 @@ const VehicleCoverageContainer = () => {
             </h2>
             {type === "market" ? (
               <SelectDropdown
-                optionList={[
-                  {
-                    label: "XL T6 4D DOUBLE CAB PICK-UP 6 SP AUTO SPORTS MODE",
-                    value: "XL T6 4D DOUBLE CAB PICK-UP 6 SP AUTO SPORTS MODE",
-                  },
-                  {
-                    label: "XL (HI-RIDER) T6 4D DOUBLE CAB PICK-U 6 SP MANUA",
-                    value: "XL (HI-RIDER) T6 4D DOUBLE CAB PICK-U 6 SP MANUA",
-                  },
-                ]}
+                // optionList={[
+                //   {
+                //     label: "XL T6 4D DOUBLE CAB PICK-UP 6 SP AUTO SPORTS MODE",
+                //     value: "XL T6 4D DOUBLE CAB PICK-UP 6 SP AUTO SPORTS MODE",
+                //   },
+                //   {
+                //     label: "XL (HI-RIDER) T6 4D DOUBLE CAB PICK-U 6 SP MANUA",
+                //     value: "XL (HI-RIDER) T6 4D DOUBLE CAB PICK-U 6 SP MANUA",
+                //   },
+                // ]}
+                optionList={variantOptionList}
                 id="hello"
                 onChange={(val: string) =>
                   setState((prev) => ({
@@ -206,20 +214,21 @@ const VehicleCoverageContainer = () => {
                   </span>
                   <SelectDropdown
                     selected={agreed.variant}
-                    optionList={[
-                      {
-                        label:
-                          "XL T6 4D DOUBLE CAB PICK-UP 6 SP AUTO SPORTS MODE",
-                        value:
-                          "XL T6 4D DOUBLE CAB PICK-UP 6 SP AUTO SPORTS MODE",
-                      },
-                      {
-                        label:
-                          "XL (HI-RIDER) T6 4D DOUBLE CAB PICK-U 6 SP MANUA",
-                        value:
-                          "XL (HI-RIDER) T6 4D DOUBLE CAB PICK-U 6 SP MANUA",
-                      },
-                    ]}
+                    // optionList={[
+                    //   {
+                    //     label:
+                    //       "XL T6 4D DOUBLE CAB PICK-UP 6 SP AUTO SPORTS MODE",
+                    //     value:
+                    //       "XL T6 4D DOUBLE CAB PICK-UP 6 SP AUTO SPORTS MODE",
+                    //   },
+                    //   {
+                    //     label:
+                    //       "XL (HI-RIDER) T6 4D DOUBLE CAB PICK-U 6 SP MANUA",
+                    //     value:
+                    //       "XL (HI-RIDER) T6 4D DOUBLE CAB PICK-U 6 SP MANUA",
+                    //   },
+                    // ]}
+                    optionList={variantOptionList}
                     id="ads"
                     onChange={(val: string) =>
                       setState((prev) => ({

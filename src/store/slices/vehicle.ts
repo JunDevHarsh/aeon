@@ -3,21 +3,22 @@ import { RootState } from "../store";
 import { VehicleStateType } from "./types";
 
 const initialState: VehicleStateType = {
-  regNo: "NBS2343",
-  make: "PERODUA",
-  model: "AXIA",
-  yearOfManufacture: "2020",
-  variant: "XL T6 4D DOUBLE CAB PICK-UP 6 SP AUTO SPORTS MODE",
-  engineNo: "123456",
-  engineCC: "1200",
-  chasisNo: "ABCDE123456",
+  regNo: "",
+  make: "",
+  model: "",
+  yearOfManufacture: "",
+  variant: null,
+  engineNo: "",
+  engineCC: "",
+  chasisNo: "",
   class: "Private",
   region: "West",
-  drivers: "2",
-  seating: "5",
-  ncd: "30",
+  drivers: "0",
+  seating: "",
+  ncd: "",
   reconIndicator: "no",
-  periodOfCoverage: "2023-05-12"
+  periodOfCoverage: "",
+  nvicList: [],
 };
 
 export const vehicleSlice = createSlice({
