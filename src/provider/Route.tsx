@@ -1,36 +1,59 @@
 import {
+  Navigate,
+  Outlet,
   Route,
   createBrowserRouter,
   createRoutesFromElements,
   useRouteError,
 } from "react-router-dom";
-import { lazy, Suspense } from "react";
-import Root from "../components/layout/Root";
-import Header from "../components/navbar/Header";
-import Footer from "../components/navbar/Footer";
-import GuyImg from "../assets/images/guy_holding_stick.png";
+import { lazy, Suspense, LazyExoticComponent, ComponentType } from "react";
+import RootLayout from "../components/layout/Root";
+import InsuranceRootLayout from "../components/layout/Insurance";
 
-const MemoizedHomePage = lazy(() => import("../pages/Home"));
-const MemoizedVehicleInfoPage = lazy(() => import("../pages/VehicleInfo"));
-const MemoizedInsurancePage = lazy(() => import("../pages/Insurance"));
-const MemoizedPaymentPage = lazy(() => import("../pages/Payment"));
-const MemoizedNotFoundPage = lazy(() => import("../pages/NotFound"));
+/**
+ * Dynamically imports a React component using lazy loading.
+ * @param filePath The file path of the component to import.
+ * @returns A lazy-loaded component.
+ */
+function importComponent(
+  filePath: string
+): LazyExoticComponent<ComponentType<any>> {
+  // Define the lazy-loaded component using the lazy function from React.
+  const importedComponent: LazyExoticComponent<ComponentType<any>> = lazy(
+    () => import(filePath)
+  );
+
+  // Return the lazy-loaded component.
+  return importedComponent;
+}
+
+// Importing lazy-loaded components using the importComponent function
+const MemoizedHomePage = importComponent("../pages/Home");
+const MemoizedVehicleInfoPage = importComponent("../pages/VehicleInfo");
+const MemoizedInsurancePage = importComponent("../pages/Insurance");
+const MemoizedPaymentPage = importComponent("../pages/Payment");
+const MemoizedNotFoundPage = importComponent("../pages/NotFound");
+
+const MemoizedQuoteListingContainer = importComponent(
+  "../components/container/QuoteListings"
+);
+// The components are now lazily loaded and memoized for optimal performance
 
 const router = createBrowserRouter(
   createRoutesFromElements(
+    // index or main route -> "/"
     <Route
       path="/"
       hasErrorBoundary={true}
       errorElement={<ErrorBoundary />}
       element={
-        <Suspense
-          fallback={
-            <>
-              <Header />
-              <main className="relative w-full min-h-[calc(100vh-144px)] h-full">
-                <div className="mx-auto  py-auto py-10 flex flex-col items-center justify-between max-w-3xl w-full">
+        <>
+          <Suspense
+            fallback={
+              <main className="relative flex items-center justify-center w-full min-h-screen">
+                <div className="mx-auto py-auto py-10 flex flex-col items-center justify-between max-w-3xl w-full">
                   <img
-                    src={GuyImg}
+                    src="/guy_holding_stick.png"
                     alt="guy-holding-stick-in-his-hand-img"
                     className="mx-auto"
                   />
@@ -39,12 +62,11 @@ const router = createBrowserRouter(
                   </p>
                 </div>
               </main>
-              <Footer />
-            </>
-          }
-        >
-          <Root />
-        </Suspense>
+            }
+          >
+            <RootLayout />
+          </Suspense>
+        </>
       }
     >
       <Route index element={<MemoizedHomePage />} />
@@ -54,6 +76,17 @@ const router = createBrowserRouter(
         element={<MemoizedInsurancePage />}
         errorElement={<ErrorBoundary />}
       />
+      <Route path="/form" element={<InsuranceRootLayout />}>
+        <Route index element={<MemoizedQuoteListingContainer />} />
+        {/* Added route for "/insurance/quote-listings" to redirect to "/insurance" */}
+        <Route
+          path="quote-listings"
+          element={<Navigate to="/form" replace={true} />}
+        />
+        <Route path="step-two" element={<div>Step 2</div>} />
+        <Route path="step-third" element={<div>Step 3</div>} />
+        <Route path="step-four" element={<div>Step 4</div>} />
+      </Route>
       <Route path="/payment" element={<MemoizedPaymentPage />} />
       <Route path="*" element={<MemoizedNotFoundPage />} />
     </Route>

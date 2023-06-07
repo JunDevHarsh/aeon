@@ -89,6 +89,7 @@ const UserRegistrationForm = () => {
           postalcode: postalCode,
         },
         {
+          timeout: 2000,
           headers: {
             "Content-Type": "application/json",
             Tenant_id: "67b61490-fec2-11ed-a640-e19d1712c006",
@@ -98,8 +99,8 @@ const UserRegistrationForm = () => {
       setLoading(false);
       const data = apiResponse.data;
       console.log(data);
-      if (data.vehicleInfo.errors) {
-        if (data.vehicleInfo.errors[0] === "Data not found.") {
+      if (data.errors) {
+        if (data.errors[0] === "Data not found.") {
           setError({
             isVisible: true,
             title: "Status - 404",
@@ -112,8 +113,8 @@ const UserRegistrationForm = () => {
             title: "Status 401",
             description: "Id number is invalid",
           });
+          throw new Error("Invalid id no.");
         }
-        return;
       }
       // if user Id Type is valid then update the state -> user -> id
       if (idType !== null) {
@@ -132,7 +133,7 @@ const UserRegistrationForm = () => {
         ncdPercentage,
         polEffectiveDate,
         polExpiryDate,
-      } = data.vehicleInfo;
+      } = data;
       dispatch(
         updateVehicleState({
           chasisNo: vehicleChassis,
@@ -165,8 +166,25 @@ const UserRegistrationForm = () => {
         })
       );
       navigate("/vehicle-info");
-    } catch (err) {
+    } catch (err: any) {
+      setLoading(false);
       console.log(err);
+      if (err.code === "ECONNABORTED") {
+        setError({
+          isVisible: true,
+          description:
+            "Server took more than expected time to respond. Better to try after some time.",
+          title: "Timeout",
+        });
+        return;
+      }
+      if (err.response.status === 404 || err.response.status === 400) {
+        setError({
+          isVisible: true,
+          description: err.response.data.errors[0],
+          title: err.response.statusText,
+        });
+      }
     }
   };
 

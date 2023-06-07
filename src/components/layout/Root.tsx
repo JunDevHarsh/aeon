@@ -1,9 +1,9 @@
 import { useEffect } from "react";
-import Footer from "../navbar/Footer";
-import Header from "../navbar/Header";
 import { Outlet, useLocation } from "react-router-dom";
+import Header from "../navbar/Header";
+import Footer from "../navbar/Footer";
 
-const Root = () => {
+const RootLayout = () => {
   const { pathname } = useLocation();
 
   useEffect(() => {
@@ -21,4 +21,4 @@ const Root = () => {
   );
 };
 
-export default Root;
+export default RootLayout;
