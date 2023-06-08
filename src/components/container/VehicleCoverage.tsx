@@ -167,29 +167,43 @@ const VehicleCoverageContainer = () => {
               Select your car variant to estimate its value
             </h2>
             {type === "market" ? (
-              <SelectDropdown
-                optionList={[
-                  {
-                    label: "XL T6 4D DOUBLE CAB PICK-UP 6 SP AUTO SPORTS MODE",
-                    value: "XL T6 4D DOUBLE CAB PICK-UP 6 SP AUTO SPORTS MODE",
-                  },
-                  {
-                    label: "XL (HI-RIDER) T6 4D DOUBLE CAB PICK-U 6 SP MANUA",
-                    value: "XL (HI-RIDER) T6 4D DOUBLE CAB PICK-U 6 SP MANUA",
-                  },
-                ]}
-                id="hello"
-                onChange={(val: string) =>
-                  setState((prev) => ({
-                    ...prev,
-                    market: {
-                      ...prev.market,
-                      variant: val,
+              <>
+                <SelectDropdown
+                  optionList={[
+                    {
+                      label:
+                        "XL T6 4D DOUBLE CAB PICK-UP 6 SP AUTO SPORTS MODE",
+                      value:
+                        "XL T6 4D DOUBLE CAB PICK-UP 6 SP AUTO SPORTS MODE",
                     },
-                  }))
-                }
-                selected={market.variant}
-              />
+                    {
+                      label: "XL (HI-RIDER) T6 4D DOUBLE CAB PICK-U 6 SP MANUA",
+                      value: "XL (HI-RIDER) T6 4D DOUBLE CAB PICK-U 6 SP MANUA",
+                    },
+                  ]}
+                  id="hello"
+                  onChange={(val: string) =>
+                    setState((prev) => ({
+                      ...prev,
+                      market: {
+                        ...prev.market,
+                        variant: val,
+                      },
+                    }))
+                  }
+                  selected={market.variant}
+                />
+                {type === "market" && market.variant && market.value && (
+                  <InputRange
+                    type="market"
+                    value={market.price}
+                    setValue={updateSlider}
+                    minValue={market.value.min}
+                    midValue={market.value.mid}
+                    maxValue={market.value.max}
+                  />
+                )}
+              </>
             ) : (
               <div className="flex flex-col items-start w-full">
                 <div className="relative pb-4 flex flex-col items-start w-full h-auto">
