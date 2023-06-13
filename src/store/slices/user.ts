@@ -27,6 +27,7 @@ type UserInfoType = {
   requestId: string;
   polEffectiveDate: string;
   polExpiryDate: string;
+  drivingExp: string;
 };
 
 const initialState: UserInfoType = {
@@ -52,7 +53,8 @@ const initialState: UserInfoType = {
   sessionName: "787ce1486488125caadb5",
   requestId: "",
   polEffectiveDate: "",
-  polExpiryDate: ""
+  polExpiryDate: "",
+  drivingExp: "",
 };
 
 export const userInfoSlice = createSlice({
