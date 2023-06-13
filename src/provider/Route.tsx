@@ -4,39 +4,46 @@ import {
   createRoutesFromElements,
   useRouteError,
 } from "react-router-dom";
-import { lazy, Suspense, LazyExoticComponent, ComponentType } from "react";
+import { Suspense } from "react";
+// import { lazy, Suspense, LazyExoticComponent, ComponentType } from "react";
 import RootLayout from "../components/layout/Root";
 import InsuranceRootLayout from "../components/layout/Insurance";
 import QuoteListingProvider from "../context/QuoteListing";
 import AddOnsContainer from "../components/container/AddOns";
+import HomePage from "../pages/Home";
+import VehicleInfoPage from "../pages/VehicleInfo";
+import InsurancePage from "../pages/Insurance";
+import NotFoundPage from "../pages/NotFound";
+import QuoteListingsContainer from "../components/container/QuoteListings";
+import PaymentPage from "../pages/Payment";
 
 /**
  * Dynamically imports a React component using lazy loading.
  * @param filePath The file path of the component to import.
  * @returns A lazy-loaded component.
  */
-function importComponent(
-  filePath: string
-): LazyExoticComponent<ComponentType<any>> {
-  // Define the lazy-loaded component using the lazy function from React.
-  const importedComponent: LazyExoticComponent<ComponentType<any>> = lazy(
-    () => import(filePath)
-  );
+// function importComponent(
+//   filePath: string
+// ): LazyExoticComponent<ComponentType<any>> {
+//   // Define the lazy-loaded component using the lazy function from React.
+//   const importedComponent: LazyExoticComponent<ComponentType<any>> = lazy(
+//     () => import(filePath)
+//   );
 
-  // Return the lazy-loaded component.
-  return importedComponent;
-}
+//   // Return the lazy-loaded component.
+//   return importedComponent;
+// }
 
 // Importing lazy-loaded components using the importComponent function
-const MemoizedHomePage = importComponent("../pages/Home");
-const MemoizedVehicleInfoPage = importComponent("../pages/VehicleInfo");
-const MemoizedInsurancePage = importComponent("../pages/Insurance");
-const MemoizedPaymentPage = importComponent("../pages/Payment");
-const MemoizedNotFoundPage = importComponent("../pages/NotFound");
+// const MemoizedHomePage = importComponent("../pages/Home");
+// const MemoizedVehicleInfoPage = importComponent("../pages/VehicleInfo");
+// const MemoizedInsurancePage = importComponent("../pages/Insurance");
+// const MemoizedPaymentPage = importComponent("../pages/Payment");
+// const MemoizedNotFoundPage = importComponent("../pages/NotFound");
 
-const MemoizedQuoteListingContainer = importComponent(
-  "../components/container/QuoteListings"
-);
+// const MemoizedQuoteListingContainer = importComponent(
+// "../components/container/QuoteListings"
+// );
 // The components are now lazily loaded and memoized for optimal performance
 
 const router = createBrowserRouter(
@@ -74,15 +81,15 @@ const router = createBrowserRouter(
         index
         element={
           <Suspense fallback={<div>Loading...</div>}>
-            <MemoizedHomePage />
+            <HomePage />
           </Suspense>
         }
       />
       {/* vehicle's info or "/vehicle-info" route*/}
-      <Route path="/vehicle-info" element={<MemoizedVehicleInfoPage />} />
+      <Route path="/vehicle-info" element={<VehicleInfoPage />} />
       <Route
         path="/insuranc"
-        element={<MemoizedInsurancePage />}
+        element={<InsurancePage />}
         errorElement={<ErrorBoundary />}
       />
       <Route
@@ -93,7 +100,7 @@ const router = createBrowserRouter(
           </QuoteListingProvider>
         }
       >
-        <Route index element={<MemoizedNotFoundPage />} />
+        <Route index element={<NotFoundPage />} />
         {/* Added route for "/insurance/quote-listings" to redirect to "/insurance" */}
         <Route
           path="plan-selection"
@@ -117,7 +124,7 @@ const router = createBrowserRouter(
                 </>
               }
             >
-              <MemoizedQuoteListingContainer />
+              <QuoteListingsContainer />
             </Suspense>
           }
         />
@@ -125,8 +132,8 @@ const router = createBrowserRouter(
         <Route path="application-details" element={<div>Step 3</div>} />
         <Route path="review-pay" element={<div>Step 4</div>} />
       </Route>
-      <Route path="/payment" element={<MemoizedPaymentPage />} />
-      <Route path="*" element={<MemoizedNotFoundPage />} />
+      <Route path="/payment" element={<PaymentPage />} />
+      <Route path="*" element={<NotFoundPage />} />
     </Route>
   )
 );
