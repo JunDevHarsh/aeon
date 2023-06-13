@@ -11,7 +11,7 @@ import { useDispatch } from "react-redux";
 import { updateInsuranceState } from "../../store/slices/insurance";
 import { addUserID, addUserBasicInfo } from "../../store/slices/user";
 import {
-  addVehicleRegNo,
+  // addVehicleRegNo,
   updateVehicleState,
 } from "../../store/slices/vehicle";
 // types
