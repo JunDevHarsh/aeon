@@ -111,7 +111,7 @@ const ApplicationDetailsContainer = () => {
               ID No.
             </span>
             <span className="text-base text-left text-primary-black font-normal">
-              {id.no || "897678888"}
+              {id.number || "897678888"}
             </span>
           </div>
           <div className="flex flex-col items-start w-auto">
@@ -119,7 +119,7 @@ const ApplicationDetailsContainer = () => {
               DOB
             </span>
             <span className="text-base text-left text-primary-black font-normal">
-              {dateOfBirth?.slice(0, 10) || "09/09/1994"}
+              {dateOfBirth?.toString()?.slice(0, 10) || "09/09/1994"}
             </span>
           </div>
           <div className="flex flex-col items-start w-full">

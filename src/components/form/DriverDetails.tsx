@@ -125,7 +125,7 @@ const DriverDetailsForm = () => {
                 DOB
               </span>
               <div className="py-1.5 px-2 w-full text-sm text-left text-[#9ca3af] bg-[#fafafa] border border-solid border-[#CFD0D7] rounded cursor-default">
-                {dateOfBirth?.slice(0, 10) || "DOB"}
+                {dateOfBirth?.toString()?.slice(0, 10) || "DOB"}
               </div>
             </div>
           </div>
@@ -148,7 +148,7 @@ const DriverDetailsForm = () => {
                   ID/Company Reg No.
                 </span>
                 <div className="py-1.5 px-2 w-full font-medium text-sm text-left text-[#9ca3af] bg-[#fafafa] border border-solid border-[#CFD0D7] rounded cursor-default">
-                  {id.no || "92374887"}
+                  {id.number || "92374887"}
                 </div>
               </div>
             </div>
