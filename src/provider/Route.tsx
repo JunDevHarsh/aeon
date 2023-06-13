@@ -86,7 +86,11 @@ const router = createBrowserRouter(
         }
       />
       {/* vehicle's info or "/vehicle-info" route*/}
-      <Route path="/vehicle-info" element={<VehicleInfoPage />} />
+      <Route
+        path="/vehicle-info"
+        element={<VehicleInfoPage />}
+        errorElement={<ErrorBoundary />}
+      />
       <Route
         path="/insuranc"
         element={<InsurancePage />}
@@ -140,7 +144,7 @@ const router = createBrowserRouter(
 
 function ErrorBoundary() {
   let error = useRouteError();
-  console.error(error);
+  console.log(error);
   // Uncaught ReferenceError: path is not defined
   return <div>Dang!</div>;
 }

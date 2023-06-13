@@ -3,22 +3,28 @@ import { RootState } from "../store";
 import { VehicleStateType } from "./types";
 
 const initialState: VehicleStateType = {
-  regNo: "",
-  make: "",
-  model: "",
-  yearOfManufacture: "",
-  variant: null,
-  engineNo: "",
-  engineCC: "",
-  chasisNo: "",
+  regNo: "AHC5758",
+  make: "TOYOTA",
+  model: "COROLLA",
+  yearOfManufacture: "2010",
+  variant: "ALTIS G 4 SP AUTOMATIC - 1794",
+  engineNo: "1ZZ4984652",
+  engineCC: "1794",
+  chasisNo: "MR053ZEE206120869",
   class: "Private",
   region: "West Malaysia",
   drivers: "0",
-  seating: "",
-  ncd: "",
+  seating: "5",
+  ncd: "55",
   reconIndicator: "no",
-  periodOfCoverage: "",
-  nvicList: [],
+  periodOfCoverage: "2023-08-04 to 2024-08-03",
+  nvicList: [
+    {
+        "nvic": "H7B10A",
+        "vehicleMarketValue": 30500,
+        "vehicleVariant": "ALTIS G 4 SP AUTOMATIC - 1794"
+    }
+],
 };
 
 export const vehicleSlice = createSlice({

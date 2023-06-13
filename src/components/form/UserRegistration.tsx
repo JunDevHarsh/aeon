@@ -9,13 +9,16 @@ import DateOfBirthField from "../fields/DateOfBirth";
 // store
 import { useDispatch } from "react-redux";
 import { updateInsuranceState } from "../../store/slices/insurance";
-import { addUserID, addUserBasicInfo } from "../../store/slices/user";
+import {
+  addUserID,
+  addUserBasicInfo,
+  updateAPIcredentials,
+} from "../../store/slices/user";
 import {
   // addVehicleRegNo,
   updateVehicleState,
 } from "../../store/slices/vehicle";
 // types
-import { UserInsuranceInputs } from "./types";
 import VehicleSelector from "../fields/VehicleSelector";
 import ReferralCodeButton from "../button/ReferralCode";
 import axios from "axios";
@@ -24,19 +27,33 @@ import md5 from "md5";
 
 let prevValue: string = "";
 
+export type UserInsuranceInputs = {
+  insuranceType: "new" | "renewal";
+  maritalStatus: string | null;
+  vehicleRegNo: string;
+  email: string;
+  postalCode: string;
+  gender: "Male" | "Female";
+  idType: string | null;
+  idNumber: string;
+  mobileNumber: string;
+  dateOfBirth: Date | null;
+  insuranceVehicle: "Car" | "Motorcycle";
+};
+
 // default value for user insurance form fields
 const defaultUserInsuranceState: UserInsuranceInputs = {
-  idNo: "",
+  idNumber: "",
   email: "",
   postalCode: "",
   idType: "NRIC",
-  gender: "male",
+  gender: "Male",
   vehicleRegNo: "",
   mobileNumber: "",
   dateOfBirth: null,
   maritalStatus: "Single",
   insuranceType: "renewal",
-  insuranceVehicle: "car",
+  insuranceVehicle: "Car",
 };
 
 const UserRegistrationForm = () => {
@@ -74,7 +91,7 @@ const UserRegistrationForm = () => {
         insuranceType,
         email,
         gender,
-        idNo,
+        idNumber,
         idType,
         maritalStatus,
         mobileNumber,
@@ -102,7 +119,7 @@ const UserRegistrationForm = () => {
         {
           timeout: 5000,
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/x-www-form-urlencoded",
           },
         }
       );
@@ -111,19 +128,19 @@ const UserRegistrationForm = () => {
         "https://app.agiliux.com/aeon/webservice.php",
         {
           sessionName: sessionName,
-          element: {
+          element: JSON.stringify({
             vehregno: vehicleRegNo,
             idtype: idType,
-            id_comregno: idNo,
+            id_comregno: idNumber,
             postalcode: postalCode,
             tenant_id: "67b61490-fec2-11ed-a640-e19d1712c006",
-          },
+          }),
           operation: "getVehicleInfo",
         },
         {
           timeout: 5000,
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/x-www-form-urlencoded",
           },
         }
       );
@@ -140,16 +157,30 @@ const UserRegistrationForm = () => {
         } else {
           setError({
             isVisible: true,
-            title: "Status 401",
-            description: "Id number is invalid",
+            title: "Invalid Id number",
+            description: "Vehicle registration number or id no. are invalid",
           });
           throw new Error("Invalid id no.");
         }
+      } else if (vehicleData[0] === "Invalid Tenant !!") {
+        setError({
+          isVisible: true,
+          title: "Something went wrong",
+          description:
+            "We are unable to process your request at the moment. Please try again later.",
+        });
+        throw new Error("Something went wrong from the server");
       }
       // if user Id Type is valid then update the state -> user -> id
       if (idType !== null) {
-        dispatch(addUserID({ userIdNo: idNo, userIdType: idType }));
+        dispatch(addUserID({ number: idNumber, type: idType }));
       }
+      dispatch(
+        updateAPIcredentials({
+          sessionName: sessionName,
+          requestId: vehicleData.requestId,
+        })
+      );
       const {
         vehicleChassis,
         vehicleEngine,
@@ -192,7 +223,9 @@ const UserRegistrationForm = () => {
           maritalStatus,
           mobileNumber,
           postalCode,
-          // dateOfBirth: dateOfBirth ? dateOfBirth.toISOString() : null,
+          polExpiryDate: polExpiryDate,
+          polEffectiveDate: polEffectiveDate
+          // dateOfBirth: dateOfBirth ? dateOfBirth : null,
         })
       );
       navigate("/vehicle-info");
@@ -364,10 +397,10 @@ const UserRegistrationForm = () => {
                     onChange={(val: string) => {
                       setValue("idType", val);
                       if (value !== val) {
-                        setValue("idNo", "");
+                        setValue("idNumber", "");
                       }
                       prevValue = "";
-                      clearErrors("idNo");
+                      clearErrors("idNumber");
                       clearErrors("idType");
                     }}
                     selected={value}
@@ -385,9 +418,9 @@ const UserRegistrationForm = () => {
             <div className="ml-0 mobile-m:ml-1 flex items-center flex-1 mobile-m:flex-[1_1_60%] w-full">
               <InputTextField
                 label="ID/Company Reg No."
-                name="idNo"
+                name="idNumber"
                 register={register}
-                errors={errors.idNo}
+                errors={errors.idNumber}
                 placeholder={
                   watchIDType === "Passport"
                     ? "A12365498"
@@ -515,9 +548,9 @@ const UserRegistrationForm = () => {
                     <input
                       id="genderMale"
                       type="radio"
-                      value="male"
+                      value="Male"
                       className="peer absolute opacity-0"
-                      checked={watch("gender") === "male"}
+                      checked={watch("gender") === "Male"}
                       {...register("gender")}
                     />
                     <label
@@ -526,7 +559,7 @@ const UserRegistrationForm = () => {
                     >
                       <span
                         className={`mr-2 inline-block w-2.5 h-2.5 rounded-full ${
-                          watch("gender") === "male"
+                          watch("gender") === "Male"
                             ? "bg-primary-black shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
                             : "bg-white shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
                         }`}
@@ -540,9 +573,9 @@ const UserRegistrationForm = () => {
                     <input
                       id="genderFemale"
                       type="radio"
-                      value="female"
+                      value="Female"
                       className="peer absolute opacity-0"
-                      checked={watch("gender") === "female"}
+                      checked={watch("gender") === "Female"}
                       {...register("gender")}
                     />
                     <label
@@ -551,7 +584,7 @@ const UserRegistrationForm = () => {
                     >
                       <span
                         className={`mr-2 inline-block w-2.5 h-2.5 rounded-full ${
-                          watch("gender") === "female"
+                          watch("gender") === "Female"
                             ? "bg-primary-black shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
                             : "bg-white shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
                         }`}
