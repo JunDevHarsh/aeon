@@ -1,24 +1,36 @@
-import { useContext } from "react";
 import Stepper from "../Stepper";
-import { InsuranceContext } from "../../context/InsuranceContext";
 
-const steps: string[] = [
-  "Plan Selection",
-  "Plan Add Ons",
-  "Application Details",
-  "Review & Pay",
+const steps = [
+  {
+    id: "131",
+    title: "Plan Selection",
+    path: "/insurance/plan-selection",
+  },
+  {
+    id: "234",
+    title: "Plan Add Ons",
+    path: "/insurance/plan-add-ons",
+  },
+  {
+    id: "265",
+    title: "Application Details",
+    path: "/insurance/application-details",
+  },
+  {
+    id: "545",
+    title: "Review & Pay",
+    path: "/insurance/review-pay",
+  },
 ];
 
-const StepperNavbar = () => {
-  const {
-    state: { currentStep },
-  } = useContext(InsuranceContext);
+const StepperNavbar = ({ pathname }: { pathname: string }) => {
+  const currentStep = steps.findIndex((step) => step.path === pathname) + 1;
 
   return (
     <div className="flex items-center justify-center w-full" role="navigation">
-      {steps.map((step, index) => (
+      {steps.map(({ id, title }, index) => (
         <Stepper
-          key={`stepper-${index}`}
+          key={`stepper-${id}`}
           count={index + 1}
           status={
             index + 1 === currentStep
@@ -27,7 +39,7 @@ const StepperNavbar = () => {
               ? "fulfilled"
               : "pending"
           }
-          title={step}
+          title={title}
           turn={
             index + 1 === 1
               ? "start"

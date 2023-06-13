@@ -9,7 +9,7 @@ const VehicleInfoPage = () => {
 
   useEffect(() => {
     if (showLoading) {
-      const timer = setTimeout(() => navigate("/insurance"), 4000);
+      const timer = setTimeout(() => navigate("/insurance/plan-selection"), 4000);
       window.scrollTo(0, 0);
       return () => clearTimeout(timer);
     }

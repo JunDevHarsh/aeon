@@ -23,6 +23,10 @@ const VehicleInfoForm = ({
   const vehicleState: VehicleStateType = useSelector(
     (state: RootState) => state.vehicle
   );
+  const variantOptionList = vehicleState.nvicList.map((variant) => ({
+    label: variant.vehicleVariant,
+    value: variant.vehicleVariant,
+  }));
   const {
     watch,
     register,
@@ -36,7 +40,7 @@ const VehicleInfoForm = ({
   });
   const dispatch = useDispatch();
 
-  const onSubmit: SubmitHandler<VehicleInfoStateType> = (
+  const onSubmit: SubmitHandler<VehicleInfoStateType> = async (
     val: VehicleInfoStateType
   ) => {
     const { dateOfBirth, maritalStatus, gender, ...vehicleRestState } = val;
@@ -143,34 +147,31 @@ const VehicleInfoForm = ({
           >
             Vehicle Variant*
           </label>
-          <Controller
-            control={control}
-            name="variant"
-            rules={{
-              validate: (val) => val !== null || "Select an option",
-            }}
-            render={({ field: { value }, fieldState: { error } }) => (
-              <SelectDropdown
-                id="vehicleVariant"
-                placeholder="Select Variant"
-                onChange={(val: string) => (
-                  setValue("variant", val), clearErrors("variant")
-                )}
-                selected={value}
-                error={error}
-                optionList={[
-                  {
-                    label: "XL T6 4D DOUBLE CAB PICK-UP 6 SP AUTO SPORTS MODE",
-                    value: "XL T6 4D DOUBLE CAB PICK-UP 6 SP AUTO SPORTS MODE",
-                  },
-                  {
-                    label: "XL (HI-RIDER) T6 4D DOUBLE CAB PICK-U 6 SP MANUA",
-                    value: "XL (HI-RIDER) T6 4D DOUBLE CAB PICK-U 6 SP MANUA",
-                  },
-                ]}
-              />
-            )}
-          />
+          {variantOptionList.length === 1 ? (
+            <span className="py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium cursor-default border border-solid border-[#CFD0D7] rounded">
+              {variantOptionList[0].value}
+            </span>
+          ) : (
+            <Controller
+              control={control}
+              name="variant"
+              rules={{
+                validate: (val) => val !== null || "Select an option",
+              }}
+              render={({ field: { value }, fieldState: { error } }) => (
+                <SelectDropdown
+                  id="vehicleVariant"
+                  placeholder="Select Variant"
+                  onChange={(val: string) => (
+                    setValue("variant", val), clearErrors("variant")
+                  )}
+                  selected={value}
+                  error={error}
+                  optionList={variantOptionList}
+                />
+              )}
+            />
+          )}
         </div>
         {/* Engine CC Field */}
         <FixedInputTextField title="Engine CC" value={vehicleState.engineCC} />
@@ -227,7 +228,7 @@ const VehicleInfoForm = ({
             render={({ field: { value }, fieldState: { error } }) => (
               <SelectDropdown
                 id="region"
-                placeholder="West"
+                placeholder="West Malaysia"
                 onChange={(val: string) => (
                   setValue("region", val), clearErrors("region")
                 )}
@@ -235,12 +236,12 @@ const VehicleInfoForm = ({
                 error={error}
                 optionList={[
                   {
-                    label: "West",
-                    value: "West",
+                    label: "West Malaysia",
+                    value: "West Malaysia",
                   },
                   {
-                    label: "East",
-                    value: "East",
+                    label: "East Malaysia",
+                    value: "East Malaysia",
                   },
                 ]}
               />

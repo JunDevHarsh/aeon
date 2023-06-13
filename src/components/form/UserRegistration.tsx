@@ -10,11 +10,17 @@ import DateOfBirthField from "../fields/DateOfBirth";
 import { useDispatch } from "react-redux";
 import { updateInsuranceState } from "../../store/slices/insurance";
 import { addUserID, addUserBasicInfo } from "../../store/slices/user";
-import { addVehicleRegNo } from "../../store/slices/vehicle";
+import {
+  // addVehicleRegNo,
+  updateVehicleState,
+} from "../../store/slices/vehicle";
 // types
 import { UserInsuranceInputs } from "./types";
 import VehicleSelector from "../fields/VehicleSelector";
 import ReferralCodeButton from "../button/ReferralCode";
+import axios from "axios";
+import DefaultPopup from "../popup/Default";
+import md5 from "md5";
 
 let prevValue: string = "";
 
@@ -46,59 +52,179 @@ const UserRegistrationForm = () => {
     defaultValues: defaultUserInsuranceState,
   });
   const [vehicleType, setVehicleType] = useState<"car" | "motorcycle">("car");
+  const [error, setError] = useState<{
+    isVisible: boolean;
+    title: string | null;
+    description: string | null;
+  }>({
+    isVisible: false,
+    title: null,
+    description: null,
+  });
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  // handle form subit
-  const onSubmit: SubmitHandler<UserInsuranceInputs> = (
-    data: UserInsuranceInputs
+  // function to handle form on submit
+  const handleOnFormSubmit: SubmitHandler<UserInsuranceInputs> = async (
+    inputUserData: UserInsuranceInputs
   ) => {
-    const {
-      insuranceType,
-      email,
-      gender,
-      idNo,
-      idType,
-      maritalStatus,
-      mobileNumber,
-      postalCode,
-      vehicleRegNo,
-    } = data;
-    // let { dateOfBirth } = data;
-    // if (idType === "nric") {
-    // const year = parseInt(idNo.slice(0, 2));
-    // const month = parseInt(idNo.slice(2, 4));
-    // const day = parseInt(idNo.slice(4, 6));
-    //   const currentYear = new Date().getFullYear() % 100;
-    //   // Check if year should belong to the 19th or 20th century
-    //   const century = year > currentYear ? 1900 : 2000;
-
-    //   const birthYear = century + year;
-
-    // dateOfBirth = new Date(`${birthYear}-${month}-${day}`);
-    //   setValue("dateOfBirth", dateOfBirth);
-    // }
-
-    // if user Id Type is valid then update the state -> user -> id
-    if (idType !== null) {
-      dispatch(addUserID({ userIdNo: idNo, userIdType: idType }));
-    }
-    // update the state -> vehicle -> regNo
-    dispatch(addVehicleRegNo(vehicleRegNo));
-    dispatch(
-      updateInsuranceState({ type: insuranceType, vehicle: vehicleType })
-    );
-    // updatethe  state -> user
-    dispatch(
-      addUserBasicInfo({
+    try {
+      setLoading(true);
+      const {
+        insuranceType,
         email,
         gender,
+        idNo,
+        idType,
         maritalStatus,
         mobileNumber,
         postalCode,
-        // dateOfBirth: dateOfBirth ? dateOfBirth.toISOString() : null,
-      })
-    );
-    navigate("/vehicle-info");
+        vehicleRegNo,
+      } = inputUserData;
+      const getToken = await axios.get(
+        "https://app.agiliux.com/aeon/webservice.php?operation=getchallenge&username=admin",
+        {
+          timeout: 5000,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const token = getToken.data.result.token;
+      const accessKey = md5(token + "bwJrIhxPdfsdialE");
+      const login = await axios.post(
+        "https://app.agiliux.com/aeon/webservice.php",
+        {
+          operation: "login",
+          username: "admin",
+          accessKey: accessKey,
+        },
+        {
+          timeout: 5000,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const sessionName = login.data.result.sessionName;
+      const getVehicle = await axios.post(
+        "https://app.agiliux.com/aeon/webservice.php",
+        {
+          sessionName: sessionName,
+          element: {
+            vehregno: vehicleRegNo,
+            idtype: idType,
+            id_comregno: idNo,
+            postalcode: postalCode,
+            tenant_id: "67b61490-fec2-11ed-a640-e19d1712c006",
+          },
+          operation: "getVehicleInfo",
+        },
+        {
+          timeout: 5000,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const vehicleData = getVehicle.data.result;
+      setLoading(false);
+      if (vehicleData.errors) {
+        if (vehicleData.errors[0] === "Data not found.") {
+          setError({
+            isVisible: true,
+            title: "Status - 404",
+            description: "Vehicle not found",
+          });
+          throw new Error("Vehicle not found");
+        } else {
+          setError({
+            isVisible: true,
+            title: "Status 401",
+            description: "Id number is invalid",
+          });
+          throw new Error("Invalid id no.");
+        }
+      }
+      // if user Id Type is valid then update the state -> user -> id
+      if (idType !== null) {
+        dispatch(addUserID({ userIdNo: idNo, userIdType: idType }));
+      }
+      const {
+        vehicleChassis,
+        vehicleEngine,
+        vehicleEngineCC,
+        vehicleLicenseId,
+        vehicleMake,
+        vehicleModel,
+        yearOfManufacture,
+        seatingCapacity,
+        nvicList,
+        ncdPercentage,
+        polEffectiveDate,
+        polExpiryDate,
+      } = vehicleData;
+      dispatch(
+        updateVehicleState({
+          chasisNo: vehicleChassis,
+          engineNo: vehicleEngine,
+          engineCC: vehicleEngineCC,
+          regNo: vehicleLicenseId,
+          make: vehicleMake,
+          model: vehicleModel,
+          variant: nvicList[0].vehicleVariant,
+          yearOfManufacture: yearOfManufacture,
+          seating: seatingCapacity,
+          nvicList: nvicList,
+          ncd: ncdPercentage,
+          periodOfCoverage: polEffectiveDate + " to " + polExpiryDate,
+        })
+      );
+
+      dispatch(
+        updateInsuranceState({ type: insuranceType, vehicle: vehicleType })
+      );
+
+      dispatch(
+        addUserBasicInfo({
+          email,
+          gender,
+          maritalStatus,
+          mobileNumber,
+          postalCode,
+          // dateOfBirth: dateOfBirth ? dateOfBirth.toISOString() : null,
+        })
+      );
+      navigate("/vehicle-info");
+    } catch (err: any) {
+      setLoading(false);
+      console.log(err);
+      if (err.code === "ECONNABORTED") {
+        setError({
+          isVisible: true,
+          description:
+            "Server took more than expected time to respond. Better to try after some time.",
+          title: "Timeout",
+        });
+        return;
+      }
+      if (err.code === "ERR_NETWORK") {
+        setError({
+          isVisible: true,
+          description:
+            "Can't make request to server. Please check your internet connection or try again later.",
+          title: "Network Error",
+        });
+        return;
+      }
+      if (err.response.status === 404 || err.response.status === 400) {
+        setError({
+          isVisible: true,
+          description: err.response.data.errors[0],
+          title: err.response.statusText,
+        });
+      }
+    }
   };
 
   const watchIDType: string | null = watch("idType");
@@ -120,12 +246,19 @@ const UserRegistrationForm = () => {
 
   return (
     <>
+      {error.isVisible && (
+        <DefaultPopup
+          title={error.title}
+          description={error.description}
+          setShowWarningPopup={setError}
+        />
+      )}
       <VehicleSelector
         vehicleType={vehicleType}
         setVehicleType={setVehicleType}
       />
       <form
-        onSubmit={handleSubmit(onSubmit)}
+        onSubmit={handleSubmit(handleOnFormSubmit)}
         className="relative mt-6 w-full px-2 md:px-6"
       >
         <div className="grid grid-cols-1 md:grid-cols-2 items-start gap-x-4 w-full">
@@ -281,7 +414,6 @@ const UserRegistrationForm = () => {
                   onChange(event: React.ChangeEvent<HTMLInputElement>) {
                     // event.preventDefault();
                     let { value } = event.currentTarget;
-                    console.log(value);
                     // remove all spaces from the text
                     value = value.replace(/\s+/g, "").toUpperCase();
                     if (watchIDType === "NRIC") {
@@ -518,26 +650,38 @@ const UserRegistrationForm = () => {
               Your data will be processed securely
             </span>
           </div>
-          <button
-            type="submit"
-            className="relative py-3 px-4 flex items-center justify-center max-w-[250px] w-full h-auto bg-primary-blue rounded-full"
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
+          {loading ? (
+            <button
+              disabled
+              className="relative py-3 px-4 flex items-center justify-center gap-x-2 max-w-[250px] w-full h-auto bg-primary-blue rounded-full"
             >
-              <path
-                d="M8.525 14.55L15.6 7.475L14.45 6.35L8.525 12.275L5.525 9.275L4.4 10.4L8.525 14.55ZM10 20C8.63333 20 7.34167 19.7375 6.125 19.2125C4.90833 18.6875 3.84583 17.9708 2.9375 17.0625C2.02917 16.1542 1.3125 15.0917 0.7875 13.875C0.2625 12.6583 0 11.3667 0 10C0 8.61667 0.2625 7.31667 0.7875 6.1C1.3125 4.88333 2.02917 3.825 2.9375 2.925C3.84583 2.025 4.90833 1.3125 6.125 0.7875C7.34167 0.2625 8.63333 0 10 0C11.3833 0 12.6833 0.2625 13.9 0.7875C15.1167 1.3125 16.175 2.025 17.075 2.925C17.975 3.825 18.6875 4.88333 19.2125 6.1C19.7375 7.31667 20 8.61667 20 10C20 11.3667 19.7375 12.6583 19.2125 13.875C18.6875 15.0917 17.975 16.1542 17.075 17.0625C16.175 17.9708 15.1167 18.6875 13.9 19.2125C12.6833 19.7375 11.3833 20 10 20Z"
-                fill="#fff"
-              />
-            </svg>
-            <span className="ml-2 text-base text-center text-white font-medium">
-              Submit
-            </span>
-          </button>
+              <span className="animate-spin duration-300 inline-block w-5 h-5 border-[3px] border-solid border-white border-y-transparent rounded-full"></span>
+              <span className="text-base text-center text-white font-medium">
+                Loading...
+              </span>
+            </button>
+          ) : (
+            <button
+              type="submit"
+              className="relative py-3 px-4 flex items-center justify-center max-w-[250px] w-full h-auto bg-primary-blue rounded-full"
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M8.525 14.55L15.6 7.475L14.45 6.35L8.525 12.275L5.525 9.275L4.4 10.4L8.525 14.55ZM10 20C8.63333 20 7.34167 19.7375 6.125 19.2125C4.90833 18.6875 3.84583 17.9708 2.9375 17.0625C2.02917 16.1542 1.3125 15.0917 0.7875 13.875C0.2625 12.6583 0 11.3667 0 10C0 8.61667 0.2625 7.31667 0.7875 6.1C1.3125 4.88333 2.02917 3.825 2.9375 2.925C3.84583 2.025 4.90833 1.3125 6.125 0.7875C7.34167 0.2625 8.63333 0 10 0C11.3833 0 12.6833 0.2625 13.9 0.7875C15.1167 1.3125 16.175 2.025 17.075 2.925C17.975 3.825 18.6875 4.88333 19.2125 6.1C19.7375 7.31667 20 8.61667 20 10C20 11.3667 19.7375 12.6583 19.2125 13.875C18.6875 15.0917 17.975 16.1542 17.075 17.0625C16.175 17.9708 15.1167 18.6875 13.9 19.2125C12.6833 19.7375 11.3833 20 10 20Z"
+                  fill="#fff"
+                />
+              </svg>
+              <span className="ml-2 text-base text-center text-white font-medium">
+                Submit
+              </span>
+            </button>
+          )}
         </div>
       </form>
     </>

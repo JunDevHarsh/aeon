@@ -55,6 +55,13 @@ export type VehicleStateType = {
   ncd: string; // Vehicle's NCD
   reconIndicator: "yes" | "no";
   periodOfCoverage: string;
+  nvicList: NvicList[];
+};
+
+type NvicList = {
+  nvic: string;
+  vehicleMarketValue: number;
+  vehicleVariant: string;
 };
 
 /*-----Reducer Payload Action-----*/

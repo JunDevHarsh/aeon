@@ -27,8 +27,8 @@ const Header = () => {
 
   return (
     <header className="relative w-full h-[60px] bg-white z-[1]">
-      <div className="fixed top-0 left-0 right-0 w-full h-auto bg-white shadow-navbar-header">
-        <div className="mx-auto py-2 px-4 flex items-center justify-between max-w-7xl w-full h-auto">
+      <div className="fixed top-0 left-0 right-0 w-full h-[60px] bg-white shadow-navbar-header">
+        <div className="mx-auto py-2 px-4 flex items-center justify-between max-w-7xl w-full h-full">
           <div className="flex items-center justify-center  w-auto h-full">
             <Link
               to="/"
