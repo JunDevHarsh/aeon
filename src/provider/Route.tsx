@@ -1,6 +1,4 @@
 import {
-  Navigate,
-  Outlet,
   Route,
   createBrowserRouter,
   createRoutesFromElements,
@@ -9,6 +7,8 @@ import {
 import { lazy, Suspense, LazyExoticComponent, ComponentType } from "react";
 import RootLayout from "../components/layout/Root";
 import InsuranceRootLayout from "../components/layout/Insurance";
+import QuoteListingProvider from "../context/QuoteListing";
+import AddOnsContainer from "../components/container/AddOns";
 
 /**
  * Dynamically imports a React component using lazy loading.
@@ -69,23 +69,54 @@ const router = createBrowserRouter(
         </>
       }
     >
+      {/* home page or "/" route */}
       <Route index element={<MemoizedHomePage />} />
+      {/* vehicle's info or "/vehicle-info" route*/}
       <Route path="/vehicle-info" element={<MemoizedVehicleInfoPage />} />
       <Route
-        path="/insurance"
+        path="/insuranc"
         element={<MemoizedInsurancePage />}
         errorElement={<ErrorBoundary />}
       />
-      <Route path="/form" element={<InsuranceRootLayout />}>
-        <Route index element={<MemoizedQuoteListingContainer />} />
+      <Route
+        path="/insurance"
+        element={
+          <QuoteListingProvider>
+            <InsuranceRootLayout />
+          </QuoteListingProvider>
+        }
+      >
+        <Route index element={<MemoizedNotFoundPage />} />
         {/* Added route for "/insurance/quote-listings" to redirect to "/insurance" */}
         <Route
-          path="quote-listings"
-          element={<Navigate to="/form" replace={true} />}
+          path="plan-selection"
+          element={
+            <Suspense
+              fallback={
+                <>
+                  <div className="relative mt-4 px-4 py-3 flex flex-col md:flex-row items-center justify-center w-full bg-[#F8F8F8] rounded-[10px]">
+                    <div className="flex flex-col sm:flex-row items-start lg:items-center justify-center max-w-none sm:max-w-xl lg:max-w-3xl w-full">
+                      <div className="animate-pulse relative py-8 lg:py-4 w-full sm:w-[45%] md:w-50% bg-gray-200 rounded"></div>
+                      <div className="animate-pulse relative mt-4 sm:mt-0 ml-0 sm:ml-4 py-8 lg:py-4 w-full sm:w-[45%] md:w-50% bg-gray-200 rounded"></div>
+                    </div>
+                  </div>
+                  <div className="relative w-full">
+                    <div className="mt-8 flex flex-col items-center justify-between w-full gap-y-4">
+                      <div className="animate-pulse relative h-64 w-full bg-gray-100 rounded-lg"></div>
+                      <div className="animate-pulse relative h-64 w-full bg-gray-100 rounded-lg"></div>
+                      <div className="animate-pulse relative h-64 w-full bg-gray-100 rounded-lg"></div>
+                    </div>
+                  </div>
+                </>
+              }
+            >
+              <MemoizedQuoteListingContainer />
+            </Suspense>
+          }
         />
-        <Route path="step-two" element={<div>Step 2</div>} />
-        <Route path="step-third" element={<div>Step 3</div>} />
-        <Route path="step-four" element={<div>Step 4</div>} />
+        <Route path="plan-add-ons" element={<AddOnsContainer />} />
+        <Route path="application-details" element={<div>Step 3</div>} />
+        <Route path="review-pay" element={<div>Step 4</div>} />
       </Route>
       <Route path="/payment" element={<MemoizedPaymentPage />} />
       <Route path="*" element={<MemoizedNotFoundPage />} />

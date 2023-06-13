@@ -20,6 +20,7 @@ import VehicleSelector from "../fields/VehicleSelector";
 import ReferralCodeButton from "../button/ReferralCode";
 import axios from "axios";
 import DefaultPopup from "../popup/Default";
+import md5 from "md5";
 
 let prevValue: string = "";
 
@@ -80,27 +81,56 @@ const UserRegistrationForm = () => {
         postalCode,
         vehicleRegNo,
       } = inputUserData;
-      const apiResponse = await axios.post(
-        "https://integra.agiliux.com/common/vehicleinfo",
+      const getToken = await axios.get(
+        "https://app.agiliux.com/aeon/webservice.php?operation=getchallenge&username=admin",
         {
-          vehregno: vehicleRegNo,
-          idtype: idType,
-          id_comregno: idNo,
-          postalcode: postalCode,
-        },
-        {
-          timeout: 2000,
+          timeout: 5000,
           headers: {
             "Content-Type": "application/json",
-            Tenant_id: "67b61490-fec2-11ed-a640-e19d1712c006",
           },
         }
       );
+      const token = getToken.data.result.token;
+      const accessKey = md5(token + "bwJrIhxPdfsdialE");
+      const login = await axios.post(
+        "https://app.agiliux.com/aeon/webservice.php",
+        {
+          operation: "login",
+          username: "admin",
+          accessKey: accessKey,
+        },
+        {
+          timeout: 5000,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const sessionName = login.data.result.sessionName;
+      const getVehicle = await axios.post(
+        "https://app.agiliux.com/aeon/webservice.php",
+        {
+          sessionName: sessionName,
+          element: {
+            vehregno: vehicleRegNo,
+            idtype: idType,
+            id_comregno: idNo,
+            postalcode: postalCode,
+            tenant_id: "67b61490-fec2-11ed-a640-e19d1712c006",
+          },
+          operation: "getVehicleInfo",
+        },
+        {
+          timeout: 5000,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const vehicleData = getVehicle.data.result;
       setLoading(false);
-      const data = apiResponse.data;
-      console.log(data);
-      if (data.errors) {
-        if (data.errors[0] === "Data not found.") {
+      if (vehicleData.errors) {
+        if (vehicleData.errors[0] === "Data not found.") {
           setError({
             isVisible: true,
             title: "Status - 404",
@@ -133,7 +163,7 @@ const UserRegistrationForm = () => {
         ncdPercentage,
         polEffectiveDate,
         polExpiryDate,
-      } = data;
+      } = vehicleData;
       dispatch(
         updateVehicleState({
           chasisNo: vehicleChassis,
@@ -175,6 +205,15 @@ const UserRegistrationForm = () => {
           description:
             "Server took more than expected time to respond. Better to try after some time.",
           title: "Timeout",
+        });
+        return;
+      }
+      if (err.code === "ERR_NETWORK") {
+        setError({
+          isVisible: true,
+          description:
+            "Can't make request to server. Please check your internet connection or try again later.",
+          title: "Network Error",
         });
         return;
       }

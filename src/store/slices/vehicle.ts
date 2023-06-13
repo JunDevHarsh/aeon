@@ -12,7 +12,7 @@ const initialState: VehicleStateType = {
   engineCC: "",
   chasisNo: "",
   class: "Private",
-  region: "West",
+  region: "West Malaysia",
   drivers: "0",
   seating: "",
   ncd: "",
