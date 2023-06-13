@@ -175,17 +175,16 @@ const VehicleCoverageContainer = () => {
             </h2>
             {type === "market" ? (
               <SelectDropdown
-                // optionList={[
-                //   {
-                //     label: "XL T6 4D DOUBLE CAB PICK-UP 6 SP AUTO SPORTS MODE",
-                //     value: "XL T6 4D DOUBLE CAB PICK-UP 6 SP AUTO SPORTS MODE",
-                //   },
-                //   {
-                //     label: "XL (HI-RIDER) T6 4D DOUBLE CAB PICK-U 6 SP MANUA",
-                //     value: "XL (HI-RIDER) T6 4D DOUBLE CAB PICK-U 6 SP MANUA",
-                //   },
-                // ]}
-                optionList={variantOptionList}
+                optionList={[
+                  {
+                    label: "XL T6 4D DOUBLE CAB PICK-UP 6 SP AUTO SPORTS MODE",
+                    value: "XL T6 4D DOUBLE CAB PICK-UP 6 SP AUTO SPORTS MODE",
+                  },
+                  {
+                    label: "XL (HI-RIDER) T6 4D DOUBLE CAB PICK-U 6 SP MANUA",
+                    value: "XL (HI-RIDER) T6 4D DOUBLE CAB PICK-U 6 SP MANUA",
+                  },
+                ]}
                 id="hello"
                 onChange={(val: string) =>
                   setState((prev) => ({
