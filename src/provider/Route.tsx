@@ -70,7 +70,14 @@ const router = createBrowserRouter(
       }
     >
       {/* home page or "/" route */}
-      <Route index element={<MemoizedHomePage />} />
+      <Route
+        index
+        element={
+          <Suspense fallback={<div>Loading...</div>}>
+            <MemoizedHomePage />
+          </Suspense>
+        }
+      />
       {/* vehicle's info or "/vehicle-info" route*/}
       <Route path="/vehicle-info" element={<MemoizedVehicleInfoPage />} />
       <Route
