@@ -1,11 +1,10 @@
 import { useState, useContext } from "react";
 import { InsurerQuoteStateType } from "../../context/types";
 import {
-  CurentStepTypes,
   InsuranceProviderTypes,
-  IsMVContainerVisibleTypes,
 } from "../../context/InsuranceContext";
 import { InsuranceContext } from "../../context/InsuranceContext";
+import { useNavigate } from "react-router-dom";
 
 type QuoteComparisonProps = {
   selectedQuotes: InsurerQuoteStateType[];
@@ -19,6 +18,7 @@ const QuoteComparisonPopup = ({
   updateSelectedQuotePlans,
 }: QuoteComparisonProps) => {
   const [showDifference, setShowDifference] = useState<boolean>(false);
+  const navigate = useNavigate();
   const { dispatch } = useContext(InsuranceContext);
   const uniqueBenefits = [
     ...new Set(
@@ -61,7 +61,7 @@ const QuoteComparisonPopup = ({
 
   function handleSelectedQuote(id: string) {
     const quotePlan = selectedQuotes.find((quote) => quote.id === id);
-    console.log(quotePlan);
+    // console.log(quotePlan);
     if (quotePlan) {
       dispatch({
         type: InsuranceProviderTypes.UpdateInsuranceProvider,
@@ -71,18 +71,7 @@ const QuoteComparisonPopup = ({
           price: quotePlan.price.toString(),
         },
       });
-      dispatch({
-        type: CurentStepTypes.UpdateCurrentStep,
-        payload: {
-          newStep: 2,
-        },
-      });
-      dispatch({
-        type: IsMVContainerVisibleTypes.UpdateContainerVisibility,
-        payload: {
-          shouldVisible: true,
-        },
-      });
+      navigate("/insurance/market-agreed-value");
     }
   }
 

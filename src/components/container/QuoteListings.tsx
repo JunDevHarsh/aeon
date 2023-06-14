@@ -11,6 +11,9 @@ import {
 } from "../../context/QuoteListing";
 import { InsurerQuoteStateType } from "../../context/types";
 import QuoteComparisonPopup from "../popup/QuoteComparison";
+import axios from "axios";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store/store";
 
 export interface PlanType {
   value: string;
@@ -61,6 +64,9 @@ const QuoteListingsContainer = () => {
   // state for managing the list of quote plans
   // fetched from the agiliux backend system
   // const [quotePlans, updateQuotePlans] = useState<QuotePlansType[]>(quotes);
+  const { sessionName, requestId } = useSelector(
+    (state: RootState) => state.user
+  );
   const [isComparePopupVisible, shouldComparePopupVisible] =
     useState<boolean>(false);
   const [warngingPopup, setWarningPopup] = useState<WarningPopupType>({
@@ -112,6 +118,55 @@ const QuoteListingsContainer = () => {
       }
     }
   }, [insurerQuotes]);
+
+  useEffect(() => {
+    async function fetchQuotes() {
+      try {
+        const quoteResponse = await axios.post(
+          "https://app.agiliux.com/aeon/webservice.php",
+          {
+            sessionName: sessionName,
+            operation: "getQuoteInfo",
+            element: JSON.stringify({
+              requestId: requestId,
+              tenant_id: "67b61490-fec2-11ed-a640-e19d1712c006",
+              vehclass: "Private Vehicle",
+            }),
+          },
+          {
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+          }
+        );
+        if (quoteResponse.status === 200) {
+          const data = quoteResponse.data.result;
+          const quoteList = data.quoteinfo.map(
+            ({ productid, logoname, displaypremium, benefits }: any) => ({
+              id: productid,
+              insurerId: "1001",
+              insurerName: logoname,
+              planType: "comprehensive",
+              imgUrl: logoname.toLowerCase(),
+              price: displaypremium,
+              popular: true,
+              isSelected: false,
+              benefits: benefits,
+            })
+          );
+          dispatch({
+            type: QuotesTypes.AddQuotes,
+            payload: { quotes: quoteList },
+          });
+          return;
+        }
+        throw new Error("Something went wrong");
+      } catch (err) {
+        console.log(err);
+      }
+    }
+    fetchQuotes();
+  }, []);
 
   // filter quotes based on user search selection i.e.
   // if user has searching for third-party or comprehensive plans
@@ -248,11 +303,10 @@ const QuoteListingsContainer = () => {
         {quotesToDisply.length === 0 ? (
           // quote skeleton
           <div className="relative w-full">
-            <div className="animate-pulse py-6 px-4 flex items-center justify-center gap-x-4 bg-[#F8F8F8] w-full rounded-2xl" />
-            <div className="mt-8 flex flex-col items-center justify-between w-full gap-y-4">
-              <div className="animate-pulse relative h-64 w-full bg-gray-100 rounded-lg"></div>
-              <div className="animate-pulse relative h-64 w-full bg-gray-100 rounded-lg"></div>
-              <div className="animate-pulse relative h-64 w-full bg-gray-100 rounded-lg"></div>
+            <div className="mt-4 flex flex-col items-center justify-between w-full">
+              <div className="animate-pulse relative h-64 w-full bg-gray-200 rounded-lg"></div>
+              <div className="animate-pulse relative mt-4 h-64 w-full bg-gray-200 rounded-lg"></div>
+              <div className="animate-pulse relative mt-4 h-64 w-full bg-gray-200 rounded-lg"></div>
             </div>
           </div>
         ) : (

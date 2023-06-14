@@ -4,7 +4,7 @@ import {
   createRoutesFromElements,
   useRouteError,
 } from "react-router-dom";
-import { Suspense } from "react";
+import { Suspense, lazy } from "react";
 // import { lazy, Suspense, LazyExoticComponent, ComponentType } from "react";
 import RootLayout from "../components/layout/Root";
 import InsuranceRootLayout from "../components/layout/Insurance";
@@ -12,39 +12,21 @@ import QuoteListingProvider from "../context/QuoteListing";
 import AddOnsContainer from "../components/container/AddOns";
 import HomePage from "../pages/Home";
 import VehicleInfoPage from "../pages/VehicleInfo";
-import InsurancePage from "../pages/Insurance";
+// import InsurancePage from "../pages/Insurance";
 import NotFoundPage from "../pages/NotFound";
-import QuoteListingsContainer from "../components/container/QuoteListings";
+// import QuoteListingsContainer from "../components/container/QuoteListings";
 import PaymentPage from "../pages/Payment";
+import InsuranceContextProvider from "../context/InsuranceContext";
+import VehicleCoverageContainer from "../components/container/VehicleCoverage";
+// import VehicleCoverageProvider from "../context/VehicleCoverage";
+import AddOnContextProvider from "../context/AddOnContext";
+import MultiFormContextProvider from "../context/MultiFormContext";
+import DriverDetailsForm from "../components/form/DriverDetails";
+import ApplicationDetailsContainer from "../components/container/ApplicationDetails";
 
-/**
- * Dynamically imports a React component using lazy loading.
- * @param filePath The file path of the component to import.
- * @returns A lazy-loaded component.
- */
-// function importComponent(
-//   filePath: string
-// ): LazyExoticComponent<ComponentType<any>> {
-//   // Define the lazy-loaded component using the lazy function from React.
-//   const importedComponent: LazyExoticComponent<ComponentType<any>> = lazy(
-//     () => import(filePath)
-//   );
-
-//   // Return the lazy-loaded component.
-//   return importedComponent;
-// }
-
-// Importing lazy-loaded components using the importComponent function
-// const MemoizedHomePage = importComponent("../pages/Home");
-// const MemoizedVehicleInfoPage = importComponent("../pages/VehicleInfo");
-// const MemoizedInsurancePage = importComponent("../pages/Insurance");
-// const MemoizedPaymentPage = importComponent("../pages/Payment");
-// const MemoizedNotFoundPage = importComponent("../pages/NotFound");
-
-// const MemoizedQuoteListingContainer = importComponent(
-// "../components/container/QuoteListings"
-// );
-// The components are now lazily loaded and memoized for optimal performance
+const MemoizedQuoteListingsPage = lazy(
+  () => import("../components/container/QuoteListings")
+);
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -91,16 +73,24 @@ const router = createBrowserRouter(
         element={<VehicleInfoPage />}
         errorElement={<ErrorBoundary />}
       />
-      <Route
+      {/* <Route
         path="/insuranc"
         element={<InsurancePage />}
         errorElement={<ErrorBoundary />}
-      />
+      /> */}
       <Route
         path="/insurance"
         element={
           <QuoteListingProvider>
-            <InsuranceRootLayout />
+            <InsuranceContextProvider>
+              {/* <VehicleCoverageProvider> */}
+              <AddOnContextProvider>
+                <MultiFormContextProvider>
+                  <InsuranceRootLayout />
+                </MultiFormContextProvider>
+              </AddOnContextProvider>
+              {/* </VehicleCoverageProvider> */}
+            </InsuranceContextProvider>
           </QuoteListingProvider>
         }
       >
@@ -118,23 +108,20 @@ const router = createBrowserRouter(
                       <div className="animate-pulse relative mt-4 sm:mt-0 ml-0 sm:ml-4 py-8 lg:py-4 w-full sm:w-[45%] md:w-50% bg-gray-200 rounded"></div>
                     </div>
                   </div>
-                  <div className="relative w-full">
-                    <div className="mt-8 flex flex-col items-center justify-between w-full gap-y-4">
-                      <div className="animate-pulse relative h-64 w-full bg-gray-100 rounded-lg"></div>
-                      <div className="animate-pulse relative h-64 w-full bg-gray-100 rounded-lg"></div>
-                      <div className="animate-pulse relative h-64 w-full bg-gray-100 rounded-lg"></div>
-                    </div>
-                  </div>
                 </>
               }
             >
-              <QuoteListingsContainer />
+              <MemoizedQuoteListingsPage />
             </Suspense>
           }
         />
         <Route path="plan-add-ons" element={<AddOnsContainer />} />
-        <Route path="application-details" element={<div>Step 3</div>} />
-        <Route path="review-pay" element={<div>Step 4</div>} />
+        <Route path="application-details" element={<DriverDetailsForm />} />
+        <Route path="review-pay" element={<ApplicationDetailsContainer />} />
+        <Route
+          path="market-agreed-value"
+          element={<VehicleCoverageContainer />}
+        />
       </Route>
       <Route path="/payment" element={<PaymentPage />} />
       <Route path="*" element={<NotFoundPage />} />

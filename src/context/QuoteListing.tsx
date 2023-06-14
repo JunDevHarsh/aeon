@@ -16,6 +16,7 @@ export enum QuoteFilterTypes {
 
 export enum QuotesTypes {
   ToggleQuoteSelection = "TOGGLE_QUOTE_SELECTION",
+  AddQuotes = "ADD_QUOTES",
 }
 
 /*---------------Payload Types---------------*/
@@ -33,6 +34,9 @@ export type QuotesPayload = {
   [QuotesTypes.ToggleQuoteSelection]: {
     id: string;
   };
+  [QuotesTypes.AddQuotes]: {
+    quotes: InsurerQuoteStateType[];
+  }
 };
 
 export type QuoteFilterAction =
@@ -40,61 +44,6 @@ export type QuoteFilterAction =
 
 export type QuotesAction =
   ActionMap<QuotesPayload>[keyof ActionMap<QuotesPayload>];
-
-// default quotes state
-const defaultQuotes: InsurerQuoteStateType[] = [
-  {
-    id: "101",
-    insurerId: "1001",
-    insurerName: "Allianz",
-    planType: "comprehensive",
-    imgUrl: "allianz",
-    price: 671.67,
-    popular: true,
-    isSelected: false,
-    benefits: [
-      "Third party body injury and death",
-      "Third party property loss or damage",
-      "Driver's Personal Accident",
-      "Full special perils",
-      "Legal liability to passengers",
-      "6 months warranty on repairs",
-      "Loss or Damage due to accident",
-    ],
-  },
-  {
-    id: "102",
-    insurerId: "1002",
-    insurerName: "MSIG",
-    planType: "third-party",
-    imgUrl: "msig",
-    price: 700,
-    popular: false,
-    isSelected: false,
-    benefits: [
-      "Driver's Personal Accident",
-      "Legal liability to passengers",
-      "6 months warranty on repairs",
-      "Loss or Damage due to accident",
-    ],
-  },
-  {
-    id: "103",
-    insurerId: "1003",
-    insurerName: "Zurich",
-    planType: "comprehensive",
-    imgUrl: "zurich",
-    price: 709,
-    popular: false,
-    isSelected: false,
-    benefits: [
-      "Third party body injury and death",
-      "Driver's Personal Accident",
-      "Full special perils",
-      "6 months warranty on repairs",
-    ],
-  },
-];
 
 // default state for context
 const defaultQuoteListingState: QuoteListingStateType = {
@@ -109,7 +58,8 @@ const defaultQuoteListingState: QuoteListingStateType = {
       },
     ],
   },
-  quotes: defaultQuotes,
+  // quotes: defaultQuotes
+  quotes: [],
 };
 
 export const QuoteListingContext = createContext<{

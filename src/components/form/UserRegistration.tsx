@@ -224,7 +224,7 @@ const UserRegistrationForm = () => {
           mobileNumber,
           postalCode,
           polExpiryDate: polExpiryDate,
-          polEffectiveDate: polEffectiveDate
+          polEffectiveDate: polEffectiveDate,
           // dateOfBirth: dateOfBirth ? dateOfBirth : null,
         })
       );
@@ -250,12 +250,14 @@ const UserRegistrationForm = () => {
         });
         return;
       }
-      if (err.response.status === 404 || err.response.status === 400) {
-        setError({
-          isVisible: true,
-          description: err.response.data.errors[0],
-          title: err.response.statusText,
-        });
+      if (err.response) {
+        if (err.response.status === 404 || err.response.status === 400) {
+          setError({
+            isVisible: true,
+            description: err.response.data.errors[0],
+            title: err.response.statusText,
+          });
+        }
       }
     }
   };

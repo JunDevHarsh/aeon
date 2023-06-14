@@ -83,7 +83,7 @@ const ApplicationDetailsContainer = () => {
               {chasisNo}
             </span>
           </div>
-          <div className="flex flex-col items-start w-auto">
+          <div className="flex flex-col items-start w-auto col-span-1 mobile-xl:col-span-2 md:col-span-3">
             <span className="text-base text-left text-primary-black font-bold">
               Variant
             </span>

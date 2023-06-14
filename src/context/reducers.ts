@@ -4,16 +4,12 @@ import {
   AdditionalDriverDetails,
   DriverDetails,
   InsurerQuoteStateType,
-  ProviderState,
   QuotesFilterType,
 } from "./types";
 import {
-  CurentStepTypes,
-  CurrentStepAction,
   InsuranceProviderAction,
   InsuranceProviderTypes,
-  IsMVContainerVisibleAction,
-  IsMVContainerVisibleTypes,
+  ProviderState,
 } from "./InsuranceContext";
 import {
   AddDriverActions,
@@ -30,31 +26,10 @@ import {
   QuotesTypes,
 } from "./QuoteListing";
 
-export const currentStepReducer = (
-  state: number,
-  action:
-    | CurrentStepAction
-    | InsuranceProviderAction
-    | IsMVContainerVisibleAction
-) => {
-  const { type, payload } = action;
-  switch (type) {
-    case CurentStepTypes.UpdateCurrentStep: {
-      const { newStep } = payload;
-      return (state = newStep);
-    }
-    default:
-      return state;
-  }
-};
-
 /*---------------Insurance Reducer---------------*/
 export const insuranceProviderReducer = (
-  state: ProviderState | null,
-  action:
-    | InsuranceProviderAction
-    | CurrentStepAction
-    | IsMVContainerVisibleAction
+  state: ProviderState,
+  action: InsuranceProviderAction
 ) => {
   const { type, payload } = action;
   switch (type) {
@@ -103,25 +78,6 @@ export const addOnsReducer = (
         addOn.id === id ? { ...addOn, price: price } : addOn
       );
       return [...updatedAddOns];
-    }
-    default:
-      return state;
-  }
-};
-
-/*---------------IsMVContainerVisible Reducer---------------*/
-export const IsMVContainerVisibleReducer = (
-  state: boolean,
-  action:
-    | IsMVContainerVisibleAction
-    | InsuranceProviderAction
-    | CurrentStepAction
-) => {
-  const { payload, type } = action;
-  switch (type) {
-    case IsMVContainerVisibleTypes.UpdateContainerVisibility: {
-      const { shouldVisible } = payload;
-      return shouldVisible;
     }
     default:
       return state;
@@ -222,6 +178,10 @@ export const quotesReducer = (
         item.id === id ? { ...item, isSelected: !item.isSelected } : item
       );
       return updatedState;
+    }
+    case QuotesTypes.AddQuotes: {
+      const { quotes } = payload;
+      return [...quotes];
     }
     default:
       return state;

@@ -25,20 +25,6 @@ export type VehicleCoverage = {
   };
 };
 
-// Insurance State
-export type InsuranceState = {
-  provider: ProviderState | null;
-  currentStep: number;
-  isMVContainerVisible: boolean;
-};
-
-// Provider State
-export type ProviderState = {
-  id: string;
-  name: string;
-  price: string;
-};
-
 // Steps State
 export type Steps = {
   id: string;
