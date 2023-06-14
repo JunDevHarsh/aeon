@@ -2,23 +2,9 @@ import { useContext } from "react";
 import SelectDropdown from "../fields/SelectDropdown";
 import InputRange from "../fields/InputRange";
 import { VehicleCoverageContext } from "../../context/VehicleCoverage";
-import {
-  InsuranceContext,
-  IsMVContainerVisibleTypes,
-} from "../../context/InsuranceContext";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
-
-/**
- * Returns a random number between min (inclusive) and max (exclusive)
- */
-// function getRandomNumber(min: number, max: number): number {
-//   return Math.round(Math.random() * (max - min) + min);
-// }
-
-// export function numberWithCommas(x: number): string {
-//   return x.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
-// }
+import { Link } from "react-router-dom";
 
 export function numberWithCommas(x: number): string {
   return x.toLocaleString();
@@ -34,23 +20,16 @@ const VehicleCoverageContainer = () => {
     label: variant.vehicleVariant,
     value: variant.vehicleVariant,
   }));
-  const { dispatch } = useContext(InsuranceContext);
 
-  function handleSubmit() {
-    setState((prev) => ({
-      ...prev,
-      selectedCoverage: {
-        type: type,
-        price: type === "market" ? market.price : agreed.price,
-      },
-    }));
-    dispatch({
-      type: IsMVContainerVisibleTypes.UpdateContainerVisibility,
-      payload: {
-        shouldVisible: false,
-      },
-    });
-  }
+  // function handleSubmit() {
+  //   setState((prev) => ({
+  //     ...prev,
+  //     selectedCoverage: {
+  //       type: type,
+  //       price: type === "market" ? market.price : agreed.price,
+  //     },
+  //   }));
+  // }
 
   function updateSlider(type: "market" | "agreed", value: number) {
     setState((prev) => ({
@@ -255,14 +234,14 @@ const VehicleCoverageContainer = () => {
             />
           )}
           <div className="mt-4 flex items-center justify-start gap-x-2 w-full">
-            <button
-              onClick={handleSubmit}
-              className="relative mt-4 py-2.5 px-8 w-auto bg-primary-blue rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
+            <Link
+              to="/insurance/plan-add-ons"
+              className="relative mt-4 py-2.5 px-8 flex items-center justify-center w-auto bg-primary-blue rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
             >
               <span className="text-base text-center font-medium text-white">
                 Submit
               </span>
-            </button>
+            </Link>
           </div>
         </div>
         <div className="ml-0 md:ml-8 mt-8 md:mt-0 relative max-w-sm w-full bg-[#F8F8F8] rounded-lg overflow-hidden shadow-container">

@@ -115,9 +115,7 @@ const VehicleCoverageProvider = ({
     console.log(type);
     if (type === "market") {
       if (market.variant) {
-        const getVariant = market.variant as
-          | "XL T6 4D DOUBLE CAB PICK-UP 6 SP AUTO SPORTS MODE"
-          | "XL (HI-RIDER) T6 4D DOUBLE CAB PICK-U 6 SP MANUA";
+        const getVariant = market.variant as keyof typeof defaultCoverages.market;
         const getCoverageValues = defaultCoverages.market[getVariant];
         const { minValue, midValue, maxValue } = getCoverageValues;
         setState((prev) => ({

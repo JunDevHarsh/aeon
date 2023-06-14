@@ -1,17 +1,14 @@
 import { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import Code from "../button/Code";
 import { numberWithCommas } from "../container/VehicleCoverage";
-import {
-  CurentStepTypes,
-  InsuranceContext,
-  IsMVContainerVisibleTypes,
-} from "../../context/InsuranceContext";
+import { InsuranceContext } from "../../context/InsuranceContext";
 import { AddOnsContext } from "../../context/AddOnContext";
 import { VehicleCoverageContext } from "../../context/VehicleCoverage";
 import { updateFinalPrice } from "../../store/slices/insurance";
+import { Link } from "react-router-dom";
 
 export interface AddBenefitsType {
   id: string;
@@ -33,16 +30,16 @@ const SummaryInfoCard = () => {
   const { ncd } = useSelector((state: RootState) => state.vehicle);
   const navigate = useNavigate();
   const {
-    state: { currentStep, provider },
-    dispatch: updateInsuranceState,
+    state: { price: proPrice, name: proName },
   } = useContext(InsuranceContext);
   const {
     state: { selectedCoverage },
   } = useContext(VehicleCoverageContext);
+  const { pathname } = useLocation();
 
   const selectedAddOns = addOns.filter((addOn) => addOn.isSelected);
 
-  const providerPrice = provider?.price ? Number(provider.price) : 0;
+  const providerPrice = proPrice ? Number(proPrice) : 0;
 
   const updatedNCD = ((providerPrice * Number(ncd)) / 100).toFixed(2);
   const grossPremium = (
@@ -87,18 +84,8 @@ const SummaryInfoCard = () => {
               <span className="text-base text-left text-primary-black font-medium">
                 RM {numberWithCommas(selectedCoverage?.price ?? 1200)}
               </span>
-              {currentStep !== 4 && (
-                <button
-                  onClick={() =>
-                    updateInsuranceState({
-                      type: IsMVContainerVisibleTypes.UpdateContainerVisibility,
-                      payload: {
-                        shouldVisible: true,
-                      },
-                    })
-                  }
-                  className="ml-1"
-                >
+              {pathname !== "/insurance/review-pay" && (
+                <Link to="/insurance/market-agreed-value" className="ml-1">
                   <svg
                     width="13"
                     height="13"
@@ -111,7 +98,7 @@ const SummaryInfoCard = () => {
                       fill="#A5308A"
                     />
                   </svg>
-                </button>
+                </Link>
               )}
             </div>
           </div>
@@ -119,7 +106,7 @@ const SummaryInfoCard = () => {
         <div className="inline-block my-3 w-full h-[1px] bg-[#bcbcbc]" />
         <div className="flex flex-col items-start gap-y-1 w-full">
           <h4 className="text-lg text-center text-primary-black font-bold">
-            {provider?.name ?? "MSIG Motor Plus Insurance"}
+            {proName ?? "MSIG Motor Plus Insurance"}
           </h4>
           <div className="flex items-center justify-between w-full">
             <span className="text-base text-left text-primary-black font-bold w-1/2">
@@ -235,21 +222,20 @@ const SummaryInfoCard = () => {
           </span>
         </div>
         <div className="mt-4 flex flex-col mobile-xl:flex-row items-center justify-center w-full">
-          <button
-            onClick={() =>
-              updateInsuranceState({
-                type: CurentStepTypes.UpdateCurrentStep,
-                payload: {
-                  newStep: currentStep - 1,
-                },
-              })
+          <Link
+            to={
+              pathname === "/insurance/plan-add-ons"
+                ? "/insurance/plan-selection"
+                : pathname === "/insurance/application-details"
+                ? "/insurance/plan-add-ons"
+                : "/insurance/application-details"
             }
-            className="relative mt-2 mobile-xl:mt-0 mr-0 mobile-xl:mr-2 py-2 px-6 order-2 mobile-xl:order-1 min-w-[120px] w-full mobile-xl:w-auto bg-white mobile-xl:bg-primary-blue border-2 mobile-xl:border-0 border-solid border-primary-blue mobile-xl:border-transparent rounded mobile-xl:rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
+            className="relative mt-2 mobile-xl:mt-0 mr-0 mobile-xl:mr-2 py-2 px-6 flex items-center justify-center order-2 mobile-xl:order-1 min-w-[120px] w-full mobile-xl:w-auto bg-white mobile-xl:bg-primary-blue border-2 mobile-xl:border-0 border-solid border-primary-blue mobile-xl:border-transparent rounded mobile-xl:rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
           >
             <span className="text-base text-center font-medium text-primary-blue mobile-xl:text-white">
               Previous
             </span>
-          </button>
+          </Link>
 
           {isEdited ? (
             <button
@@ -260,34 +246,33 @@ const SummaryInfoCard = () => {
                 Update Quote
               </span>
             </button>
-          ) : currentStep === 4 ? (
+          ) : pathname === "/insurance/review-pay" ? (
             <button
               onClick={() => {
                 updateFinalPriceToStore(updateFinalPrice(totalAmount));
                 navigate("/payment");
               }}
-              className="relative py-2 px-6 min-w-[120px] order-1 mobile-xl:order-2 w-full mobile-xl:w-auto bg-primary-blue rounded mobile-xl:rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
+              className="relative py-2 px-6 min-w-[120px] order-1 mobile-xl:order-2 flex items-center justify-center w-full mobile-xl:w-auto bg-primary-blue rounded mobile-xl:rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
             >
               <span className="text-base text-center font-medium text-white">
                 Pay Now
               </span>
             </button>
           ) : (
-            <button
-              onClick={() =>
-                updateInsuranceState({
-                  type: CurentStepTypes.UpdateCurrentStep,
-                  payload: {
-                    newStep: currentStep + 1,
-                  },
-                })
+            <Link
+              to={
+                pathname === "/insurance/plan-add-ons"
+                  ? "/insurance/application-details"
+                  : "/insurance/review-pay"
               }
-              className="relative py-2 px-6 min-w-[120px] order-1 mobile-xl:order-2 w-full mobile-xl:w-auto bg-primary-blue rounded mobile-xl:rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
+              className="relative py-2 px-6 min-w-[120px] flex items-center justify-center order-1 mobile-xl:order-2 w-full mobile-xl:w-auto bg-primary-blue rounded mobile-xl:rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
             >
               <span className="text-base text-center font-medium text-white">
-                {currentStep === 3 ? "Proceed To Confirm" : "Next"}
+                {pathname === "/insurance/application-details"
+                  ? "Proceed To Confirm"
+                  : "Next"}
               </span>
-            </button>
+            </Link>
           )}
         </div>
       </div>

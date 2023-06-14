@@ -3,13 +3,12 @@ import { useContext, useState } from "react";
 import FileDownloadButton from "../button/FileDownload";
 import CheckboxWithTextField from "../fields/CheckboxWithText";
 import {
-  CurentStepTypes,
   InsuranceContext,
   InsuranceProviderTypes,
-  IsMVContainerVisibleTypes,
 } from "../../context/InsuranceContext";
-import { useDispatch } from "react-redux";
-import { updateInsuranceProvider } from "../../store/slices/insurance";
+// import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+// import { updateInsuranceProvider } from "../../store/slices/insurance";
 
 type QuoteListingPlanProps = {
   id: string;
@@ -43,7 +42,8 @@ const QuoteListingPlanCard = ({
   ); // limit for displaying list of coverages, default is 4
   const [showDownloadButton, setShowDownloadButton] = useState<boolean>(false);
   const { dispatch } = useContext(InsuranceContext);
-  const updateInsuranceStore = useDispatch();
+  const navigate = useNavigate();
+  // const updateInsuranceStore = useDispatch();
 
   function updateListSize(size: number, updatedSize: number): void {
     setShowDownloadButton((prev) => !prev);
@@ -59,13 +59,13 @@ const QuoteListingPlanCard = ({
   }
 
   function handleSelectedQuotePlan() {
-    updateInsuranceStore(
-      updateInsuranceProvider({
-        price: Number(price),
-        companyId: insurerId,
-        companyName: insurerName,
-      })
-    );
+    // updateInsuranceStore(
+    //   updateInsuranceProvider({
+    //     price: Number(price),
+    //     companyId: insurerId,
+    //     companyName: insurerName,
+    //   })
+    // );
     dispatch({
       type: InsuranceProviderTypes.UpdateInsuranceProvider,
       payload: {
@@ -74,18 +74,7 @@ const QuoteListingPlanCard = ({
         price: price.toString(),
       },
     });
-    dispatch({
-      type: CurentStepTypes.UpdateCurrentStep,
-      payload: {
-        newStep: 2,
-      },
-    });
-    dispatch({
-      type: IsMVContainerVisibleTypes.UpdateContainerVisibility,
-      payload: {
-        shouldVisible: true,
-      },
-    });
+    navigate("/insurance/market-agreed-value");
   }
 
   return (
