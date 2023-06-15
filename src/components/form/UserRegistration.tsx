@@ -7,13 +7,9 @@ import SelectDropdown from "../fields/SelectDropdown";
 import MobileNumberField from "../fields/MobileNumber";
 import DateOfBirthField from "../fields/DateOfBirth";
 // store
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { updateInsuranceState } from "../../store/slices/insurance";
-import {
-  addUserID,
-  addUserBasicInfo,
-  updateAPIcredentials,
-} from "../../store/slices/user";
+import { addUserID, addUserBasicInfo } from "../../store/slices/user";
 import {
   // addVehicleRegNo,
   updateVehicleState,
@@ -21,9 +17,23 @@ import {
 // types
 import VehicleSelector from "../fields/VehicleSelector";
 import ReferralCodeButton from "../button/ReferralCode";
-import axios from "axios";
 import DefaultPopup from "../popup/Default";
-import md5 from "md5";
+import { RootState } from "../../store/store";
+import {
+  checkTokenIsExpired,
+  generateSessionName,
+  generateToken,
+  getVehicleInfo,
+} from "../../utils/helpers";
+import {
+  SessionType,
+  TokenType,
+  addSessionName,
+  addToken,
+} from "../../store/slices/credentials";
+
+const tenantId = import.meta.env.VITE_TENANT_ID;
+const md5Secret = import.meta.env.VITE_MD5_SECRET;
 
 let prevValue: string = "";
 
@@ -78,9 +88,16 @@ const UserRegistrationForm = () => {
     title: null,
     description: null,
   });
+  // console.log(hookError, hookSetError);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  // get token from store
+  const { token: tokenInStore, session: sessionInStore } = useSelector(
+    (state: RootState) => state.credentials
+  );
+
   // function to handle form on submit
   const handleOnFormSubmit: SubmitHandler<UserInsuranceInputs> = async (
     inputUserData: UserInsuranceInputs
@@ -98,117 +115,90 @@ const UserRegistrationForm = () => {
         postalCode,
         vehicleRegNo,
       } = inputUserData;
-      const getToken = await axios.get(
-        "https://app.agiliux.com/aeon/webservice.php?operation=getchallenge&username=admin",
-        {
-          timeout: 5000,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      const token = getToken.data.result.token;
-      const accessKey = md5(token + "bwJrIhxPdfsdialE");
-      const login = await axios.post(
-        "https://app.agiliux.com/aeon/webservice.php",
-        {
-          operation: "login",
-          username: "admin",
-          accessKey: accessKey,
-        },
-        {
-          timeout: 5000,
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-        }
-      );
-      const sessionName = login.data.result.sessionName;
-      const getVehicle = await axios.post(
-        "https://app.agiliux.com/aeon/webservice.php",
-        {
-          sessionName: sessionName,
-          element: JSON.stringify({
-            vehregno: vehicleRegNo,
-            idtype: idType,
-            id_comregno: idNumber,
-            postalcode: postalCode,
-            tenant_id: "67b61490-fec2-11ed-a640-e19d1712c006",
-          }),
-          operation: "getVehicleInfo",
-        },
-        {
-          timeout: 5000,
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-        }
-      );
-      const vehicleData = getVehicle.data.result;
-      setLoading(false);
-      if (vehicleData.errors) {
-        if (vehicleData.errors[0] === "Data not found.") {
-          setError({
-            isVisible: true,
-            title: "Status - 404",
-            description: "Vehicle not found",
-          });
-          throw new Error("Vehicle not found");
-        } else {
-          setError({
-            isVisible: true,
-            title: "Invalid Id number",
-            description: "Vehicle registration number or id no. are invalid",
-          });
-          throw new Error("Invalid id no.");
-        }
-      } else if (vehicleData[0] === "Invalid Tenant !!") {
-        setError({
-          isVisible: true,
-          title: "Something went wrong",
-          description:
-            "We are unable to process your request at the moment. Please try again later.",
-        });
-        throw new Error("Something went wrong from the server");
+
+      let tokenInfo = tokenInStore;
+      let sessionInfo = sessionInStore;
+      // check if there is not token in store or token is expired
+      if (
+        tokenInfo === null ||
+        checkTokenIsExpired(tokenInfo) ||
+        sessionInfo === null
+      ) {
+        // get new token
+        const getToken: TokenType = await generateToken(
+          "https://app.agiliux.com/aeon/webservice.php?operation=getchallenge&username=admin",
+          2000
+        );
+        tokenInfo = getToken;
+        // add token to store
+        dispatch(addToken({ ...getToken }));
+        const sessionApiResponse: SessionType = await generateSessionName(
+          "https://app.agiliux.com/aeon/webservice.php",
+          3000,
+          tokenInfo.token,
+          md5Secret
+        );
+        sessionInfo = sessionApiResponse;
+        // add session name to store state
+        dispatch(
+          addSessionName({
+            userId: sessionApiResponse.userId,
+            sessionName: sessionApiResponse.sessionName,
+          })
+        );
       }
-      // if user Id Type is valid then update the state -> user -> id
+      const vehicleApiResponse = await getVehicleInfo(
+        "https://app.agiliux.com/aeon/webservice.php",
+        3000,
+        sessionInfo.sessionName,
+        vehicleRegNo,
+        idType || "NRIC",
+        idNumber,
+        tenantId,
+        postalCode
+      );
+      setLoading(false);
+      // // if user Id Type is valid then update the state -> user -> id
       if (idType !== null) {
         dispatch(addUserID({ number: idNumber, type: idType }));
       }
-      dispatch(
-        updateAPIcredentials({
-          sessionName: sessionName,
-          requestId: vehicleData.requestId,
-        })
-      );
       const {
-        vehicleChassis,
-        vehicleEngine,
-        vehicleEngineCC,
         vehicleLicenseId,
+        avMakeCode,
+        makeCode,
         vehicleMake,
+        modelCode,
         vehicleModel,
-        yearOfManufacture,
-        seatingCapacity,
-        nvicList,
-        ncdPercentage,
+        vehicleEngineCC,
         polEffectiveDate,
         polExpiryDate,
-      } = vehicleData;
+        vehicleEngine,
+        vehicleChassis,
+        yearOfManufacture,
+        seatingCapacity,
+        ncdPercentage,
+        nvicList,
+        requestId,
+      } = vehicleApiResponse;
       dispatch(
         updateVehicleState({
-          chasisNo: vehicleChassis,
-          engineNo: vehicleEngine,
-          engineCC: vehicleEngineCC,
-          regNo: vehicleLicenseId,
-          make: vehicleMake,
-          model: vehicleModel,
-          variant: nvicList[0].vehicleVariant,
-          yearOfManufacture: yearOfManufacture,
-          seating: seatingCapacity,
-          nvicList: nvicList,
-          ncd: ncdPercentage,
+          vehicleLicenseId,
+          avMakeCode,
+          makeCode,
+          vehicleMake,
+          modelCode,
+          vehicleModel,
+          vehicleEngineCC,
+          vehicleEngine,
+          vehicleChassis,
+          yearOfManufacture,
+          seatingCapacity,
           periodOfCoverage: polEffectiveDate + " to " + polExpiryDate,
+          polEffectiveDate,
+          polExpiryDate,
+          ncdPercentage,
+          nvicList,
+          requestId,
         })
       );
 
@@ -223,42 +213,45 @@ const UserRegistrationForm = () => {
           maritalStatus,
           mobileNumber,
           postalCode,
-          polExpiryDate: polExpiryDate,
-          polEffectiveDate: polEffectiveDate,
-          // dateOfBirth: dateOfBirth ? dateOfBirth : null,
         })
       );
       navigate("/vehicle-info");
     } catch (err: any) {
       setLoading(false);
-      console.log(err);
-      if (err.code === "ECONNABORTED") {
-        setError({
-          isVisible: true,
-          description:
-            "Server took more than expected time to respond. Better to try after some time.",
-          title: "Timeout",
-        });
-        return;
-      }
-      if (err.code === "ERR_NETWORK") {
-        setError({
-          isVisible: true,
-          description:
-            "Can't make request to server. Please check your internet connection or try again later.",
-          title: "Network Error",
-        });
-        return;
-      }
-      if (err.response) {
-        if (err.response.status === 404 || err.response.status === 400) {
-          setError({
-            isVisible: true,
-            description: err.response.data.errors[0],
-            title: err.response.statusText,
-          });
+      if (err instanceof Error) {
+        const { message } = err;
+        console.log(message);
+        switch (message) {
+          case "DATA_NOT_FOUND":
+            setError({
+              isVisible: true,
+              title: "Data Not Found",
+              description:
+              "Vehicle registration number does not match. Make sure vehicle registration no is entered correctly.",
+            });
+            return;
+          case "INVALID_ID_NUMBER":
+            setError({
+              isVisible: true,
+              title: "Data Not Found",
+              description:
+                "Make sure vehicle registration no or Identity no is entered correctly.",
+            });
+            return;
+          default:
+            setError({
+              isVisible: true,
+              title: "Data Not Found",
+              description: "Intenal server error. Please try again later.",
+            });
+            return;
         }
       }
+      setError({
+        isVisible: true,
+        title: "Internal Server Error",
+        description: "Intenal server error. Please try again later.",
+      });
     }
   };
 

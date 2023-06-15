@@ -2,31 +2,42 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../store";
 
-type TokenType = {
+export type TokenType = {
   token: string;
   serverTime: number;
   expireTime: number;
 };
 
-type SessionType = {
+export type SessionType = {
   sessionName: string;
   userId: string;
 };
 
 type CredentialsStateType = {
-  TOKEN: TokenType | null;
-  SESSION: SessionType | null;
+  token: TokenType | null;
+  session: SessionType | null;
+  requestId: string;
 };
 
 const initialState: CredentialsStateType = {
-  TOKEN: null,
-  SESSION: null,
+  token: null,
+  session: null,
+  requestId: "",
 };
 
 export const credentialSlice = createSlice({
   name: "insurance",
   initialState,
   reducers: {
+    addToken: (state, action: PayloadAction<TokenType>) => {
+      state.token = action.payload;
+    },
+    addSessionName: (state, action: PayloadAction<SessionType>) => {
+      state.session = action.payload;
+    },
+    addRequestId: (state, action: PayloadAction<string>) => {
+      state.requestId = action.payload;
+    },
     updateTokenAndSession: (
       state,
       action: PayloadAction<{
@@ -39,12 +50,12 @@ export const credentialSlice = createSlice({
     ) => {
       const { token, serverTime, expireTime, sessionName, userId } =
         action.payload;
-      state.TOKEN = {
+      state.token = {
         token,
         serverTime,
         expireTime,
       };
-      state.SESSION = {
+      state.session = {
         sessionName,
         userId,
       };
@@ -52,10 +63,11 @@ export const credentialSlice = createSlice({
   },
 });
 
-export const getSessionInfo = (state: RootState) => state.credentials.SESSION;
+export const getSessionInfo = (state: RootState) => state.credentials.session;
 
-export const getTokenInfo = (state: RootState) => state.credentials.TOKEN;
+export const getTokenInfo = (state: RootState) => state.credentials.token;
 
-export const { updateTokenAndSession } = credentialSlice.actions;
+export const { addToken, addSessionName, addRequestId, updateTokenAndSession } =
+  credentialSlice.actions;
 
 export default credentialSlice.reducer;

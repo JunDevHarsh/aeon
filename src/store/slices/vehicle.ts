@@ -3,28 +3,27 @@ import { RootState } from "../store";
 import { VehicleStateType } from "./types";
 
 const initialState: VehicleStateType = {
-  regNo: "AHC5758",
-  make: "TOYOTA",
-  model: "COROLLA",
-  yearOfManufacture: "2010",
-  variant: "ALTIS G 4 SP AUTOMATIC - 1794",
-  engineNo: "1ZZ4984652",
-  engineCC: "1794",
-  chasisNo: "MR053ZEE206120869",
-  class: "Private",
+  vehicleLicenseId: "",
+  avMakeCode: "",
+  makeCode: "",
+  vehicleMake: "",
+  variant: "",
+  modelCode: "",
+  vehicleModel: "",
+  vehicleEngineCC: "",
+  vehicleEngine: "",
+  vehicleChassis: "",
+  yearOfManufacture: "",
+  seatingCapacity: 0,
+  polEffectiveDate: "",
+  polExpiryDate: "",
+  drivers: 0,
   region: "West Malaysia",
-  drivers: "0",
-  seating: "5",
-  ncd: "55",
-  reconIndicator: "no",
-  periodOfCoverage: "2023-08-04 to 2024-08-03",
-  nvicList: [
-    {
-        "nvic": "H7B10A",
-        "vehicleMarketValue": 30500,
-        "vehicleVariant": "ALTIS G 4 SP AUTOMATIC - 1794"
-    }
-],
+  periodOfCoverage: "",
+  ncdPercentage: 0,
+  reconIndicator: "yes",
+  nvicList: [],
+  requestId: ""
 };
 
 export const vehicleSlice = createSlice({
@@ -32,7 +31,7 @@ export const vehicleSlice = createSlice({
   initialState,
   reducers: {
     addVehicleRegNo: (state, action: PayloadAction<string>) => {
-      state.regNo = action.payload;
+      state.vehicleLicenseId = action.payload;
     },
     updateVehicleState: (
       state,
@@ -45,6 +44,7 @@ export const vehicleSlice = createSlice({
 
 export const { addVehicleRegNo, updateVehicleState } = vehicleSlice.actions;
 
-export const getVehicleRegNo = (state: RootState) => state.vehicle.regNo;
+export const getVehicleRegNo = (state: RootState) =>
+  state.vehicle.vehicleLicenseId;
 
 export default vehicleSlice.reducer;

@@ -27,7 +27,7 @@ const SummaryInfoCard = () => {
     state: { addOns, isEdited },
     dispatch,
   } = useContext(AddOnsContext);
-  const { ncd } = useSelector((state: RootState) => state.vehicle);
+  const { ncdPercentage: ncd } = useSelector((state: RootState) => state.vehicle);
   const navigate = useNavigate();
   const {
     state: { price: proPrice, name: proName },

@@ -25,11 +25,11 @@ const DefaultPopup: React.FC<DefaultPopupProps> = ({
       <div className="relative flex items-center justify-center h-screen w-screen">
         <div className="relative max-w-[412px] bg-white w-full rounded">
           <div className="px-6 py-4 flex items-center justify-between w-full">
-            <h3 className="text-base text-center text-primary-black font-bold">
+            <h3 className="hidden text-base text-center text-primary-black font-bold">
               {title}
             </h3>
             <button
-              className="inline-block w-auto h-auto"
+              className="inline-block ml-auto w-auto h-auto"
               onClick={closeWarningPopup}
             >
               <svg

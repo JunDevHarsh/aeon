@@ -7,12 +7,12 @@ const ApplicationDetailsContainer = () => {
   const {
     user: { id, gender, maritalStatus, dateOfBirth },
     vehicle: {
-      regNo,
-      make,
-      model,
+      vehicleLicenseId: regNo,
+      vehicleMake: make,
+      vehicleModel: model,
       yearOfManufacture,
-      engineNo,
-      chasisNo,
+      vehicleEngine: engineNo,
+      vehicleChassis: chasisNo,
       variant,
     },
   } = useSelector((state: RootState) => state);

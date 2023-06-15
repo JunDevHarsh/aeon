@@ -40,22 +40,27 @@ export type UserIdInputs = {
 /*---------------Vehicle Types---------------*/
 // Vehicle State
 export type VehicleStateType = {
-  regNo: string; // Vehicle Registration Number
-  make: string | null; // Vehicle Make/Type
-  model: string | null; // Vehicle Model
-  yearOfManufacture: string; // Vehicle Manufacturing Year
-  variant: string | null; // Vehicle Variant
-  engineNo: string; // Vehicle Engine Number
-  engineCC: string; // Vehicle Engine CC
-  chasisNo: string; // Vehicle Chasis Number
-  class: string; // Vehicle Class
-  region: string | null; // Region
-  drivers: string; // Vehicle Driver's Capacity
-  seating: string; // Vehicle Total Seats
-  ncd: string; // Vehicle's NCD
-  reconIndicator: "yes" | "no";
+  vehicleLicenseId: string;
+  avMakeCode: string;
+  makeCode: string;
+  variant: string;
+  vehicleMake: string;
+  modelCode: string;
+  vehicleModel: string;
+  vehicleEngineCC: string;
+  vehicleEngine: string;
+  vehicleChassis: string;
+  drivers: number;
+  region: string | null;
   periodOfCoverage: string;
+  yearOfManufacture: string;
+  seatingCapacity: number;
+  ncdPercentage: number;
+  polEffectiveDate: string,
+  polExpiryDate: string;
   nvicList: NvicList[];
+  reconIndicator: "yes" | "no";
+  requestId: string;
 };
 
 type NvicList = {

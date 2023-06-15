@@ -84,7 +84,9 @@ const VehicleCoverageProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const { make, variant } = useSelector((state: RootState) => state.vehicle);
+  const { vehicleMake: make, variant } = useSelector(
+    (state: RootState) => state.vehicle
+  );
   const [state, setState] = useState<VehicleCoverageStateType>({
     type: "market",
     isContainerVisible: false,
@@ -115,7 +117,8 @@ const VehicleCoverageProvider = ({
     console.log(type);
     if (type === "market") {
       if (market.variant) {
-        const getVariant = market.variant as keyof typeof defaultCoverages.market;
+        const getVariant =
+          market.variant as keyof typeof defaultCoverages.market;
         const getCoverageValues = defaultCoverages.market[getVariant];
         const { minValue, midValue, maxValue } = getCoverageValues;
         setState((prev) => ({

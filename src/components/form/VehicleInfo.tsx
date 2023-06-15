@@ -27,6 +27,7 @@ const VehicleInfoForm = ({
     (state: RootState) => state.vehicle
   );
   const userState = useSelector((state: RootState) => state.user);
+  const sessionState = useSelector((state: RootState) => state.credentials.session);
   const variantOptionList = vehicleState.nvicList.map((variant) => ({
     label: variant.vehicleVariant,
     value: variant.vehicleVariant,
@@ -64,10 +65,10 @@ const VehicleInfoForm = ({
         "https://app.agiliux.com/aeon/webservice.php",
         {
           operation: "createInquiry",
-          sessionName: userState.sessionName,
+          sessionName: sessionState?.sessionName,
           element: JSON.stringify({
             tenant_id: "67b61490-fec2-11ed-a640-e19d1712c006",
-            requestId: userState.requestId,
+            requestId: vehicleState.requestId,
             client: {
               phone: userState.mobileNumber,
               email1: userState.email,
@@ -87,13 +88,15 @@ const VehicleInfoForm = ({
               period_to: userState.polExpiryDate,
             },
             vehicle: {
-              reg_no: vehicleState.regNo,
-              vehicle_make: vehicleState.make,
-              vehicle_model: vehicleState.model,
-              engine_no: vehicleState.engineNo,
-              engine_capacity: vehicleState.engineCC,
-              passenger_cap: vehicleState.seating,
-              vehncd: vehicleState.ncd,
+              reg_no: vehicleState.vehicleLicenseId,
+              vehicle_make: vehicleState.vehicleMake,
+              vehicle_model: vehicleState.vehicleModel,
+              engine_no: vehicleState.vehicleEngine,
+              engine_capacity: vehicleState.vehicleEngineCC,
+              passenger_cap: vehicleState.seatingCapacity,
+              vehncd: vehicleState.ncdPercentage,
+              year_manufacture: vehicleState.yearOfManufacture,
+              chasis_no: vehicleState.vehicleChassis,
               fl_location: val.region,
               veh_variant: val.variant,
             },
@@ -153,7 +156,7 @@ const VehicleInfoForm = ({
           {/* Vehicle Reg No. */}
           <FixedInputTextField
             title="Vehicle Registration No."
-            value={vehicleState.regNo}
+            value={vehicleState.vehicleLicenseId}
           />
           {/* Vehicle Make Field  */}
           {/* <div className="relative pb-5 flex flex-col items-start gap-y-1 w-auto h-auto">
@@ -188,7 +191,7 @@ const VehicleInfoForm = ({
               Vehicle Make*
             </span>
             <span className="py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium cursor-default border border-solid border-[#CFD0D7] rounded">
-              {watch("make")}
+              {watch("vehicleMake")}
             </span>
           </div>
           {/* Vehicle Model Field  */}
@@ -229,7 +232,7 @@ const VehicleInfoForm = ({
               Vehicle Model*
             </span>
             <span className="py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium cursor-default border border-solid border-[#CFD0D7] rounded">
-              {watch("model")}
+              {watch("vehicleModel")}
             </span>
           </div>
           {/* Vehicle Variant Field  */}
@@ -269,20 +272,20 @@ const VehicleInfoForm = ({
           {/* Engine CC Field */}
           <FixedInputTextField
             title="Engine CC"
-            value={vehicleState.engineCC}
+            value={vehicleState.vehicleEngineCC}
           />
           {/* Engine No. Field */}
           <FixedInputTextField
             title="Engine No."
-            value={vehicleState.engineNo}
+            value={vehicleState.vehicleEngine}
           />
           {/* Vehicle Class Field */}
           <FixedInputTextField
             title="Vehicle Class"
-            value={vehicleState.class}
+            value="Private Class"
           />
           {/* Seating Field */}
-          <FixedInputTextField title="Seating" value={vehicleState.seating} />
+          <FixedInputTextField title="Seating" value={vehicleState.seatingCapacity.toString()} />
           {/* Driver Field */}
           <InputTextField
             label="Drivers"
@@ -312,7 +315,7 @@ const VehicleInfoForm = ({
             }}
           />
           {/* NCD Field */}
-          <FixedInputTextField title="NCD" value={vehicleState.ncd} />
+          <FixedInputTextField title="NCD" value={vehicleState.ncdPercentage.toString()} />
           {/* Vehicle Model Field  */}
           <div className="relative pb-5 flex flex-col items-start gap-y-1 w-auto h-auto">
             <label
