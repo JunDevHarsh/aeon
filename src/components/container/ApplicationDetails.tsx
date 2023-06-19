@@ -88,7 +88,7 @@ const ApplicationDetailsContainer = () => {
               Variant
             </span>
             <span className="text-base text-left text-primary-black font-normal">
-              {variant ?? "Honda HRV X3"}
+              {variant?.vehicleVariant ?? "Honda HRV X3"}
             </span>
           </div>
         </div>
