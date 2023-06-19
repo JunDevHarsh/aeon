@@ -7,7 +7,7 @@ const initialState: VehicleStateType = {
   avMakeCode: "",
   makeCode: "",
   vehicleMake: "",
-  variant: "",
+  variant: null,
   modelCode: "",
   vehicleModel: "",
   vehicleEngineCC: "",
@@ -21,7 +21,7 @@ const initialState: VehicleStateType = {
   region: "West Malaysia",
   periodOfCoverage: "",
   ncdPercentage: 0,
-  reconIndicator: "yes",
+  reconIndicator: "no",
   nvicList: [],
   requestId: ""
 };

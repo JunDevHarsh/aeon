@@ -10,28 +10,24 @@ import { VehicleStateType } from "../../store/slices/types";
 import axios from "axios";
 import { useState } from "react";
 import DefaultPopup from "../popup/Default";
-// import { updateUserStateInfo } from "../../store/slices/user";
-
-// interface VehicleInfoStateType extends VehicleStateType {
-//   dateOfBirth: string;
-//   maritalStatus: string | null;
-//   gender: "male" | "female";
-// }
 
 const VehicleInfoForm = ({
   setShowLoading,
 }: {
   setShowLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
-  const vehicleState: VehicleStateType = useSelector(
-    (state: RootState) => state.vehicle
-  );
-  const userState = useSelector((state: RootState) => state.user);
-  const sessionState = useSelector((state: RootState) => state.credentials.session);
-  const variantOptionList = vehicleState.nvicList.map((variant) => ({
-    label: variant.vehicleVariant,
-    value: variant.vehicleVariant,
+  // extract state from redux store using useSelector hook
+  const {
+    user: userState,
+    vehicle: vehicleState,
+    credentials: { session: sessionState, requestId },
+  } = useSelector((state: RootState) => state);
+  // extract variant options from vehicle state and map it to the format required by SelectDropdown component
+  const variantOptionList = vehicleState.nvicList.map(({ vehicleVariant }) => ({
+    label: vehicleVariant,
+    value: vehicleVariant,
   }));
+  // state for handlgin error
   const [error, setError] = useState<{
     isVisible: boolean;
     title: string | null;
@@ -41,7 +37,9 @@ const VehicleInfoForm = ({
     title: null,
     description: null,
   });
+  // state for handling loading
   const [loading, setLoading] = useState<boolean>(false);
+  // react hook form
   const {
     watch,
     register,
@@ -53,6 +51,7 @@ const VehicleInfoForm = ({
   } = useForm<VehicleStateType>({
     defaultValues: vehicleState,
   });
+
   const dispatch = useDispatch();
 
   const onSubmit: SubmitHandler<VehicleStateType> = async (
@@ -68,7 +67,7 @@ const VehicleInfoForm = ({
           sessionName: sessionState?.sessionName,
           element: JSON.stringify({
             tenant_id: "67b61490-fec2-11ed-a640-e19d1712c006",
-            requestId: vehicleState.requestId,
+            requestId: requestId,
             client: {
               phone: userState.mobileNumber,
               email1: userState.email,
@@ -136,7 +135,7 @@ const VehicleInfoForm = ({
       console.error(err);
     }
   };
-
+  // react hook form watch
   const watchReconIndicator = watch("reconIndicator");
 
   return (
@@ -258,10 +257,16 @@ const VehicleInfoForm = ({
                   <SelectDropdown
                     id="vehicleVariant"
                     placeholder="Select Variant"
-                    onChange={(val: string) => (
-                      setValue("variant", val), clearErrors("variant")
-                    )}
-                    selected={value}
+                    onChange={(val: string) => {
+                      const selectedVariant = vehicleState.nvicList.find(
+                        (variant) => variant.vehicleVariant === val
+                      );
+                      if (selectedVariant) {
+                        setValue("variant", selectedVariant);
+                        clearErrors("variant");
+                      }
+                    }}
+                    selected={value?.vehicleVariant || null}
                     error={error}
                     optionList={variantOptionList}
                   />
@@ -280,12 +285,12 @@ const VehicleInfoForm = ({
             value={vehicleState.vehicleEngine}
           />
           {/* Vehicle Class Field */}
-          <FixedInputTextField
-            title="Vehicle Class"
-            value="Private Class"
-          />
+          <FixedInputTextField title="Vehicle Class" value="Private Class" />
           {/* Seating Field */}
-          <FixedInputTextField title="Seating" value={vehicleState.seatingCapacity.toString()} />
+          <FixedInputTextField
+            title="Seating"
+            value={vehicleState.seatingCapacity.toString()}
+          />
           {/* Driver Field */}
           <InputTextField
             label="Drivers"
@@ -315,7 +320,10 @@ const VehicleInfoForm = ({
             }}
           />
           {/* NCD Field */}
-          <FixedInputTextField title="NCD" value={vehicleState.ncdPercentage.toString()} />
+          <FixedInputTextField
+            title="NCD"
+            value={vehicleState.ncdPercentage.toString()}
+          />
           {/* Vehicle Model Field  */}
           <div className="relative pb-5 flex flex-col items-start gap-y-1 w-auto h-auto">
             <label

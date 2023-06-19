@@ -2,8 +2,8 @@ import { useContext } from "react";
 import SelectDropdown from "../fields/SelectDropdown";
 import InputRange from "../fields/InputRange";
 import { VehicleCoverageContext } from "../../context/VehicleCoverage";
-import { useSelector } from "react-redux";
-import { RootState } from "../../store/store";
+// import { useSelector } from "react-redux";
+// import { RootState } from "../../store/store";
 import { Link } from "react-router-dom";
 
 export function numberWithCommas(x: number): string {
@@ -15,10 +15,15 @@ const VehicleCoverageContainer = () => {
     state: { type, market, agreed },
     setState,
   } = useContext(VehicleCoverageContext);
-  const vehicleInfo = useSelector((state: RootState) => state.vehicle);
-  const variantOptionList = vehicleInfo.nvicList.map((variant) => ({
-    label: variant.vehicleVariant,
-    value: variant.vehicleVariant,
+  // const vehicleInfo = useSelector((state: RootState) => state.vehicle);
+  // const variantOptionList = vehicleInfo.nvicList.map((variant) => ({
+  //   label: variant.vehicleVariant,
+  //   value: variant.vehicleVariant,
+  // }));
+
+  const marketVariantOptionList = market.nvicList.map(({ vehicleVariant }) => ({
+    label: vehicleVariant,
+    value: vehicleVariant,
   }));
 
   // function handleSubmit() {
@@ -31,15 +36,15 @@ const VehicleCoverageContainer = () => {
   //   }));
   // }
 
-  function updateSlider(type: "market" | "agreed", value: number) {
-    setState((prev) => ({
-      ...prev,
-      [type]: {
-        ...prev[type],
-        price: value,
-      },
-    }));
-  }
+  // function updateSlider(type: "market" | "agreed", value: number) {
+  //   setState((prev) => ({
+  //     ...prev,
+  //     [type]: {
+  //       ...prev[type],
+  //       price: value,
+  //     },
+  //   }));
+  // }
 
   return (
     <div className="relative py-10 px-4 flex items-center justify-center w-full">
@@ -60,7 +65,9 @@ const VehicleCoverageContainer = () => {
             </svg>
             <p className="text-sm text-center text-primary-pink font-bold">
               The Current market value for your vehicle is RM{" "}
-              {numberWithCommas(14000)}
+              {numberWithCommas(
+                market.nvic ? market.nvic?.vehicleMarketValue : 0
+              )}
             </p>
           </div>
           <div className="mt-4 flex flex-col items-start w-full">
@@ -76,7 +83,6 @@ const VehicleCoverageContainer = () => {
                   id="marketValue1"
                   value="market"
                   checked={type === "market"}
-                  // onChange={(e) => updateCoverage("type", e.target.value)}
                   onChange={() =>
                     setState((prev) => ({
                       ...prev,
@@ -96,9 +102,9 @@ const VehicleCoverageContainer = () => {
                   <span className="text-sm text-center text-current font-bold">
                     Market Value
                   </span>
-                  {market.variant ? (
+                  {market.nvic?.vehicleMarketValue ? (
                     <span className="text-base text-center text-current font-normal">
-                      RM {numberWithCommas(market.price)}
+                      RM {numberWithCommas(market.nvic.vehicleMarketValue)}
                     </span>
                   ) : (
                     <span className="text-xs text-left text-current font-normal">
@@ -135,9 +141,9 @@ const VehicleCoverageContainer = () => {
                   <span className="text-sm text-center text-current font-bold">
                     Agreed Value
                   </span>
-                  {agreed.variant ? (
+                  {agreed.nvic?.vehicleMarketValue ? (
                     <span className="text-base text-center text-current font-normal">
-                      RM {numberWithCommas(agreed.price)}
+                      RM {numberWithCommas(agreed.nvic.vehicleMarketValue)}
                     </span>
                   ) : (
                     <span className="text-xs text-left text-current font-normal">
@@ -154,16 +160,7 @@ const VehicleCoverageContainer = () => {
             </h2>
             {type === "market" ? (
               <SelectDropdown
-                optionList={[
-                  {
-                    label: "XL T6 4D DOUBLE CAB PICK-UP 6 SP AUTO SPORTS MODE",
-                    value: "XL T6 4D DOUBLE CAB PICK-UP 6 SP AUTO SPORTS MODE",
-                  },
-                  {
-                    label: "XL (HI-RIDER) T6 4D DOUBLE CAB PICK-U 6 SP MANUA",
-                    value: "XL (HI-RIDER) T6 4D DOUBLE CAB PICK-U 6 SP MANUA",
-                  },
-                ]}
+                optionList={marketVariantOptionList}
                 id="hello"
                 onChange={(val: string) =>
                   setState((prev) => ({
@@ -174,7 +171,7 @@ const VehicleCoverageContainer = () => {
                     },
                   }))
                 }
-                selected={market.variant}
+                selected={market.nvic ? market.nvic.vehicleVariant : null}
               />
             ) : (
               <div className="flex flex-col items-start w-full">
@@ -183,7 +180,7 @@ const VehicleCoverageContainer = () => {
                     Car Type
                   </span>
                   <span className="py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium cursor-default border border-solid border-[#CFD0D7] rounded">
-                    {agreed.type}
+                    {agreed.nvic && agreed.nvic.vehicleVariant}
                   </span>
                 </div>
                 <div className="relative flex flex-col items-start w-full h-auto">
@@ -191,22 +188,8 @@ const VehicleCoverageContainer = () => {
                     Car Variant
                   </span>
                   <SelectDropdown
-                    selected={agreed.variant}
-                    // optionList={[
-                    //   {
-                    //     label:
-                    //       "XL T6 4D DOUBLE CAB PICK-UP 6 SP AUTO SPORTS MODE",
-                    //     value:
-                    //       "XL T6 4D DOUBLE CAB PICK-UP 6 SP AUTO SPORTS MODE",
-                    //   },
-                    //   {
-                    //     label:
-                    //       "XL (HI-RIDER) T6 4D DOUBLE CAB PICK-U 6 SP MANUA",
-                    //     value:
-                    //       "XL (HI-RIDER) T6 4D DOUBLE CAB PICK-U 6 SP MANUA",
-                    //   },
-                    // ]}
-                    optionList={variantOptionList}
+                    selected={agreed.nvic ? agreed.nvic.vehicleVariant : null}
+                    optionList={marketVariantOptionList}
                     id="ads"
                     onChange={(val: string) =>
                       setState((prev) => ({
@@ -223,14 +206,14 @@ const VehicleCoverageContainer = () => {
               </div>
             )}
           </div>
-          {type === "agreed" && agreed.variant && agreed.value && (
+          {type === "agreed" && agreed.nvic && (
             <InputRange
               type="agreed"
-              value={agreed.price}
-              setValue={updateSlider}
-              minValue={agreed.value.min}
-              midValue={agreed.value.mid}
-              maxValue={agreed.value.max}
+              value={50}
+              setValue={() => {}}
+              minValue={0}
+              midValue={50}
+              maxValue={100}
             />
           )}
           <div className="mt-4 flex items-center justify-start gap-x-2 w-full">

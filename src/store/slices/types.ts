@@ -43,7 +43,7 @@ export type VehicleStateType = {
   vehicleLicenseId: string;
   avMakeCode: string;
   makeCode: string;
-  variant: string;
+  variant: NvicList | null;
   vehicleMake: string;
   modelCode: string;
   vehicleModel: string;
@@ -63,7 +63,7 @@ export type VehicleStateType = {
   requestId: string;
 };
 
-type NvicList = {
+export type NvicList = {
   nvic: string;
   vehicleMarketValue: number;
   vehicleVariant: string;

@@ -42,6 +42,7 @@ const VehicleSelector = ({
             />
             <img
               src={CarImg}
+              onLoad={() => console.log("Loaded")}
               alt="car-vehicle-img"
               className="ml-3 mr-1 w-9 mobile-m:w-auto h-auto"
               aria-label="Image of car vehicle"

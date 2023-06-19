@@ -30,7 +30,7 @@ const InputRange = ({
     setValue(type, numValue);
   }
 
-  const labelPosition = `${((value - minValue) / 2000) * 50}%`;
+  const labelPosition = `${((value - minValue) / 50) * 50}%`;
 
   return (
     <div className="mt-4 flex flex-col items-start w-full">
@@ -47,7 +47,7 @@ const InputRange = ({
           id="insuredValue"
           min={minValue}
           max={maxValue}
-          step={2000}
+          step={50}
           className="peer w-full"
         />
         <label
@@ -61,13 +61,13 @@ const InputRange = ({
             RM {numberWithCommas(value)}
           </span>
         </label>
-        <div className="absolute -bottom-6 -left-6">
+        <div className="absolute -bottom-6 -left-4">
           <span className="absolute -top-4 left-1/2 -translate-x-1/2 w-4 h-4 bg-primary-pink rounded-full" />
           <span className="text-sm text-center text-primary-black font-bold">
             RM {numberWithCommas(minValue)}
           </span>
         </div>
-        <div className="absolute -bottom-6 -right-6">
+        <div className="absolute -bottom-6 -right-4">
           <span className="text-sm text-center text-primary-black font-bold">
             RM {numberWithCommas(maxValue)}
           </span>

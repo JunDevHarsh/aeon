@@ -28,6 +28,7 @@ import {
 import {
   SessionType,
   TokenType,
+  addRequestId,
   addSessionName,
   addToken,
 } from "../../store/slices/credentials";
@@ -188,6 +189,7 @@ const UserRegistrationForm = () => {
           vehicleMake,
           modelCode,
           vehicleModel,
+          variant: nvicList[0] || null,
           vehicleEngineCC,
           vehicleEngine,
           vehicleChassis,
@@ -198,9 +200,10 @@ const UserRegistrationForm = () => {
           polExpiryDate,
           ncdPercentage,
           nvicList,
-          requestId,
         })
       );
+
+      dispatch(addRequestId(requestId));
 
       dispatch(
         updateInsuranceState({ type: insuranceType, vehicle: vehicleType })
@@ -227,7 +230,7 @@ const UserRegistrationForm = () => {
               isVisible: true,
               title: "Data Not Found",
               description:
-              "Vehicle registration number does not match. Make sure vehicle registration no is entered correctly.",
+                "Vehicle registration number does not match. Make sure vehicle registration no is entered correctly.",
             });
             return;
           case "INVALID_ID_NUMBER":

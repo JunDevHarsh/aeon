@@ -21,8 +21,8 @@ const DefaultPopup: React.FC<DefaultPopupProps> = ({
     setShowWarningPopup({ isVisible: false, description: null, title: null });
   }
   return (
-    <div className="fixed top-0 left-0 right-0 bottom-0 bg-gradient-to-tr from-[rgba(0,0,0,0.7)] to-[rgba(0,0,0,0.7)] z-[20]">
-      <div className="relative flex items-center justify-center h-screen w-screen">
+    <div className="popup--shown fixed top-0 left-0 right-0 bottom-0 bg-gradient-to-tr from-[rgba(0,0,0,0.7)] to-[rgba(0,0,0,0.7)] z-[20]">
+      <div className="relative p-4 flex items-center justify-center h-screen w-full">
         <div className="relative max-w-[412px] bg-white w-full rounded">
           <div className="px-6 py-4 flex items-center justify-between w-full">
             <h3 className="hidden text-base text-center text-primary-black font-bold">
