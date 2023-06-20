@@ -11,6 +11,7 @@ type RadioFieldProps = {
   name: string;
   register: UseFormRegister<any>;
   options: OptionList[];
+  isRequired?: boolean;
 };
 
 function RadioFieldWithRFH({
@@ -19,11 +20,12 @@ function RadioFieldWithRFH({
   selectedValue,
   register,
   options,
+  isRequired = true,
 }: RadioFieldProps) {
   return (
     <div className="relative pb-3 flex flex-col items-start w-full h-auto">
       <span className="mb-1 text-base text-center text-primary-black font-semibold">
-        {title}
+        {title + (isRequired ? "*" : "")}
       </span>
       <div className="flex items-center justify-start w-full">
         {options.map(({ title, value }: OptionList) => (
