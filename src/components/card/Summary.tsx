@@ -27,13 +27,15 @@ const SummaryInfoCard = () => {
     state: { addOns, isEdited },
     dispatch,
   } = useContext(AddOnsContext);
-  const { ncd } = useSelector((state: RootState) => state.vehicle);
+  const { ncdPercentage: ncd } = useSelector(
+    (state: RootState) => state.vehicle
+  );
   const navigate = useNavigate();
   const {
     state: { price: proPrice, name: proName },
   } = useContext(InsuranceContext);
   const {
-    state: { selectedCoverage },
+    state: { type, market },
   } = useContext(VehicleCoverageContext);
   const { pathname } = useLocation();
 
@@ -73,16 +75,18 @@ const SummaryInfoCard = () => {
           <div className="flex items-start justify-between w-full">
             <span className="text-base text-left text-primary-black font-bold w-1/2">
               Sum Insured <br />
-              {`(${
-                (selectedCoverage?.type &&
-                  selectedCoverage.type[0].toUpperCase() +
-                    selectedCoverage.type.slice(1)) ||
-                "Market"
-              } Value)`}
+              {`(${type[0].toUpperCase() + type.slice(1) || "Market"} Value)`}
             </span>
             <div className="flex items-center justify-end w-1/2">
               <span className="text-base text-left text-primary-black font-medium">
-                RM {numberWithCommas(selectedCoverage?.price ?? 1200)}
+                RM{" "}
+                {numberWithCommas(
+                  type === "market"
+                    ? market.nvic
+                      ? market.nvic.vehicleMarketValue
+                      : 1300
+                    : 1200
+                )}
               </span>
               {pathname !== "/insurance/review-pay" && (
                 <Link to="/insurance/market-agreed-value" className="ml-1">
@@ -108,6 +112,9 @@ const SummaryInfoCard = () => {
           <h4 className="text-lg text-center text-primary-black font-bold">
             {proName ?? "MSIG Motor Plus Insurance"}
           </h4>
+          <span className="text-base text-center text-primary-black font-normal">
+            Motor Comprehensive
+          </span>
           <div className="flex items-center justify-between w-full">
             <span className="text-base text-left text-primary-black font-bold w-1/2">
               Premium
@@ -118,10 +125,10 @@ const SummaryInfoCard = () => {
           </div>
           <div className="flex items-center justify-between w-full">
             <span className="text-base text-left text-primary-black font-bold w-1/2">
-              NCD({ncd ?? 30}%)
+              NCD ({ncd ?? 30}%)
             </span>
             <span className="text-base text-right text-primary-black font-medium w-1/2">
-              RM {updatedNCD}
+              <span className="font-semibold">-</span> RM {updatedNCD}
             </span>
           </div>
         </div>
@@ -153,7 +160,8 @@ const SummaryInfoCard = () => {
                   {addOn.title}
                 </span>
                 <span className="text-base text-right text-primary-black font-medium w-1/2">
-                  RM {addOn.price.toFixed(2)}
+                  <span className="font-semibold">+</span> RM{" "}
+                  {addOn.price.toFixed(2)}
                 </span>
               </div>
             ))
@@ -175,7 +183,7 @@ const SummaryInfoCard = () => {
                 Discount {`${promoCode}%`}
               </span>
               <span className="text-base text-right text-primary-black font-medium w-1/2">
-                RM {discount}
+                <span className="font-semibold">-</span> RM {discount}
               </span>
             </div>
           )}

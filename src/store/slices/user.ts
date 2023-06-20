@@ -33,7 +33,7 @@ type UserInfoType = {
 const initialState: UserInfoType = {
   id: {
     type: "NRIC",
-    number: "580127035192",
+    number: "",
   },
   name: "",
   gender: "Male",
@@ -41,8 +41,8 @@ const initialState: UserInfoType = {
   address: {
     address1: "",
   },
-  mobileNumber: "12312323",
-  email: "askjdkh@sad.com",
+  mobileNumber: "",
+  email: "",
   city: "",
   state: "",
   postalCode: "",
@@ -50,7 +50,7 @@ const initialState: UserInfoType = {
   occupation: "Teacher",
   nationality: "Malaysia",
   race: "Chinese",
-  sessionName: "787ce1486488125caadb5",
+  sessionName: "",
   requestId: "",
   polEffectiveDate: "",
   polExpiryDate: "",

@@ -64,8 +64,8 @@ const QuoteListingsContainer = () => {
   // state for managing the list of quote plans
   // fetched from the agiliux backend system
   // const [quotePlans, updateQuotePlans] = useState<QuotePlansType[]>(quotes);
-  const { sessionName, requestId } = useSelector(
-    (state: RootState) => state.user
+  const { session, requestId } = useSelector(
+    (state: RootState) => state.credentials
   );
   const [isComparePopupVisible, shouldComparePopupVisible] =
     useState<boolean>(false);
@@ -125,7 +125,7 @@ const QuoteListingsContainer = () => {
         const quoteResponse = await axios.post(
           "https://app.agiliux.com/aeon/webservice.php",
           {
-            sessionName: sessionName,
+            sessionName: session ? session.sessionName : "",
             operation: "getQuoteInfo",
             element: JSON.stringify({
               requestId: requestId,
@@ -139,7 +139,7 @@ const QuoteListingsContainer = () => {
             },
           }
         );
-        if (quoteResponse.status === 200) {
+        if (quoteResponse.status === 200 && quoteResponse.data !== "") {
           const data = quoteResponse.data.result;
           const quoteList = data.quoteinfo.map(
             ({ productid, logoname, displaypremium, benefits }: any) => ({

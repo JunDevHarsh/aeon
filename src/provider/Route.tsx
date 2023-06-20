@@ -18,7 +18,7 @@ import NotFoundPage from "../pages/NotFound";
 import PaymentPage from "../pages/Payment";
 import InsuranceContextProvider from "../context/InsuranceContext";
 import VehicleCoverageContainer from "../components/container/VehicleCoverage";
-// import VehicleCoverageProvider from "../context/VehicleCoverage";
+import VehicleCoverageProvider from "../context/VehicleCoverage";
 import AddOnContextProvider from "../context/AddOnContext";
 import MultiFormContextProvider from "../context/MultiFormContext";
 import DriverDetailsForm from "../components/form/DriverDetails";
@@ -80,16 +80,17 @@ const router = createBrowserRouter(
       /> */}
       <Route
         path="/insurance"
+        errorElement={<ErrorBoundary />}
         element={
           <QuoteListingProvider>
             <InsuranceContextProvider>
-              {/* <VehicleCoverageProvider> */}
-              <AddOnContextProvider>
-                <MultiFormContextProvider>
-                  <InsuranceRootLayout />
-                </MultiFormContextProvider>
-              </AddOnContextProvider>
-              {/* </VehicleCoverageProvider> */}
+              <VehicleCoverageProvider>
+                <AddOnContextProvider>
+                  <MultiFormContextProvider>
+                    <InsuranceRootLayout />
+                  </MultiFormContextProvider>
+                </AddOnContextProvider>
+              </VehicleCoverageProvider>
             </InsuranceContextProvider>
           </QuoteListingProvider>
         }

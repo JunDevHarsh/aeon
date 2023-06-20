@@ -13,6 +13,10 @@ html{
   overflow-x: auto;
 }
 
+.popup--shown body{
+  overflow: hidden;
+}
+
 .selectedOptions::-webkit-scrollbar {
   display: none;
 }

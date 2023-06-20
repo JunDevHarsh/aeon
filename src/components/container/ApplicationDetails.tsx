@@ -7,12 +7,12 @@ const ApplicationDetailsContainer = () => {
   const {
     user: { id, gender, maritalStatus, dateOfBirth },
     vehicle: {
-      regNo,
-      make,
-      model,
+      vehicleLicenseId: regNo,
+      vehicleMake: make,
+      vehicleModel: model,
       yearOfManufacture,
-      engineNo,
-      chasisNo,
+      vehicleEngine: engineNo,
+      vehicleChassis: chasisNo,
       variant,
     },
   } = useSelector((state: RootState) => state);
@@ -88,7 +88,7 @@ const ApplicationDetailsContainer = () => {
               Variant
             </span>
             <span className="text-base text-left text-primary-black font-normal">
-              {variant ?? "Honda HRV X3"}
+              {variant?.vehicleVariant ?? "Honda HRV X3"}
             </span>
           </div>
         </div>
