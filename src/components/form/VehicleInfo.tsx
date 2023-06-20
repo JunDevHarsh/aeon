@@ -10,6 +10,7 @@ import { VehicleStateType } from "../../store/slices/types";
 import axios from "axios";
 import { useState } from "react";
 import DefaultPopup from "../popup/Default";
+import RadioFieldWithRFH from "../rhfFields/RadioField";
 
 const VehicleInfoForm = ({
   setShowLoading,
@@ -135,8 +136,6 @@ const VehicleInfoForm = ({
       console.error(err);
     }
   };
-  // react hook form watch
-  const watchReconIndicator = watch("reconIndicator");
 
   return (
     <>
@@ -157,34 +156,6 @@ const VehicleInfoForm = ({
             title="Vehicle Registration No."
             value={vehicleState.vehicleLicenseId}
           />
-          {/* Vehicle Make Field  */}
-          {/* <div className="relative pb-5 flex flex-col items-start gap-y-1 w-auto h-auto">
-          <label
-            htmlFor="vehicleMake"
-            className="text-base text-center text-primary-black font-semibold"
-          >
-            Vehicle Make*
-          </label>
-          <Controller
-            control={control}
-            name="make"
-            rules={{
-              validate: (val) => val !== null || "Select an option",
-            }}
-            render={({ field: { value }, fieldState: { error } }) => (
-              <SelectDropdown
-                id="vehicleMake"
-                placeholder="Select Make"
-                onChange={(val: string) => (
-                  setValue("make", val), clearErrors("make")
-                )}
-                selected={value}
-                error={error}
-                optionList={[{ label: "PERODUA", value: "PERODUA" }]}
-              />
-            )}
-          />
-        </div> */}
           <div className="relative pb-5 flex flex-col items-start gap-y-1 w-full h-auto">
             <span className="text-base text-center text-primary-black font-semibold">
               Vehicle Make*
@@ -193,39 +164,6 @@ const VehicleInfoForm = ({
               {watch("vehicleMake")}
             </span>
           </div>
-          {/* Vehicle Model Field  */}
-          {/* <div className="relative pb-5 flex flex-col items-start gap-y-1 w-auto h-auto">
-          <label
-            htmlFor="vehicleModel"
-            className="text-base text-center text-primary-black font-semibold"
-          >
-            Vehicle Model*
-          </label>
-          <Controller
-            control={control}
-            name="model"
-            rules={{
-              validate: (val) => val !== null || "Select an option",
-            }}
-            render={({ field: { value }, fieldState: { error } }) => (
-              <SelectDropdown
-                id="vehicleModel"
-                placeholder="Select Model"
-                onChange={(val: string) => (
-                  setValue("model", val), clearErrors("model")
-                )}
-                selected={value}
-                error={error}
-                optionList={[
-                  {
-                    label: "AXIA",
-                    value: "AXIA",
-                  },
-                ]}
-              />
-            )}
-          />
-        </div> */}
           <div className="relative pb-5 flex flex-col items-start gap-y-1 w-full h-auto">
             <span className="text-base text-center text-primary-black font-semibold">
               Vehicle Model*
@@ -367,76 +305,22 @@ const VehicleInfoForm = ({
             value={vehicleState.periodOfCoverage}
           />
           {/* Recond Indicator */}
-          <div className="relative pb-2 flex flex-col gap-y-1 items-start w-full h-auto">
-            <span className="text-base text-center text-primary-black font-semibold">
-              Recon Indicator
-            </span>
-            <div className="flex items-center justify-start w-full">
-              <div className="relative flex items-center justify-center w-auto">
-                <input
-                  id="reconIndicatorYes"
-                  type="radio"
-                  value="yes"
-                  className="peer absolute opacity-0 -z-10"
-                  checked={watchReconIndicator === "yes"}
-                  {...register("reconIndicator")}
-                />
-                <label
-                  htmlFor="reconIndicatorYes"
-                  className="px-1.5 flex items-center border-2 border-solid border-transparent peer-focus-visible:border-primary-black rounded cursor-pointer"
-                >
-                  <span
-                    className={`inline-block w-2.5 h-2.5 rounded-full ${
-                      watchReconIndicator === "yes"
-                        ? "bg-primary-black shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
-                        : "bg-white shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
-                    }`}
-                  />
-                  <span className="ml-2 text-sm text-center text-dark-1 font-normal">
-                    Yes
-                  </span>
-                </label>
-              </div>
-              <div className="ml-2 relative flex items-center justify-center w-auto">
-                <input
-                  id="reconIndicatorNo"
-                  type="radio"
-                  value="no"
-                  className="peer absolute opacity-0 -z-10"
-                  checked={watchReconIndicator === "no"}
-                  {...register("reconIndicator")}
-                />
-                <label
-                  htmlFor="reconIndicatorNo"
-                  className="px-1.5 flex items-center border-2 border-solid border-transparent peer-focus-visible:border-primary-black rounded cursor-pointer"
-                >
-                  <span
-                    className={`inline-block w-2.5 h-2.5 rounded-full ${
-                      watchReconIndicator === "no"
-                        ? "bg-primary-black shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
-                        : "bg-white shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
-                    }`}
-                  />
-                  <span className="ml-2 text-sm text-center text-dark-1 font-normal">
-                    No
-                  </span>
-                </label>
-              </div>
-            </div>
-          </div>
-          {/* E-hailing services */}
-          {/* <Controller
-          control={control}
-          name="hailingServices"
-          render={({ field: { value } }) => (
-            <CheckboxWithTextField
-              id="hailingServices"
-              isSelected={value}
-              text="This Vehicle used for E-Hailing Services"
-              updateIsSelected={() => setValue("hailingServices", !value)}
-            />
-          )}
-        /> */}
+          <RadioFieldWithRFH
+            name="reconIndicator"
+            register={register}
+            selectedValue={watch("reconIndicator")}
+            title="Recon Indicator"
+            options={[
+              {
+                value: "yes",
+                title: "Yes",
+              },
+              {
+                value: "no",
+                title: "No",
+              },
+            ]}
+          />
         </div>
         {/* Submit Form */}
         <div className="mt-4 flex flex-col items-center justify-center w-full">
