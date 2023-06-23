@@ -41,6 +41,7 @@ export type UserIdInputs = {
 // Vehicle State
 export type VehicleStateType = {
   vehicleLicenseId: string;
+  contractNumber: string;
   avMakeCode: string;
   makeCode: string;
   variant: NvicList | null;
@@ -94,7 +95,7 @@ export type CoverageStateType = {
 
 export type InsuranceStateType = {
   type: "new" | "renewal";
-  vehicle: "car" | "motorcycle";
+  vehicle: string;
   provider: ProviderStateType | null;
   coverage: CoverageStateType | null;
   referralCode: string | null;

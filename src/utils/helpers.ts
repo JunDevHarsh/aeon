@@ -94,9 +94,9 @@ export async function getVehicleInfo(
       {
         sessionName: sessionName,
         element: JSON.stringify({
-          vehregno: vehicleRegNo,
+          regno: vehicleRegNo,
           idtype: idType,
-          id_comregno: idNumber,
+          idvalue: idNumber,
           postalcode: postalCode,
           tenant_id: tenantId,
         }),

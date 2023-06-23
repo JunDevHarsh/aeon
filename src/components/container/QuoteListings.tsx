@@ -14,6 +14,7 @@ import QuoteComparisonPopup from "../popup/QuoteComparison";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
+import { MarketAndAgreedContext } from "../../context/MarketAndAgreedContext";
 
 export interface PlanType {
   value: string;
@@ -67,6 +68,10 @@ const QuoteListingsContainer = () => {
   const { session, requestId } = useSelector(
     (state: RootState) => state.credentials
   );
+  const {
+    state: { type, market, agreed },
+  } = useContext(MarketAndAgreedContext);
+  console.log(type, market, agreed);
   const [isComparePopupVisible, shouldComparePopupVisible] =
     useState<boolean>(false);
   const [warngingPopup, setWarningPopup] = useState<WarningPopupType>({
@@ -130,7 +135,9 @@ const QuoteListingsContainer = () => {
             element: JSON.stringify({
               requestId: requestId,
               tenant_id: "67b61490-fec2-11ed-a640-e19d1712c006",
-              vehclass: "Private Vehicle",
+              class: "Private Vehicle",
+              suminsured:
+                type === "market" ? market?.marketValue.toString() : agreed?.sumInsured.toString(),
             }),
           },
           {

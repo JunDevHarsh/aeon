@@ -15,7 +15,6 @@ import {
   updateVehicleState,
 } from "../../store/slices/vehicle";
 // types
-import VehicleSelector from "../fields/VehicleSelector";
 import ReferralCodeButton from "../button/ReferralCode";
 import DefaultPopup from "../popup/Default";
 import { RootState } from "../../store/store";
@@ -32,6 +31,8 @@ import {
   addSessionName,
   addToken,
 } from "../../store/slices/credentials";
+import RadioFieldWithRFH from "../rhfFields/RadioField";
+import CheckboxWithImageText from "../fields/CheckboxWithImageText";
 
 const tenantId = import.meta.env.VITE_TENANT_ID;
 const md5Secret = import.meta.env.VITE_MD5_SECRET;
@@ -44,7 +45,7 @@ export type UserInsuranceInputs = {
   vehicleRegNo: string;
   email: string;
   postalCode: string;
-  gender: "Male" | "Female";
+  gender: "male" | "female";
   idType: string | null;
   idNumber: string;
   mobileNumber: string;
@@ -58,7 +59,7 @@ const defaultUserInsuranceState: UserInsuranceInputs = {
   email: "",
   postalCode: "",
   idType: "NRIC",
-  gender: "Male",
+  gender: "male",
   vehicleRegNo: "",
   mobileNumber: "",
   dateOfBirth: null,
@@ -79,7 +80,7 @@ const UserRegistrationForm = () => {
   } = useForm<UserInsuranceInputs>({
     defaultValues: defaultUserInsuranceState,
   });
-  const [vehicleType, setVehicleType] = useState<"car" | "motorcycle">("car");
+  const [vehicleType, setVehicleType] = useState<string>("car");
   const [error, setError] = useState<{
     isVisible: boolean;
     title: string | null;
@@ -154,7 +155,7 @@ const UserRegistrationForm = () => {
         sessionInfo.sessionName,
         vehicleRegNo,
         idType || "NRIC",
-        idNumber,
+        idNumber.replace(/-/gi, ""),
         tenantId,
         postalCode
       );
@@ -180,9 +181,11 @@ const UserRegistrationForm = () => {
         ncdPercentage,
         nvicList,
         requestId,
+        contractNumber
       } = vehicleApiResponse;
       dispatch(
         updateVehicleState({
+          contractNumber,
           vehicleLicenseId,
           avMakeCode,
           makeCode,
@@ -284,9 +287,22 @@ const UserRegistrationForm = () => {
           setShowWarningPopup={setError}
         />
       )}
-      <VehicleSelector
-        vehicleType={vehicleType}
-        setVehicleType={setVehicleType}
+      <CheckboxWithImageText
+        name="vehicleType"
+        optionList={[
+          {
+            value: "car",
+            title: "Car Insurance",
+            imgName: "car_vehicle",
+          },
+          {
+            value: "motorcycle",
+            title: "Motorcycle Insurance",
+            imgName: "motorcycle_vehicle",
+          },
+        ]}
+        selectedValue={vehicleType}
+        updateValue={(val: string) => setVehicleType(val)}
       />
       <form
         onSubmit={handleSubmit(handleOnFormSubmit)}
@@ -294,63 +310,22 @@ const UserRegistrationForm = () => {
       >
         <div className="grid grid-cols-1 md:grid-cols-2 items-start gap-x-4 w-full">
           {/* Insurance Type Field */}
-          <div className="relative pb-3 flex flex-col items-start w-full h-auto">
-            <span className="mb-1 text-base text-center text-primary-black font-semibold">
-              Type*
-            </span>
-            <div className="flex items-center justify-start w-full">
-              <div className="mr-2 relative flex items-center justify-center w-auto">
-                <input
-                  id="insuranceTypeNew"
-                  type="radio"
-                  value="new"
-                  className="peer absolute opacity-0 -z-10"
-                  checked={watch("insuranceType") === "new"}
-                  {...register("insuranceType")}
-                />
-                <label
-                  htmlFor="insuranceTypeNew"
-                  className="px-1.5 flex items-center border-2 border-solid border-transparent peer-focus-visible:border-primary-black rounded cursor-pointer"
-                >
-                  <span
-                    className={`mr-2 inline-block w-2.5 h-2.5 rounded-full ${
-                      watch("insuranceType") === "new"
-                        ? "bg-primary-black shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
-                        : "bg-white shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
-                    }`}
-                  />
-                  <span className="text-sm text-center text-dark-1 font-normal">
-                    New
-                  </span>
-                </label>
-              </div>
-              <div className="relative flex items-center justify-center w-auto">
-                <input
-                  id="insuranceTypeRenewal"
-                  type="radio"
-                  value="renewal"
-                  className="peer absolute opacity-0 -z-10"
-                  checked={watch("insuranceType") === "renewal"}
-                  {...register("insuranceType")}
-                />
-                <label
-                  htmlFor="insuranceTypeRenewal"
-                  className="px-1.5 flex items-center border-2 border-solid border-transparent peer-focus-visible:border-primary-black rounded cursor-pointer"
-                >
-                  <span
-                    className={`mr-2 inline-block w-2.5 h-2.5 rounded-full ${
-                      watch("insuranceType") === "renewal"
-                        ? "bg-primary-black shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
-                        : "bg-white shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
-                    }`}
-                  />
-                  <span className="text-sm text-center text-dark-1 font-normal">
-                    Renewal
-                  </span>
-                </label>
-              </div>
-            </div>
-          </div>
+          <RadioFieldWithRFH
+            selectedValue={watch("insuranceType")}
+            title="Type"
+            name="insuranceType"
+            register={register}
+            options={[
+              {
+                value: "new",
+                title: "New",
+              },
+              {
+                value: "renewal",
+                title: "Renewal",
+              },
+            ]}
+          />
           {/* Vehicle Reg. No. Field */}
           <InputTextField
             label="Vehicle Registration No."
@@ -377,12 +352,9 @@ const UserRegistrationForm = () => {
           {/* ID Type and ID No. Field */}
           <div className="flex flex-col mobile-m:flex-row items-start justify-between w-full">
             <div className="relative pb-5 flex flex-col items-start flex-1 mobile-m:flex-[1_1_40%] w-full mobile-m:w-auto h-auto">
-              <label
-                htmlFor="selectIdType"
-                className="mb-1 text-base text-center text-primary-black font-semibold"
-              >
+              <span className="mb-1 text-base text-center text-primary-black font-semibold">
                 ID Type*
-              </label>
+              </span>
               <Controller
                 control={control}
                 name="idType"
@@ -503,12 +475,9 @@ const UserRegistrationForm = () => {
           />
           {/* Marital Status Field */}
           <div className="relative pb-5 flex flex-col items-start w-full h-auto">
-            <label
-              htmlFor="selectMaritalStatus"
-              className="mb-1 text-base text-center text-primary-black font-semibold"
-            >
+            <span className="mb-1 text-base text-center text-primary-black font-semibold">
               Marital Status*
-            </label>
+            </span>
             <Controller
               control={control}
               name="maritalStatus"
@@ -537,63 +506,22 @@ const UserRegistrationForm = () => {
           {watchIDType && watchIDType === "Passport" && (
             <>
               {/* Gender Field */}
-              <div className="mb-1 md:mb-0 relative pb-2 flex flex-col items-start w-full h-auto">
-                <span className="mb-1 text-base text-center text-primary-black font-semibold">
-                  Gender*
-                </span>
-                <div className="flex items-center justify-start w-full">
-                  <div className="mr-2 relative flex items-center justify-center w-auto">
-                    <input
-                      id="genderMale"
-                      type="radio"
-                      value="Male"
-                      className="peer absolute opacity-0"
-                      checked={watch("gender") === "Male"}
-                      {...register("gender")}
-                    />
-                    <label
-                      htmlFor="genderMale"
-                      className="px-1.5 flex items-center border-2 border-solid border-transparent peer-focus-visible:border-primary-black rounded cursor-pointer"
-                    >
-                      <span
-                        className={`mr-2 inline-block w-2.5 h-2.5 rounded-full ${
-                          watch("gender") === "Male"
-                            ? "bg-primary-black shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
-                            : "bg-white shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
-                        }`}
-                      />
-                      <span className="text-sm text-center text-dark-1 font-normal">
-                        Male
-                      </span>
-                    </label>
-                  </div>
-                  <div className="relative flex items-center justify-center w-auto">
-                    <input
-                      id="genderFemale"
-                      type="radio"
-                      value="Female"
-                      className="peer absolute opacity-0"
-                      checked={watch("gender") === "Female"}
-                      {...register("gender")}
-                    />
-                    <label
-                      htmlFor="genderFemale"
-                      className="px-1.5 flex items-center border-2 border-solid border-transparent peer-focus-visible:border-primary-black rounded cursor-pointer"
-                    >
-                      <span
-                        className={`mr-2 inline-block w-2.5 h-2.5 rounded-full ${
-                          watch("gender") === "Female"
-                            ? "bg-primary-black shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
-                            : "bg-white shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
-                        }`}
-                      />
-                      <span className="text-sm text-center text-dark-1 font-normal">
-                        Female
-                      </span>
-                    </label>
-                  </div>
-                </div>
-              </div>
+              <RadioFieldWithRFH
+                selectedValue={watch("gender")}
+                title="Gender"
+                name="gender"
+                register={register}
+                options={[
+                  {
+                    value: "male",
+                    title: "Male",
+                  },
+                  {
+                    value: "female",
+                    title: "Female",
+                  },
+                ]}
+              />
               {/* Date Of Birth */}
               {/* <DateOfBirthField /> */}
               <Controller

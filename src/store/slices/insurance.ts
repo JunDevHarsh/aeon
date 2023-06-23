@@ -29,7 +29,7 @@ export const insuranceSlice = createSlice({
       state,
       action: PayloadAction<{
         type: "new" | "renewal";
-        vehicle: "car" | "motorcycle";
+        vehicle: string;
       }>
     ) => {
       const { type, vehicle } = action.payload;
