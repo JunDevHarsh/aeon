@@ -60,10 +60,10 @@ function MarketAndAgreedContainer() {
     value: nvic,
   }));
 
-  const agreedTypeOptionList = types.map(({ AvCode, Variant }) => ({
-    label: Variant,
-    value: AvCode,
-  }));
+  // const agreedTypeOptionList = types.map(({ AvCode, Variant }) => ({
+  //   label: Variant,
+  //   value: AvCode,
+  // }));
 
   const listOfAgreedVariants = check(types);
   const agreedVariantOptionList = Object.values(listOfAgreedVariants).map(

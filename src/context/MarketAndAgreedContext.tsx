@@ -1,7 +1,7 @@
 import React, { createContext, useReducer } from "react";
 import { ActionMap } from "./types";
-import { useSelector } from "react-redux";
-import { RootState } from "../store/store";
+// import { useSelector } from "react-redux";
+// import { RootState } from "../store/store";
 
 export type AgreedVariantType = {
   Variant: string;
