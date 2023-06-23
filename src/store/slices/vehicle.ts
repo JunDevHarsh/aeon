@@ -4,6 +4,7 @@ import { VehicleStateType } from "./types";
 
 const initialState: VehicleStateType = {
   vehicleLicenseId: "",
+  contractNumber: "",
   avMakeCode: "",
   makeCode: "",
   vehicleMake: "",

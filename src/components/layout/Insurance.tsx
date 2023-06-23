@@ -3,6 +3,7 @@ import StepperNavbar from "../navbar/Stepper";
 import NotFoundPage from "../../pages/NotFound";
 import { Suspense, lazy } from "react";
 import SummaryInfoCard from "../card/Summary";
+import MarketAndAgreedContainer from "../container/MarketAndAgreed";
 
 const VehicleCoverageContainer = lazy(
   () => import("../container/VehicleCoverage")
@@ -24,6 +25,10 @@ const InsuranceRootLayout = () => {
         <VehicleCoverageContainer />
       </Suspense>
     );
+  }
+
+  if (pathname === "/insurance/test") {
+    return <MarketAndAgreedContainer />;
   }
 
   return (

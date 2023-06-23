@@ -15,7 +15,6 @@ import {
   updateVehicleState,
 } from "../../store/slices/vehicle";
 // types
-import VehicleSelector from "../fields/VehicleSelector";
 import ReferralCodeButton from "../button/ReferralCode";
 import DefaultPopup from "../popup/Default";
 import { RootState } from "../../store/store";
@@ -33,6 +32,7 @@ import {
   addToken,
 } from "../../store/slices/credentials";
 import RadioFieldWithRFH from "../rhfFields/RadioField";
+import CheckboxWithImageText from "../fields/CheckboxWithImageText";
 
 const tenantId = import.meta.env.VITE_TENANT_ID;
 const md5Secret = import.meta.env.VITE_MD5_SECRET;
@@ -80,7 +80,7 @@ const UserRegistrationForm = () => {
   } = useForm<UserInsuranceInputs>({
     defaultValues: defaultUserInsuranceState,
   });
-  const [vehicleType, setVehicleType] = useState<"car" | "motorcycle">("car");
+  const [vehicleType, setVehicleType] = useState<string>("car");
   const [error, setError] = useState<{
     isVisible: boolean;
     title: string | null;
@@ -155,7 +155,7 @@ const UserRegistrationForm = () => {
         sessionInfo.sessionName,
         vehicleRegNo,
         idType || "NRIC",
-        idNumber,
+        idNumber.replace(/-/gi, ""),
         tenantId,
         postalCode
       );
@@ -181,9 +181,11 @@ const UserRegistrationForm = () => {
         ncdPercentage,
         nvicList,
         requestId,
+        contractNumber
       } = vehicleApiResponse;
       dispatch(
         updateVehicleState({
+          contractNumber,
           vehicleLicenseId,
           avMakeCode,
           makeCode,
@@ -275,7 +277,7 @@ const UserRegistrationForm = () => {
       errorMessage: "For e.g. 1234567-J",
     },
   };
-  
+
   return (
     <>
       {error.isVisible && (
@@ -285,9 +287,22 @@ const UserRegistrationForm = () => {
           setShowWarningPopup={setError}
         />
       )}
-      <VehicleSelector
-        vehicleType={vehicleType}
-        setVehicleType={setVehicleType}
+      <CheckboxWithImageText
+        name="vehicleType"
+        optionList={[
+          {
+            value: "car",
+            title: "Car Insurance",
+            imgName: "car_vehicle",
+          },
+          {
+            value: "motorcycle",
+            title: "Motorcycle Insurance",
+            imgName: "motorcycle_vehicle",
+          },
+        ]}
+        selectedValue={vehicleType}
+        updateValue={(val: string) => setVehicleType(val)}
       />
       <form
         onSubmit={handleSubmit(handleOnFormSubmit)}
@@ -337,12 +352,9 @@ const UserRegistrationForm = () => {
           {/* ID Type and ID No. Field */}
           <div className="flex flex-col mobile-m:flex-row items-start justify-between w-full">
             <div className="relative pb-5 flex flex-col items-start flex-1 mobile-m:flex-[1_1_40%] w-full mobile-m:w-auto h-auto">
-              <label
-                htmlFor="selectIdType"
-                className="mb-1 text-base text-center text-primary-black font-semibold"
-              >
+              <span className="mb-1 text-base text-center text-primary-black font-semibold">
                 ID Type*
-              </label>
+              </span>
               <Controller
                 control={control}
                 name="idType"
@@ -463,12 +475,9 @@ const UserRegistrationForm = () => {
           />
           {/* Marital Status Field */}
           <div className="relative pb-5 flex flex-col items-start w-full h-auto">
-            <label
-              htmlFor="selectMaritalStatus"
-              className="mb-1 text-base text-center text-primary-black font-semibold"
-            >
+            <span className="mb-1 text-base text-center text-primary-black font-semibold">
               Marital Status*
-            </label>
+            </span>
             <Controller
               control={control}
               name="maritalStatus"

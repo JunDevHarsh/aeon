@@ -23,6 +23,8 @@ import AddOnContextProvider from "../context/AddOnContext";
 import MultiFormContextProvider from "../context/MultiFormContext";
 import DriverDetailsForm from "../components/form/DriverDetails";
 import ApplicationDetailsContainer from "../components/container/ApplicationDetails";
+import MarketAndAgreedProvider from "../context/MarketAndAgreedContext";
+import MarketAndAgreedContainer from "../components/container/MarketAndAgreed";
 
 const MemoizedQuoteListingsPage = lazy(
   () => import("../components/container/QuoteListings")
@@ -87,7 +89,9 @@ const router = createBrowserRouter(
               <VehicleCoverageProvider>
                 <AddOnContextProvider>
                   <MultiFormContextProvider>
-                    <InsuranceRootLayout />
+                    <MarketAndAgreedProvider>
+                      <InsuranceRootLayout />
+                    </MarketAndAgreedProvider>
                   </MultiFormContextProvider>
                 </AddOnContextProvider>
               </VehicleCoverageProvider>
@@ -122,6 +126,10 @@ const router = createBrowserRouter(
         <Route
           path="market-agreed-value"
           element={<VehicleCoverageContainer />}
+        />
+        <Route
+          path="test"
+          element={<MarketAndAgreedContainer />}
         />
       </Route>
       <Route path="/payment" element={<PaymentPage />} />
