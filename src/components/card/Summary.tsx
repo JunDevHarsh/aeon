@@ -6,9 +6,10 @@ import Code from "../button/Code";
 import { numberWithCommas } from "../container/VehicleCoverage";
 import { InsuranceContext } from "../../context/InsuranceContext";
 import { AddOnsContext } from "../../context/AddOnContext";
-import { VehicleCoverageContext } from "../../context/VehicleCoverage";
+// import { VehicleCoverageContext } from "../../context/VehicleCoverage";
 import { updateFinalPrice } from "../../store/slices/insurance";
 import { Link } from "react-router-dom";
+import { MarketAndAgreedContext } from "../../context/MarketAndAgreedContext";
 
 export interface AddBenefitsType {
   id: string;
@@ -34,9 +35,18 @@ const SummaryInfoCard = () => {
   const {
     state: { price: proPrice, name: proName },
   } = useContext(InsuranceContext);
+  // const {
+  //   state: { type, market },
+  // } = useContext(VehicleCoverageContext);
+
   const {
-    state: { type, market },
-  } = useContext(VehicleCoverageContext);
+    state: {
+      type: valuationType,
+      agreed: valuationAgreed,
+      market: valuationMarket,
+    },
+  } = useContext(MarketAndAgreedContext);
+
   const { pathname } = useLocation();
 
   const selectedAddOns = addOns.filter((addOn) => addOn.isSelected);
@@ -57,6 +67,8 @@ const SummaryInfoCard = () => {
   const serviceTax = ((Number(grossPremium) * 6) / 100).toFixed(2);
   const totalAmount = (Number(subTotal) + Number(serviceTax) + 10).toFixed(2);
 
+  console.log(valuationMarket?.marketValue);
+
   return (
     <div className="mt-8 lg:mt-0 ml-0 lg:ml-8 relative flex flex-col items-center justify-between mobile-l:min-w-[360px] sm:min-w-[375px] max-w-sm w-full h-auto rounded-[20px] shadow-container overflow-hidden">
       <div className="inline-block p-2 w-full bg-[#283CC6]">
@@ -75,17 +87,20 @@ const SummaryInfoCard = () => {
           <div className="flex items-start justify-between w-full">
             <span className="text-base text-left text-primary-black font-bold w-1/2">
               Sum Insured <br />
-              {`(${type[0].toUpperCase() + type.slice(1) || "Market"} Value)`}
+              {`(${
+                valuationType[0].toUpperCase() + valuationType.slice(1) ||
+                "Market"
+              } Value)`}
             </span>
             <div className="flex items-center justify-end w-1/2">
               <span className="text-base text-left text-primary-black font-medium">
                 RM{" "}
                 {numberWithCommas(
-                  type === "market"
-                    ? market.nvic
-                      ? market.nvic.vehicleMarketValue
-                      : 1300
-                    : 1200
+                  valuationType === "market"
+                    ? valuationMarket.marketValue
+                    : valuationAgreed?.sumInsured
+                    ? Number(valuationAgreed?.sumInsured)
+                    : 0
                 )}
               </span>
               {pathname !== "/insurance/review-pay" && (
