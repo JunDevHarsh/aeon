@@ -28,9 +28,11 @@ const SummaryInfoCard = () => {
     state: { addOns, isEdited },
     dispatch,
   } = useContext(AddOnsContext);
-  const { ncdPercentage: ncd } = useSelector(
-    (state: RootState) => state.vehicle
-  );
+  const {
+    ncdPercentage: ncd,
+    polExpiryDate,
+    polEffectiveDate,
+  } = useSelector((state: RootState) => state.vehicle);
   const navigate = useNavigate();
   const {
     state: { price: proPrice, name: proName },
@@ -67,22 +69,25 @@ const SummaryInfoCard = () => {
   const serviceTax = ((Number(grossPremium) * 6) / 100).toFixed(2);
   const totalAmount = (Number(subTotal) + Number(serviceTax) + 10).toFixed(2);
 
-  console.log(valuationMarket?.marketValue);
-
   return (
     <div className="mt-8 lg:mt-0 ml-0 lg:ml-8 relative flex flex-col items-center justify-between mobile-l:min-w-[360px] sm:min-w-[375px] max-w-sm w-full h-auto rounded-[20px] shadow-container overflow-hidden">
       <div className="inline-block p-2 w-full bg-[#283CC6]">
         <h3 className="text-xl text-center text-white font-bold">Summary</h3>
       </div>
       <div className="relative py-4 px-6 flex flex-col items-center justify-center w-full bg-[#F8F8F8]">
-        <div className="flex flex-col items-center gap-y-1 w-full">
+        <div className="flex flex-col items-center w-full">
           <div className="flex items-start justify-between w-full">
             <span className="text-base text-left text-primary-black font-bold w-1/2">
               Coverage Period
             </span>
-            <span className="text-base text-right whitespace-nowrap text-primary-black font-medium w-1/2">
-              19/01/23 - 19/01/24
-            </span>
+            <div className="flex flex-row items-end justify-center flex-wrap text-primary-black w-1/2">
+              <span className="text-base text-center font-medium whitespace-nowrap">
+                {polEffectiveDate || "19/01/23"}
+              </span>
+              <span className="ml-1 text-base text-center font-medium whitespace-nowrap">
+                to {polExpiryDate || "19/01/23"}
+              </span>
+            </div>
           </div>
           <div className="flex items-start justify-between w-full">
             <span className="text-base text-left text-primary-black font-bold w-1/2">
@@ -104,7 +109,7 @@ const SummaryInfoCard = () => {
                 )}
               </span>
               {pathname !== "/insurance/review-pay" && (
-                <Link to="/insurance/market-agreed-value" className="ml-1">
+                <Link to="/insurance/test" className="ml-1">
                   <svg
                     width="13"
                     height="13"
@@ -125,9 +130,9 @@ const SummaryInfoCard = () => {
         <div className="inline-block my-3 w-full h-[1px] bg-[#bcbcbc]" />
         <div className="flex flex-col items-start gap-y-1 w-full">
           <h4 className="text-lg text-center text-primary-black font-bold">
-            {proName ?? "MSIG Motor Plus Insurance"}
+            {proName || "MSIG Motor Plus Insurance"}
           </h4>
-          <span className="text-base text-center text-primary-black font-normal">
+          <span className="-mt-2 mb-1 text-base text-center text-primary-black font-normal">
             Motor Comprehensive
           </span>
           <div className="flex items-center justify-between w-full">

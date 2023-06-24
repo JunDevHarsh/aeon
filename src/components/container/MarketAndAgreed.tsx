@@ -8,8 +8,10 @@ import {
 import SelectDropdown from "../fields/SelectDropdown";
 import InputRange from "../fields/InputRange";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store/store";
 
-function o(types: AgreedVariantType[]) {
+function createUniqueValues(types: AgreedVariantType[]) {
   const regEx = /(-HIGH|-LOW|-HI|-LO)\s*-?\s*/;
   return types.reduce((acc: any, curr: any) => {
     const { AvCode, Variant } = curr;
@@ -52,6 +54,7 @@ function MarketAndAgreedContainer() {
     state: { type, market, agreed, variants, types, previousValue },
     dispatch,
   } = useContext(MarketAndAgreedContext);
+  const { reconIndicator } = useSelector((state: RootState) => state.vehicle);
 
   const marketVariantOptionList = variants.map(({ nvic, vehicleVariant }) => ({
     label: vehicleVariant,
@@ -59,12 +62,14 @@ function MarketAndAgreedContainer() {
   }));
 
   // const listOfAgreedVariants = check(types);
-  const listOfAgreedVariants: AgreedVariantType[] = Object.values(o(types));
+  const listOfAgreedVariants: AgreedVariantType[] = Object.values(
+    createUniqueValues(types)
+  );
 
   const agreedVariantOptionList = listOfAgreedVariants.map(
     ({ AvCode, Variant }) => ({
       label: "TOYOTA COROLLA | " + Variant,
-      value: AvCode,
+      value: AvCode.replace(/(-HIGH|-LOW|-HI|-LO)\s*-?\s*/, ""),
     })
   );
 
@@ -94,7 +99,9 @@ function MarketAndAgreedContainer() {
   }
 
   function handleAgreedTypeChange(val: string) {
-    const selectedType = types.find((type) => type.AvCode === val);
+    const selectedType = types.find(
+      (type) => type.AvCode.replace(/(-HIGH|-LOW|-HI|-LO)\s*-?\s*/, "") === val
+    );
     if (!selectedType) return;
     const { AvCode, SumInsured, Variant } = selectedType;
     dispatch({
@@ -157,13 +164,27 @@ function MarketAndAgreedContainer() {
                 price={market?.marketValue.toString() || ""}
                 updateValue={handleTypeChange}
               />
-              <ValuationTypeButton
-                selectedValue={type}
-                title="Agreed Value"
-                value="agreed"
-                price={agreed ? agreed.sumInsured : ""}
-                updateValue={handleTypeChange}
-              />
+              {reconIndicator === "yes" ? (
+                <div className="relative even:mt-4 mobile-l:even:mt-0 even:ml-0 mobile-l:even:ml-4 inline-block w-full mobile-l:w-auto">
+                  <div className="relative px-4 py-4 flex flex-col items-start justify-center w-full mobile-l:w-[157px] h-auto border border-solid rounded-xl outline outline-2 outline-transparent focus-visible:outline-primary-black cursor-pointer border-transparent text-primary-black shadow-[0_8px_10px_0_#00000024]">
+                    <span className="text-sm text-center text-current font-bold">
+                      Agreed Value
+                    </span>
+                    <span className="text-xs text-left text-current font-normal">
+                      User are not allowed to select Agreed Value if
+                      reconIndicator is selected "Yes"
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <ValuationTypeButton
+                  selectedValue={type}
+                  title="Agreed Value"
+                  value="agreed"
+                  price={agreed ? agreed.sumInsured : ""}
+                  updateValue={handleTypeChange}
+                />
+              )}
             </div>
           </div>
           <div className="mt-4 flex flex-col items-start w-full">
@@ -304,10 +325,10 @@ function ValuationTypeButton({
   selectedValue,
 }: ValuationTypeButtonProps) {
   return (
-    <div className="relative even:mt-4 mobile-l:even:mt-0 even:ml-0 mobile-l:even:ml-4 inline-block w-full mobile-l:w-auto">
+    <div className="relative even:mt-4 mobile-l:even:mt-0 even:ml-0 mobile-l:even:ml-4 inline-block w-full mobile-l:w-auto h-auto">
       <button
         onClick={() => updateValue(value)}
-        className={`relative px-4 py-4 flex flex-col items-start justify-center w-full mobile-l:w-[157px] h-[82px] border border-solid rounded-xl outline outline-2 outline-transparent focus-visible:outline-primary-black cursor-pointer ${
+        className={`relative px-4 py-4 flex flex-col items-start justify-center w-full mobile-l:w-[157px] min-h-[82px] h-auto border border-solid rounded-xl outline outline-2 outline-transparent focus-visible:outline-primary-black cursor-pointer ${
           selectedValue === value
             ? "border-[#4B5EAA] text-primary-blue"
             : "border-transparent text-primary-black"

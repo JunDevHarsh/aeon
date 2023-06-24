@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext, useRef } from "react";
 import SelectMultiSearch from "../fields/SelectMultiSearch";
 import SelectDropdown from "../fields/SelectDropdown";
 import QuoteListingPlanCard from "../card/QuoteListingPlan";
@@ -71,7 +71,7 @@ const QuoteListingsContainer = () => {
   const {
     state: { type, market, agreed },
   } = useContext(MarketAndAgreedContext);
-  console.log(type, market, agreed);
+  // console.log(type, market, agreed);
   const [isComparePopupVisible, shouldComparePopupVisible] =
     useState<boolean>(false);
   const [warngingPopup, setWarningPopup] = useState<WarningPopupType>({
@@ -79,6 +79,12 @@ const QuoteListingsContainer = () => {
     title: null,
     description: null,
   });
+
+  const [error, setError] = useState<{
+    code: string;
+    message: string;
+    description: string;
+  } | null>(null);
 
   const {
     state: { filter, quotes: insurerQuotes },
@@ -137,7 +143,9 @@ const QuoteListingsContainer = () => {
               tenant_id: "67b61490-fec2-11ed-a640-e19d1712c006",
               class: "Private Vehicle",
               suminsured:
-                type === "market" ? market?.marketValue.toString() : agreed?.sumInsured.toString(),
+                type === "market"
+                  ? market?.marketValue.toString()
+                  : agreed?.sumInsured.toString(),
             }),
           },
           {
@@ -146,30 +154,58 @@ const QuoteListingsContainer = () => {
             },
           }
         );
-        if (quoteResponse.status === 200 && quoteResponse.data !== "") {
-          const data = quoteResponse.data.result;
-          const quoteList = data.quoteinfo.map(
-            ({ productid, logoname, displaypremium, benefits }: any) => ({
-              id: productid,
-              insurerId: "1001",
-              insurerName: logoname,
-              planType: "comprehensive",
-              imgUrl: logoname.toLowerCase(),
-              price: displaypremium,
-              popular: true,
-              isSelected: false,
-              benefits: benefits,
-            })
-          );
-          dispatch({
-            type: QuotesTypes.AddQuotes,
-            payload: { quotes: quoteList },
-          });
-          return;
+        if (quoteResponse.status === 200 && quoteResponse.data) {
+          if (quoteResponse.data.error || !quoteResponse.data.success) {
+            throw new Error("INTERVAL_SERVER_ERROR");
+          }
+          if (quoteResponse.data) {
+            if (quoteResponse.data.result.quoteinfo.length === 0) {
+              throw new Error("NO_QUOTE_FOUND");
+            }
+            const data = quoteResponse.data.result;
+            const quoteList = data.quoteinfo.map(
+              ({ productid, logoname, displaypremium, benefits }: any) => ({
+                id: productid,
+                insurerId: "1001",
+                insurerName: logoname,
+                planType: "comprehensive",
+                imgUrl: logoname.toLowerCase(),
+                price: displaypremium,
+                popular: true,
+                isSelected: false,
+                benefits: benefits,
+              })
+            );
+            dispatch({
+              type: QuotesTypes.AddQuotes,
+              payload: { quotes: quoteList },
+            });
+            return;
+          }
+          throw new Error("INTERVAL_SERVER_ERROR");
         }
-        throw new Error("Something went wrong");
+        throw new Error("INTERVAL_SERVER_ERROR");
       } catch (err) {
-        console.log(err);
+        if (err instanceof Error) {
+          console.log(err);
+          switch (err.message) {
+            case "NO_QUOTE_FOUND": {
+              setError({
+                code: "404",
+                message: "No Quote Found",
+                description: "No quote found for the given request.",
+              });
+              return;
+            }
+            default: {
+              setError({
+                code: "500",
+                message: "Internal Server Error",
+                description: "Something went wrong. Please try again later.",
+              });
+            }
+          }
+        }
       }
     }
     fetchQuotes();
@@ -183,6 +219,8 @@ const QuoteListingsContainer = () => {
       .map((b) => b.value)
       .includes(quotePlan.planType)
   );
+
+  // console.log(filterQuotePlansType);
 
   const quotesToDisply =
     filterQuotePlansType.length === 0 ? insurerQuotes : filterQuotePlansType;
@@ -306,44 +344,118 @@ const QuoteListingsContainer = () => {
           </div>
         </div>
       </div>
-      <div className="mt-8 flex flex-col items-center justify-start w-full h-auto">
-        {quotesToDisply.length === 0 ? (
-          // quote skeleton
-          <div className="relative w-full">
-            <div className="mt-4 flex flex-col items-center justify-between w-full">
-              <div className="animate-pulse relative h-64 w-full bg-gray-200 rounded-lg"></div>
-              <div className="animate-pulse relative mt-4 h-64 w-full bg-gray-200 rounded-lg"></div>
-              <div className="animate-pulse relative mt-4 h-64 w-full bg-gray-200 rounded-lg"></div>
+      {
+        // if there is no quote to display
+        error ? (
+          <div className="mt-8 flex flex-col items-center justify-start w-full h-auto">
+            <div className="relative flex flex-col items-center justify-center w-full">
+              <LazyLoadImage
+                height={40}
+                maxWidth={250}
+                imgAlt="aeon-insurance-brokers-img"
+                imgPath="../../assets/images/AEON_LOGO.png"
+              />
+              <span className="text-lg text-center text-primary-black font-bold">
+                {error.code + " - " + error.description}
+              </span>
             </div>
           </div>
         ) : (
-          quotesToDisply
-            // sort the quote based on pricing
-            .sort((a, b) => {
-              if (filter.sort) {
-                const sortValue: string = filter.sort;
-                if (sortValue === "high-to-low") {
-                  // return parseInt(b.price) - parseInt(a.price);
-                  return b.price - a.price;
-                }
-              }
-              return a.price - b.price;
-            })
-            .map((quote) => {
-              return (
-                <QuoteListingPlanCard
-                  key={quote.id}
-                  {...{
-                    ...quote,
-                  }}
-                  updateSelectedQuotePlans={updateSelectedQuotePlans}
-                />
-              );
-            })
+          <div className="mt-8 flex flex-col items-center justify-start w-full h-auto">
+            {quotesToDisply.length === 0 ? (
+              // quote skeleton
+              <div className="relative w-full">
+                <div className="mt-4 flex flex-col items-center justify-between w-full">
+                  <div className="animate-pulse relative h-64 w-full bg-gray-200 rounded-lg"></div>
+                  <div className="animate-pulse relative mt-4 h-64 w-full bg-gray-200 rounded-lg"></div>
+                  <div className="animate-pulse relative mt-4 h-64 w-full bg-gray-200 rounded-lg"></div>
+                </div>
+              </div>
+            ) : (
+              quotesToDisply
+                // sort the quote based on pricing
+                .sort((a, b) => {
+                  if (filter.sort) {
+                    const sortValue: string = filter.sort;
+                    if (sortValue === "high-to-low") {
+                      // return parseInt(b.price) - parseInt(a.price);
+                      return b.price - a.price;
+                    }
+                  }
+                  return a.price - b.price;
+                })
+                .map((quote) => {
+                  return (
+                    <QuoteListingPlanCard
+                      key={quote.id}
+                      {...{
+                        ...quote,
+                      }}
+                      updateSelectedQuotePlans={updateSelectedQuotePlans}
+                    />
+                  );
+                })
+            )}
+          </div>
+        )
+      }
+    </div>
+  );
+};
+
+type LazyLoadImageProps = {
+  height: number;
+  minWidth?: number;
+  maxWidth?: number;
+  imgPath: string;
+  imgAlt: string;
+};
+
+function LazyLoadImage({
+  height,
+  minWidth,
+  imgPath,
+  maxWidth,
+  imgAlt,
+}: LazyLoadImageProps) {
+  const [isLoaded, setIsLoaded] = useState<boolean>(false);
+  const [pathLoaded, setPathLoaded] = useState<boolean>(false);
+  const imgRef = useRef<string>("");
+
+  useEffect(() => {
+    async function importImageDynamically() {
+      const importedImage = await import(imgPath);
+      imgRef.current = importedImage.default;
+      setPathLoaded(true);
+    }
+    importImageDynamically();
+  }, []);
+
+  return (
+    <div className="relative w-auto">
+      <div
+        style={{
+          height: `${height}px`,
+          maxWidth: `${maxWidth}px`,
+        }}
+        className={`${
+          !isLoaded ? `animate-pulse min-w-[${minWidth}]` : ""
+        } relative even:mt-4 md:even:mt-0 even:ml-0 md:even:ml-4 w-auto rounded`}
+      >
+        {!isLoaded && (
+          <div className="absolute top-0 left-0 w-full h-full bg-gray-300 z-10 rounded" />
+        )}
+        {pathLoaded && (
+          <img
+            src={imgRef.current}
+            alt={imgAlt}
+            onLoad={() => setIsLoaded(true)}
+            className={`ml-3 mr-1 w-9 mobile-m:w-auto h-auto`}
+          />
         )}
       </div>
     </div>
   );
-};
+}
 
 export default QuoteListingsContainer;

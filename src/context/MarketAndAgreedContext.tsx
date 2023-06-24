@@ -1,8 +1,7 @@
 import React, { createContext, useReducer } from "react";
 import { ActionMap } from "./types";
-// import { useSelector } from "react-redux";
-// import { RootState } from "../store/store";
-
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
 export type AgreedVariantType = {
   Variant: string;
   AvCode: string;
@@ -200,9 +199,10 @@ function marketAgreedReducer(
 }
 
 function MarketAndAgreedProvider({ children }: { children: React.ReactNode }) {
-  // const { nvicList, variant } = useSelector(
-  //   (state: RootState) => state.vehicle
-  // );
+  const { nvicList, variant } = useSelector(
+    (state: RootState) => state.vehicle
+  );
+  console.log(nvicList, variant);
   const [state, dispatch] = useReducer(marketAgreedReducer, initialState);
   return (
     <MarketAndAgreedContext.Provider value={{ state, dispatch }}>
