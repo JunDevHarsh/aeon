@@ -7,83 +7,90 @@ import {
 } from "../../context/MarketAndAgreedContext";
 import SelectDropdown from "../fields/SelectDropdown";
 import InputRange from "../fields/InputRange";
+import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store/store";
 
-function check(
-  listOfAgreed: Array<AgreedVariantType>
-): Record<string, AgreedVariantType> {
+function createUniqueValues(types: AgreedVariantType[]) {
   const regEx = /(-HIGH|-LOW|-HI|-LO)\s*-?\s*/;
-
-  return listOfAgreed.reduce<Record<string, AgreedVariantType>>(
-    (acc: any, currentAgreed: any) => {
-      const avCode = currentAgreed.AvCode.replace(regEx, "");
-
-      if (!acc[avCode]) {
-        acc[avCode] = {
-          Variant:
-            "TOYOTA COROLLA | " + currentAgreed.Variant.replace(regEx, ""),
-          AvCode: avCode,
-          MakeYear: currentAgreed.MakeYear,
-          VehicleEngineCC: currentAgreed.VehicleEngineCC,
-        };
-      }
-
-      if (
-        currentAgreed.AvCode.includes("-HI") ||
-        currentAgreed.AvCode.includes("-HIGH")
-      ) {
-        acc[avCode].AvCodeHigh = currentAgreed.AvCode;
-        acc[avCode].SumInsuredHigh = currentAgreed.SumInsured;
-      } else if (
-        currentAgreed.AvCode.includes("-LO") ||
-        currentAgreed.AvCode.includes("-LOW")
-      ) {
-        acc[avCode].AvCodeLow = currentAgreed.AvCode;
-        acc[avCode].SumInsuredLow = currentAgreed.SumInsured;
-      } else {
-        acc[avCode].SumInsured = currentAgreed.SumInsured;
-      }
-
-      return acc;
-    },
-    {}
-  );
+  return types.reduce((acc: any, curr: any) => {
+    const { AvCode, Variant } = curr;
+    const key = AvCode.replace(regEx, "");
+    if (!acc[key]) {
+      acc[key] = {
+        AvCode: AvCode,
+        SumInsured: curr.SumInsured,
+        Variant: Variant.replace(regEx, ""),
+        VehicleEngineCC: curr.VehicleEngineCC,
+        MakeYear: curr.MakeYear,
+      };
+    }
+    if (key === AvCode) {
+      acc[key] = {
+        ...acc[key],
+        AvCode: key,
+        SumInsured: curr.SumInsured,
+      };
+    }
+    return acc;
+  }, {});
 }
+
+// function check(listOfAgreed: AgreedVariantType[]) {
+//   // const regEx = /(-HIGH|-LOW|-HI|-LO)\s*-?\s*/;
+
+//   const listOfAgreedVariants = listOfAgreed.filter((currAgreedVariant) => {
+//     const { AvCode } = currAgreedVariant;
+
+//     if (!AvCode.includes("-LO") && !AvCode.includes("-HI")) {
+//       return true;
+//     }
+//   });
+//   return listOfAgreedVariants;
+// }
 
 function MarketAndAgreedContainer() {
   const {
-    state: { type, market, agreed, variants, types },
+    state: { type, market, agreed, variants, types, previousValue },
     dispatch,
   } = useContext(MarketAndAgreedContext);
+  const { reconIndicator } = useSelector((state: RootState) => state.vehicle);
 
   const marketVariantOptionList = variants.map(({ nvic, vehicleVariant }) => ({
     label: vehicleVariant,
     value: nvic,
   }));
 
-  // const agreedTypeOptionList = types.map(({ AvCode, Variant }) => ({
-  //   label: Variant,
-  //   value: AvCode,
-  // }));
+  // const listOfAgreedVariants = check(types);
+  const listOfAgreedVariants: AgreedVariantType[] = Object.values(
+    createUniqueValues(types)
+  );
 
-  const listOfAgreedVariants = check(types);
-  const agreedVariantOptionList = Object.values(listOfAgreedVariants).map(
+  const agreedVariantOptionList = listOfAgreedVariants.map(
     ({ AvCode, Variant }) => ({
-      label: Variant,
-      value: AvCode,
+      label: "TOYOTA COROLLA | " + Variant,
+      value: AvCode.replace(/(-HIGH|-LOW|-HI|-LO)\s*-?\s*/, ""),
     })
   );
 
   const minAgreedValue = types.find(
     ({ AvCode }) =>
-      AvCode.replace(/(-HIGH|-LOW|-HI|-LO)\s*-?\s*/, "") === agreed?.avCode &&
+      AvCode.replace(/(-HIGH|-LOW|-HI|-LO)\s*-?\s*/, "") ===
+        agreed?.avCode.replace(/(-HIGH|-LOW|-HI|-LO)\s*-?\s*/, "") &&
       AvCode.includes("-LO")
   );
 
-  const midAgreedValue = types.find(({ AvCode }) => AvCode === agreed?.avCode);
+  const midAgreedValue = types.find(
+    ({ AvCode }) =>
+      AvCode.replace(/(-HIGH|-LOW|-HI|-LO)\s*-?\s*/, "") ===
+        agreed?.avCode.replace(/(-HIGH|-LOW|-HI|-LO)\s*-?\s*/, "") &&
+      !/(-HIGH|-LOW|-HI|-LO)\s*-?\s*/.test(AvCode)
+  );
 
   const maxAgreedValue = types.find(
     ({ AvCode }) =>
-      AvCode.replace(/(-HIGH|-LOW|-HI|-LO)\s*-?\s*/, "") === agreed?.avCode &&
+      AvCode.replace(/(-HIGH|-LOW|-HI|-LO)\s*-?\s*/, "") ===
+        agreed?.avCode.replace(/(-HIGH|-LOW|-HI|-LO)\s*-?\s*/, "") &&
       AvCode.includes("-HI")
   );
 
@@ -92,14 +99,16 @@ function MarketAndAgreedContainer() {
   }
 
   function handleAgreedTypeChange(val: string) {
-    const selectedType = types.find((type) => type.AvCode === val);
+    const selectedType = types.find(
+      (type) => type.AvCode.replace(/(-HIGH|-LOW|-HI|-LO)\s*-?\s*/, "") === val
+    );
     if (!selectedType) return;
     const { AvCode, SumInsured, Variant } = selectedType;
     dispatch({
       type: UpdateValuation.UpdateAgreedType,
       payload: {
         avCode: AvCode,
-        sumInsured: Number(SumInsured),
+        sumInsured: SumInsured,
         type: Variant,
       },
     });
@@ -140,7 +149,7 @@ function MarketAndAgreedContainer() {
             {/* will be fixed for first time */}
             <p className="text-sm text-center text-primary-pink font-bold">
               The Current market value for your vehicle is RM{" "}
-              {numberWithCommas(14000)}
+              {numberWithCommas(Number(previousValue))}
             </p>
           </div>
           <div className="mt-4 flex flex-col items-start w-full">
@@ -152,16 +161,30 @@ function MarketAndAgreedContainer() {
                 value="market"
                 title="Market Value"
                 selectedValue={type}
-                price={market ? market.marketValue : null}
+                price={market?.marketValue.toString() || ""}
                 updateValue={handleTypeChange}
               />
-              <ValuationTypeButton
-                selectedValue={type}
-                title="Agreed Value"
-                value="agreed"
-                price={agreed ? agreed.sumInsured : null}
-                updateValue={handleTypeChange}
-              />
+              {reconIndicator === "yes" ? (
+                <div className="relative even:mt-4 mobile-l:even:mt-0 even:ml-0 mobile-l:even:ml-4 inline-block w-full mobile-l:w-auto">
+                  <div className="relative px-4 py-4 flex flex-col items-start justify-center w-full mobile-l:w-[157px] h-auto border border-solid rounded-xl outline outline-2 outline-transparent focus-visible:outline-primary-black cursor-pointer border-transparent text-primary-black shadow-[0_8px_10px_0_#00000024]">
+                    <span className="text-sm text-center text-current font-bold">
+                      Agreed Value
+                    </span>
+                    <span className="text-xs text-left text-current font-normal">
+                      User are not allowed to select Agreed Value if
+                      reconIndicator is selected "Yes"
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <ValuationTypeButton
+                  selectedValue={type}
+                  title="Agreed Value"
+                  value="agreed"
+                  price={agreed ? agreed.sumInsured : ""}
+                  updateValue={handleTypeChange}
+                />
+              )}
             </div>
           </div>
           <div className="mt-4 flex flex-col items-start w-full">
@@ -184,7 +207,14 @@ function MarketAndAgreedContainer() {
                     </span>
                     <SelectDropdown
                       id="asda"
-                      selected={agreed ? agreed.avCode : null}
+                      selected={
+                        agreed
+                          ? agreed.avCode.replace(
+                              /(-HIGH|-LOW|-HI|-LO)\s*-?\s*/,
+                              ""
+                            )
+                          : null
+                      }
                       optionList={agreedVariantOptionList}
                       onChange={(val: string) => handleAgreedTypeChange(val)}
                     />
@@ -201,18 +231,40 @@ function MarketAndAgreedContainer() {
                     />
                   </div>
                 </div>
-                {agreed?.avCode && (
+                {agreed && agreed.avCode !== "" && (
                   <InputRange
-                    type="agreed"
-                    value={agreed.sumInsured}
-                    minValue={Number(minAgreedValue?.SumInsured)}
-                    midValue={Number(midAgreedValue?.SumInsured)}
-                    maxValue={Number(maxAgreedValue?.SumInsured)}
-                    setValue={() => {}}
+                    value={Number(agreed.sumInsured)}
+                    minValue={minAgreedValue || null}
+                    midValue={midAgreedValue || null}
+                    maxValue={maxAgreedValue || null}
+                    setValue={({
+                      AvCode: avCode,
+                      SumInsured: sumInsured,
+                      Variant: type,
+                    }: AgreedVariantType) => {
+                      dispatch({
+                        type: UpdateValuation.UpdateAgreedType,
+                        payload: {
+                          avCode,
+                          sumInsured,
+                          type,
+                        },
+                      });
+                    }}
                   />
                 )}
               </>
             )}
+            <div className="mt-4 flex items-center justify-start gap-x-2 w-full">
+              <Link
+                to="/insurance/plan-add-ons"
+                className="relative mt-4 py-2.5 px-8 flex items-center justify-center w-auto bg-primary-blue rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
+              >
+                <span className="text-base text-center font-medium text-white">
+                  Submit
+                </span>
+              </Link>
+            </div>
           </div>
         </div>
         {/* Description */}
@@ -260,7 +312,7 @@ function MarketAndAgreedContainer() {
 type ValuationTypeButtonProps = {
   value: "market" | "agreed";
   title: string;
-  price: number | null;
+  price: string;
   selectedValue: string;
   updateValue: (value: "market" | "agreed") => void;
 };
@@ -273,10 +325,10 @@ function ValuationTypeButton({
   selectedValue,
 }: ValuationTypeButtonProps) {
   return (
-    <div className="relative even:mt-4 mobile-l:even:mt-0 even:ml-0 mobile-l:even:ml-4 inline-block w-full mobile-l:w-auto">
+    <div className="relative even:mt-4 mobile-l:even:mt-0 even:ml-0 mobile-l:even:ml-4 inline-block w-full mobile-l:w-auto h-auto">
       <button
         onClick={() => updateValue(value)}
-        className={`relative px-4 py-4 flex flex-col items-start justify-center w-full mobile-l:w-[157px] h-[82px] border border-solid rounded-xl outline outline-2 outline-transparent focus-visible:outline-primary-black cursor-pointer ${
+        className={`relative px-4 py-4 flex flex-col items-start justify-center w-full mobile-l:w-[157px] min-h-[82px] h-auto border border-solid rounded-xl outline outline-2 outline-transparent focus-visible:outline-primary-black cursor-pointer ${
           selectedValue === value
             ? "border-[#4B5EAA] text-primary-blue"
             : "border-transparent text-primary-black"
@@ -285,9 +337,9 @@ function ValuationTypeButton({
         <span className="text-sm text-center text-current font-bold">
           {title}
         </span>
-        {price ? (
+        {price !== "" ? (
           <span className="text-base text-center text-current font-normal">
-            RM {numberWithCommas(price)}
+            RM {numberWithCommas(Number(price))}
           </span>
         ) : (
           <span className="text-xs text-left text-current font-normal">
