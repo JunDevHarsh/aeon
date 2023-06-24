@@ -1,8 +1,7 @@
 import React, { createContext, useReducer } from "react";
 import { ActionMap } from "./types";
-// import { useSelector } from "react-redux";
-// import { RootState } from "../store/store";
-
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
 export type AgreedVariantType = {
   Variant: string;
   AvCode: string;
@@ -43,7 +42,7 @@ export type UpdateValuationPayload = {
   };
   [UpdateValuation.UpdateAgreedType]: {
     avCode: string;
-    sumInsured: number;
+    sumInsured: string;
     type: string;
   };
 };
@@ -54,15 +53,16 @@ export type UpdateValuationAction =
 type MarketAndAgreedState = {
   type: "market" | "agreed";
   variants: MarketVariantType[];
+  previousValue: string;
   types: AgreedVariantType[];
   market: {
     nvic: string;
     marketValue: number;
     variant: string;
-  } | null;
+  };
   agreed: {
     nvic?: string;
-    sumInsured: number;
+    sumInsured: string;
     marketValue?: number;
     variant?: string;
     avCode: string;
@@ -72,6 +72,7 @@ type MarketAndAgreedState = {
 
 const initialState: MarketAndAgreedState = {
   type: "market",
+  previousValue: "36700",
   variants: [
     {
       nvic: "JAO20A",
@@ -111,13 +112,13 @@ const initialState: MarketAndAgreedState = {
       VehicleEngineCC: 1329,
       MakeYear: "2016",
     },
-    {
-      Variant: "SEDAN PREMIUM X  1.3 (A) [4DOOR 4 SPEED] - 1329 CC",
-      AvCode: "PERO16BQ",
-      SumInsured: "30000.00",
-      VehicleEngineCC: 1329,
-      MakeYear: "2016",
-    },
+    // {
+    //   Variant: "SEDAN PREMIUM X  1.3 (A) [4DOOR 4 SPEED] - 1329 CC",
+    //   AvCode: "PERO16BQ",
+    //   SumInsured: "30000.00",
+    //   VehicleEngineCC: 1329,
+    //   MakeYear: "2016",
+    // },
     {
       Variant: "SEDAN PREMIUM X  1.3 (A) [4DOOR 4 SPEED] -HIGH - 1329 CC",
       AvCode: "PERO16BQ-HI",
@@ -142,7 +143,7 @@ const initialState: MarketAndAgreedState = {
     nvic: "JAO20A",
     variant: "ADVANCE 4 SP AUTOMATIC - 1329",
     avCode: "",
-    sumInsured: 0,
+    sumInsured: "",
     type: "",
   },
 };
@@ -198,9 +199,10 @@ function marketAgreedReducer(
 }
 
 function MarketAndAgreedProvider({ children }: { children: React.ReactNode }) {
-  // const { nvicList, variant } = useSelector(
-  //   (state: RootState) => state.vehicle
-  // );
+  const { nvicList, variant } = useSelector(
+    (state: RootState) => state.vehicle
+  );
+  console.log(nvicList, variant);
   const [state, dispatch] = useReducer(marketAgreedReducer, initialState);
   return (
     <MarketAndAgreedContext.Provider value={{ state, dispatch }}>

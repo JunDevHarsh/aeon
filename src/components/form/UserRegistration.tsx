@@ -129,14 +129,14 @@ const UserRegistrationForm = () => {
         // get new token
         const getToken: TokenType = await generateToken(
           "https://app.agiliux.com/aeon/webservice.php?operation=getchallenge&username=admin",
-          2000
+          5000
         );
         tokenInfo = getToken;
         // add token to store
         dispatch(addToken({ ...getToken }));
         const sessionApiResponse: SessionType = await generateSessionName(
           "https://app.agiliux.com/aeon/webservice.php",
-          3000,
+          5000,
           tokenInfo.token,
           md5Secret
         );
@@ -151,7 +151,7 @@ const UserRegistrationForm = () => {
       }
       const vehicleApiResponse = await getVehicleInfo(
         "https://app.agiliux.com/aeon/webservice.php",
-        3000,
+        5000,
         sessionInfo.sessionName,
         vehicleRegNo,
         idType || "NRIC",
@@ -181,7 +181,7 @@ const UserRegistrationForm = () => {
         ncdPercentage,
         nvicList,
         requestId,
-        contractNumber
+        contractNumber,
       } = vehicleApiResponse;
       dispatch(
         updateVehicleState({
@@ -262,21 +262,6 @@ const UserRegistrationForm = () => {
   };
 
   const watchIDType: string | null = watch("idType");
-
-  // const regEx = {
-  //   Passport: {
-  //     pattern: /^[A-Z]{1}[0-9]{8}$/,
-  //     errorMessage: "For e.g. A12365498",
-  //   },
-  //   NRIC: {
-  //     pattern: /^\d{6}-\d{2}-\d{4}$/,
-  //     errorMessage: "For e.g. 050505-12-2321",
-  //   },
-  //   Company: {
-  //     pattern: /^[0-9]{7}-[A-Z]/g,
-  //     errorMessage: "For e.g. 1234567-J",
-  //   },
-  // };
 
   return (
     <>
@@ -369,7 +354,6 @@ const UserRegistrationForm = () => {
                       if (value !== val) {
                         setValue("idNumber", "");
                       }
-                      // prevValue = "";
                       clearErrors("idNumber");
                       clearErrors("idType");
                     }}
@@ -407,40 +391,31 @@ const UserRegistrationForm = () => {
                     value: true,
                     message: "Field can't be empty",
                   },
-                  // pattern: {
-                  //   value: watchIDType
-                  //     ? regEx[watchIDType as keyof typeof regEx]["pattern"]
-                  //     : /^\d{6}-\d{2}-\d{4}$/,
-                  //   message:
-                  //     regEx[watchIDType as keyof typeof regEx]["errorMessage"],
-                  // },
                   onChange(event: React.ChangeEvent<HTMLInputElement>) {
                     // event.preventDefault();
-                    let { value } = event.currentTarget;
+                    let { value } = event.target;
                     // remove all spaces from the text
                     value = value.replace(/\s+/g, "").toUpperCase();
-                    // if (watchIDType === "NRIC") {
-                    //   value = value.replace(/\D/g, "");
-                    //   let formatValue = "";
-                    //   for (let i = 0; i < value.length; i++) {
-                    //     if (i === 5 || i === 7) {
-                    //       formatValue += value[i] + "-";
-                    //     } else {
-                    //       formatValue += value[i];
-                    //     }
-                    //   }
-                    //   value = formatValue;
-                    // } else if (watchIDType === "Company") {
-                    //   if (value.length === 7) {
-                    //     if (value.length > prevValue.length) {
-                    //       value += "-";
-                    //     } else {
-                    //       value = value.slice(0, value.length - 1);
-                    //     }
-                    //   }
-                    // }
-                    // prevValue = value;
-                    event.currentTarget.value = value;
+                    if (watchIDType === "NRIC") {
+                      value = value.replace(/\D/g, "");
+                      if (value.length > 12) {
+                        value = value.substring(0, 12);
+                      }
+                      let first = value.substring(0, 6);
+                      let second = value.substring(6, 8);
+                      let third = value.substring(8, 12);
+
+                      value = first;
+
+                      if (second !== "" || second) {
+                        value += "-" + second;
+                      }
+
+                      if (third !== "" || third) {
+                        value += "-" + third;
+                      }
+                    }
+                    event.target.value = value;
                   },
                 }}
               />

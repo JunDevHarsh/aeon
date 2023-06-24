@@ -63,6 +63,7 @@ const DefaultPopup: React.FC<DefaultPopupProps> = ({
           </div>
           <div className="px-6 py-4 flex items-center justify-end w-full border-t border-solid border-t-[#22222614]">
             <button
+              autoFocus
               onClick={closeWarningPopup}
               className="inline-block px-4 py-2 text-base text-center text-white bg-primary-blue font-medium rounded"
             >

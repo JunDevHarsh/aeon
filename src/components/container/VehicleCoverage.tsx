@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import SelectDropdown from "../fields/SelectDropdown";
-import InputRange from "../fields/InputRange";
+// import InputRange from "../fields/InputRange";
 import { VehicleCoverageContext } from "../../context/VehicleCoverage";
 // import { useSelector } from "react-redux";
 // import { RootState } from "../../store/store";
@@ -206,7 +206,7 @@ const VehicleCoverageContainer = () => {
               </div>
             )}
           </div>
-          {type === "agreed" && agreed.nvic && (
+          {/* {type === "agreed" && agreed.nvic && (
             <InputRange
               type="agreed"
               value={50}
@@ -215,7 +215,7 @@ const VehicleCoverageContainer = () => {
               midValue={50}
               maxValue={100}
             />
-          )}
+          )} */}
           <div className="mt-4 flex items-center justify-start gap-x-2 w-full">
             <Link
               to="/insurance/plan-add-ons"
