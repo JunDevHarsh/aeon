@@ -1,4 +1,4 @@
-import { useContext, useState, useRef, useEffect } from "react";
+import { useContext, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
@@ -329,20 +329,20 @@ const SummaryInfoCard = () => {
   );
 };
 
-function ImportImageDynamically(imgName: string) {
-  const [pathLoaded, setPathLoaded] = useState<boolean>(false);
-  const [isLoaded, setIsLoaded] = useState<boolean>(false);
-  const imgRef = useRef<string>("");
+// function ImportImageDynamically(imgName: string) {
+//   const [pathLoaded, setPathLoaded] = useState<boolean>(false);
+//   const [isLoaded, setIsLoaded] = useState<boolean>(false);
+//   const imgRef = useRef<string>("");
 
-  useEffect(() => {
-    async function importImageDynamically() {
-      const importedImage = await import(`../../assets/images/${imgName}.png`);
-      imgRef.current = importedImage.default;
-      setPathLoaded(true);
-    }
-    importImageDynamically();
-  }, []);
-  return <div></div>;
-}
+//   useEffect(() => {
+//     async function importImageDynamically() {
+//       const importedImage = await import(`../../assets/images/${imgName}.png`);
+//       imgRef.current = importedImage.default;
+//       setPathLoaded(true);
+//     }
+//     importImageDynamically();
+//   }, []);
+//   return <div></div>;
+// }
 
 export default SummaryInfoCard;
