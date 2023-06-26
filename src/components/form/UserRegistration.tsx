@@ -164,6 +164,8 @@ const UserRegistrationForm = () => {
       if (idType !== null) {
         dispatch(addUserID({ number: idNumber, type: idType }));
       }
+      // console.log(vehicleApiResponse);
+      // return;
       const {
         vehicleLicenseId,
         avMakeCode,

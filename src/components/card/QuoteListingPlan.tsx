@@ -195,7 +195,7 @@ const QuoteListingPlanCard = ({
           <div className="ml-0 md:ml-4 lg:ml-auto flex flex-col items-center justify-start w-full h-full">
             <div className="mx-auto flex items-center justify-center w-full lg:w-auto">
               <span className="text-3xl text-center text-primary-black font-bold">
-                RM {price}
+                RM {Number(price).toFixed(2)}
               </span>
             </div>
             <div className="mt-4 flex flex-col items-center justify-start w-full lg:w-auto">

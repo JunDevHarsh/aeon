@@ -170,7 +170,7 @@ const QuoteListingsContainer = () => {
                 insurerName: logoname,
                 planType: "comprehensive",
                 imgUrl: logoname.toLowerCase(),
-                price: displaypremium,
+                price: displaypremium || 672.80,
                 popular: true,
                 isSelected: false,
                 benefits: benefits,
