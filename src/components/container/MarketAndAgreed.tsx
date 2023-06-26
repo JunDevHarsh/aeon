@@ -166,13 +166,12 @@ function MarketAndAgreedContainer() {
               />
               {reconIndicator === "yes" ? (
                 <div className="relative even:mt-4 mobile-l:even:mt-0 even:ml-0 mobile-l:even:ml-4 inline-block w-full mobile-l:w-auto">
-                  <div className="relative px-4 py-4 flex flex-col items-start justify-center w-full mobile-l:w-[157px] h-auto border border-solid rounded-xl outline outline-2 outline-transparent focus-visible:outline-primary-black cursor-pointer border-transparent text-primary-black shadow-[0_8px_10px_0_#00000024]">
+                  <div className="relative px-4 py-4 flex flex-col items-start justify-center w-full mobile-l:w-[157px] h-auto border border-solid border-[#d3d3d3] opacity-70 cursor-no-drop rounded-xl text-primary-black shadow-[0_8px_10px_0_#00000024]">
                     <span className="text-sm text-center text-current font-bold">
                       Agreed Value
                     </span>
-                    <span className="text-xs text-left text-current font-normal">
-                      User are not allowed to select Agreed Value if
-                      reconIndicator is selected "Yes"
+                    <span className="text-base text-left text-current font-normal">
+                      Not Available
                     </span>
                   </div>
                 </div>
