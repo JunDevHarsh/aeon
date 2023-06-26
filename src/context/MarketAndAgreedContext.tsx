@@ -92,46 +92,88 @@ const initialState: MarketAndAgreedState = {
   ],
   types: [
     {
-      Variant: "SEDAN ADVANCE 1.3 (A) [4DOOR 4 SPEED] - 1329 CC",
-      AvCode: "PERO16BP",
-      SumInsured: "34000.00",
-      VehicleEngineCC: 1329,
-      MakeYear: "2016",
+      "Variant": "ZZE142R-GEPGKEEW ALTIS E SALOON (A)GATESHIFT 1.8I [4DOOR 4SPEED FWD] [NON RECOND ONLY] - 1794 CC",
+      "AvCode": "TOYO10AU",
+      "SumInsured": "37000.00",
+      "VehicleEngineCC": 1794,
+      "MakeYear": "2010"
     },
     {
-      Variant: "SEDAN ADVANCE 1.3 (A) [4DOOR 4 SPEED] -HIGH - 1329 CC",
-      AvCode: "PERO16BP-HI",
-      SumInsured: "35000.00",
-      VehicleEngineCC: 1329,
-      MakeYear: "2016",
+      "Variant": "ZZE142R-GEPGKEEW ALTIS E SALOON (A)GATESHIFT 1.8I [4DOOR 4SPEED FWD] [NON RECOND ONLY]-HIGH - 1794 CC",
+      "AvCode": "TOYO10AU-HI",
+      "SumInsured": "38000.00",
+      "VehicleEngineCC": 1794,
+      "MakeYear": "2010"
     },
     {
-      Variant: "SEDAN ADVANCE 1.3 (A) [4DOOR 4 SPEED] -LOW - 1329 CC",
-      AvCode: "PERO16BP-LO",
-      SumInsured: "33000.00",
-      VehicleEngineCC: 1329,
-      MakeYear: "2016",
-    },
-    // {
-    //   Variant: "SEDAN PREMIUM X  1.3 (A) [4DOOR 4 SPEED] - 1329 CC",
-    //   AvCode: "PERO16BQ",
-    //   SumInsured: "30000.00",
-    //   VehicleEngineCC: 1329,
-    //   MakeYear: "2016",
-    // },
-    {
-      Variant: "SEDAN PREMIUM X  1.3 (A) [4DOOR 4 SPEED] -HIGH - 1329 CC",
-      AvCode: "PERO16BQ-HI",
-      SumInsured: "31000.00",
-      VehicleEngineCC: 1329,
-      MakeYear: "2016",
+      "Variant": "ZZE142R-GEPGKEEW ALTIS E SALOON (A)GATESHIFT 1.8I [4DOOR 4SPEED FWD] [NON RECOND ONLY]-LOW - 1794 CC",
+      "AvCode": "TOYO10AU-LO",
+      "SumInsured": "36000.00",
+      "VehicleEngineCC": 1794,
+      "MakeYear": "2010"
     },
     {
-      Variant: "SEDAN PREMIUM X  1.3 (A) [4DOOR 4 SPEED] -LOW - 1329 CC",
-      AvCode: "PERO16BQ-LO",
-      SumInsured: "29000.00",
-      VehicleEngineCC: 1329,
-      MakeYear: "2016",
+      "Variant": "ZZE142R-GEPGKEEY ALTIS G SALOON (A)GATESHIFT 1.8I [4DOOR 4SPEED FWD] [NON RECOND ONLY] - 1794 CC",
+      "AvCode": "TOYO10AV",
+      "SumInsured": "41000.00",
+      "VehicleEngineCC": 1794,
+      "MakeYear": "2010"
+    },
+    {
+      "Variant": "ZZE142R-GEPGKEEY ALTIS G SALOON (A)GATESHIFT 1.8I [4DOOR 4SPEED FWD] [NON RECOND ONLY]-HIGH - 1794 CC",
+      "AvCode": "TOYO10AV-HI",
+      "SumInsured": "42000.00",
+      "VehicleEngineCC": 1794,
+      "MakeYear": "2010"
+    },
+    {
+      "Variant": "ZZE142R-GEPGKEEY ALTIS G SALOON (A)GATESHIFT 1.8I [4DOOR 4SPEED FWD] [NON RECOND ONLY]-LOW - 1794 CC",
+      "AvCode": "TOYO10AV-LO",
+      "SumInsured": "40000.00",
+      "VehicleEngineCC": 1794,
+      "MakeYear": "2010"
+    },
+    {
+      "Variant": "ZZE142R-GEPGKEEW ALTIS E SALOON (A)GATESHIFT 1.8I [4DOOR 4SPEED FWD (SPORTY)] [NON RECOND ONLY] - 1794 CC",
+      "AvCode": "TOYO10AW",
+      "SumInsured": "38000.00",
+      "VehicleEngineCC": 1794,
+      "MakeYear": "2010"
+    },
+    {
+      "Variant": "ZZE142R-GEPGKEEW ALTIS E SALOON (A)GATESHIFT 1.8I [4DOOR 4SPEED FWD (SPORTY)] [NON RECOND ONLY]-HIGH - 1794 CC",
+      "AvCode": "TOYO10AW-HI",
+      "SumInsured": "39000.00",
+      "VehicleEngineCC": 1794,
+      "MakeYear": "2010"
+    },
+    {
+      "Variant": "ZZE142R-GEPGKEEW ALTIS E SALOON (A)GATESHIFT 1.8I [4DOOR 4SPEED FWD (SPORTY)] [NON RECOND ONLY]-LOW - 1794 CC",
+      "AvCode": "TOYO10AW-LO",
+      "SumInsured": "37000.00",
+      "VehicleEngineCC": 1794,
+      "MakeYear": "2010"
+    },
+    {
+      "Variant": "ZZE142R-GEPGKEEY ALTIS G SALOON (A)GATESHIFT 1.8I [4DOOR 4SPEED FWD (SPORTY)] [NON RECOND ONLY] - 1794 CC",
+      "AvCode": "TOYO10AY",
+      "SumInsured": "42000.00",
+      "VehicleEngineCC": 1794,
+      "MakeYear": "2010"
+    },
+    {
+      "Variant": "ZZE142R-GEPGKEEY ALTIS G SALOON (A)GATESHIFT 1.8I [4DOOR 4SPEED FWD (SPORTY)] [NON RECOND ONLY]-HIGH - 1794 CC",
+      "AvCode": "TOYO10AY-HI",
+      "SumInsured": "43000.00",
+      "VehicleEngineCC": 1794,
+      "MakeYear": "2010"
+    },
+    {
+      "Variant": "ZZE142R-GEPGKEEY ALTIS G SALOON (A)GATESHIFT 1.8I [4DOOR 4SPEED FWD (SPORTY)] [NON RECOND ONLY]-LOW - 1794 CC",
+      "AvCode": "TOYO10AY-LO",
+      "SumInsured": "41000.00",
+      "VehicleEngineCC": 1794,
+      "MakeYear": "2010"
     },
   ],
   market: {

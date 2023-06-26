@@ -22,7 +22,7 @@ const initialState: VehicleStateType = {
     vehicleMarketValue: 30500,
     vehicleVariant: "ALTIS G 4 SP AUTOMATIC - 1794",
   },
-  polExpiryDate: "2023-08-03",
+  polExpiryDate: "2024-08-03",
   drivers: 0,
   region: "West Malaysia",
   periodOfCoverage: "2023-08-04 to 2024-08-03",

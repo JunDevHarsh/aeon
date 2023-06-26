@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useRef, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
@@ -10,6 +10,7 @@ import { AddOnsContext } from "../../context/AddOnContext";
 import { updateFinalPrice } from "../../store/slices/insurance";
 import { Link } from "react-router-dom";
 import { MarketAndAgreedContext } from "../../context/MarketAndAgreedContext";
+import AllianzImg from "../../assets/images/logo-allianz.png";
 
 export interface AddBenefitsType {
   id: string;
@@ -72,9 +73,29 @@ const SummaryInfoCard = () => {
   return (
     <div className="mt-8 lg:mt-0 ml-0 lg:ml-8 relative flex flex-col items-center justify-between mobile-l:min-w-[360px] sm:min-w-[375px] max-w-sm w-full h-auto rounded-[20px] shadow-container overflow-hidden">
       <div className="inline-block p-2 w-full bg-[#283CC6]">
-        <h3 className="text-xl text-center text-white font-bold">Summary</h3>
+        <h3 className="text-xl text-center text-white font-bold">
+          Purchase Summary
+        </h3>
       </div>
       <div className="relative py-4 px-6 flex flex-col items-center justify-center w-full bg-[#F8F8F8]">
+        <div className="flex items-center justify-center w-full">
+          <div className="relative flex items-center justify-center w-1/3">
+            <img
+              src={AllianzImg}
+              className="w-auto h-auto"
+              alt="allianz-logo-img"
+            />
+          </div>
+          <div className="pl-4 flex flex-col items-start w-2/3">
+            <h4 className="text-lg text-center text-primary-black font-semibold">
+              {proName || "Insurer"}
+            </h4>
+            <span className="-mt-2 mb-1 text-base text-center text-primary-black font-normal">
+              Motor Comprehensive
+            </span>
+          </div>
+        </div>
+        <div className="inline-block my-3 w-full h-[1px] bg-[#bcbcbc]" />
         <div className="flex flex-col items-center w-full">
           <div className="flex items-start justify-between w-full">
             <span className="text-base text-left text-primary-black font-bold w-1/2">
@@ -82,20 +103,26 @@ const SummaryInfoCard = () => {
             </span>
             <div className="flex flex-row items-end justify-center flex-wrap text-primary-black w-1/2">
               <span className="text-base text-center font-medium whitespace-nowrap">
-                {polEffectiveDate || "19/01/23"}
+                {polEffectiveDate.slice(2).split("-").reverse().join("/") ||
+                  "19/01/23"}
               </span>
               <span className="ml-1 text-base text-center font-medium whitespace-nowrap">
-                to {polExpiryDate || "19/01/23"}
+                -{" "}
+                {polExpiryDate.slice(2).split("-").reverse().join("/") ||
+                  "19/01/23"}
               </span>
             </div>
           </div>
           <div className="flex items-start justify-between w-full">
             <span className="text-base text-left text-primary-black font-bold w-1/2">
               Sum Insured <br />
-              {`(${
-                valuationType[0].toUpperCase() + valuationType.slice(1) ||
-                "Market"
-              } Value)`}
+              <span className="font-medium">
+                {" "}
+                {`(${
+                  valuationType[0].toUpperCase() + valuationType.slice(1) ||
+                  "Market"
+                } Value)`}
+              </span>
             </span>
             <div className="flex items-center justify-end w-1/2">
               <span className="text-base text-left text-primary-black font-medium">
@@ -129,12 +156,6 @@ const SummaryInfoCard = () => {
         </div>
         <div className="inline-block my-3 w-full h-[1px] bg-[#bcbcbc]" />
         <div className="flex flex-col items-start gap-y-1 w-full">
-          <h4 className="text-lg text-center text-primary-black font-bold">
-            {proName || "MSIG Motor Plus Insurance"}
-          </h4>
-          <span className="-mt-2 mb-1 text-base text-center text-primary-black font-normal">
-            Motor Comprehensive
-          </span>
           <div className="flex items-center justify-between w-full">
             <span className="text-base text-left text-primary-black font-bold w-1/2">
               Premium
@@ -176,7 +197,7 @@ const SummaryInfoCard = () => {
                 key={`add-benefit-${addOn.id}`}
                 className="flex items-start justify-between w-full"
               >
-                <span className="text-base text-left text-primary-black font-bold w-1/2">
+                <span className="text-base text-left text-primary-black font-base w-1/2">
                   {addOn.title}
                 </span>
                 <span className="text-base text-right text-primary-black font-medium w-1/2">
@@ -307,5 +328,21 @@ const SummaryInfoCard = () => {
     </div>
   );
 };
+
+function ImportImageDynamically(imgName: string) {
+  const [pathLoaded, setPathLoaded] = useState<boolean>(false);
+  const [isLoaded, setIsLoaded] = useState<boolean>(false);
+  const imgRef = useRef<string>("");
+
+  useEffect(() => {
+    async function importImageDynamically() {
+      const importedImage = await import(`../../assets/images/${imgName}.png`);
+      imgRef.current = importedImage.default;
+      setPathLoaded(true);
+    }
+    importImageDynamically();
+  }, []);
+  return <div></div>;
+}
 
 export default SummaryInfoCard;
