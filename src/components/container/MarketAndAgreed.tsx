@@ -316,7 +316,7 @@ function MarketAndAgreedContainer() {
             payload: {
               companyId: productId,
               companyName: "Allianz",
-              price: data.displayPremium,
+              price: data.quoteinfo.displaypremium,
             },
           });
           // updateQuotesDispatch({
