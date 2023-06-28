@@ -96,7 +96,7 @@ const AddOnsCard: React.FC<AddOnsCardProps> = ({
         </p>
         {isSelected && isEditable && (
           <>
-            <div className="block h-[2px] w-2/3 bg-[#D9D9D9]" />
+            <div className="block my-1.5 h-[2px] w-2/3 bg-[#D9D9D9]" />
             <div className="flex items-center justify-center  w-full">
               <span className="mr-2 text-sm text-center text-primary-black font-medium">
                 Sum Insured

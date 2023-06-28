@@ -183,6 +183,10 @@ export const quotesReducer = (
       const { quotes } = payload;
       return [...quotes];
     }
+    case QuotesTypes.UpdateAllQuotes: {
+      const {quotes} = payload;
+      return [...quotes];
+    }
     default:
       return state;
   }

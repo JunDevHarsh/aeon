@@ -7,9 +7,26 @@ import {
 } from "../../context/MarketAndAgreedContext";
 import SelectDropdown from "../fields/SelectDropdown";
 import InputRange from "../fields/InputRange";
-import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
+import axios from "axios";
+import {
+  checkTokenIsExpired,
+  generateSessionName,
+  generateToken,
+} from "../../utils/helpers";
+import {
+  SessionType,
+  TokenType,
+  addSessionName,
+  addToken,
+} from "../../store/slices/credentials";
+import {
+  InsuranceContext,
+  InsuranceProviderTypes,
+} from "../../context/InsuranceContext";
+import { QuoteListingContext, QuotesTypes } from "../../context/QuoteListing";
+import { useNavigate } from "react-router-dom";
 
 function createUniqueValues(types: AgreedVariantType[]) {
   const regEx = /(-HIGH|-LOW|-HI|-LO)\s*-?\s*/;
@@ -54,12 +71,33 @@ function MarketAndAgreedContainer() {
     state: { type, market, agreed, variants, types, previousValue },
     dispatch,
   } = useContext(MarketAndAgreedContext);
-  const { reconIndicator } = useSelector((state: RootState) => state.vehicle);
+  // get token from store
+  const {
+    token: tokenInStore,
+    session: sessionInStore,
+    requestId,
+    inquiryId,
+  } = useSelector((state: RootState) => state.credentials);
+  const {
+    state: { id: productId },
+    dispatch: updateInsuranceDispatch,
+  } = useContext(InsuranceContext);
+  const { dispatch: updateQuotesDispatch } = useContext(QuoteListingContext);
+  const updateStore = useDispatch();
+  const {
+    reconIndicator,
+    // vehicleMake,
+    // vehicleModel,
+    // region,
+    // yearOfManufacture,
+  } = useSelector((state: RootState) => state.vehicle);
 
   const marketVariantOptionList = variants.map(({ nvic, vehicleVariant }) => ({
     label: vehicleVariant,
     value: nvic,
   }));
+
+  const navigate = useNavigate();
 
   // const listOfAgreedVariants = check(types);
   const listOfAgreedVariants: AgreedVariantType[] = Object.values(
@@ -114,6 +152,170 @@ function MarketAndAgreedContainer() {
     });
   }
 
+  // async function getAgreedVariantsList() {
+  //   try {
+  //     let tokenInfo = tokenInStore;
+  //     let sessionInfo = sessionInStore;
+  //     if (!tokenInStore || checkTokenIsExpired(tokenInStore)) {
+  //       // get new token
+  //       const getToken: TokenType = await generateToken(
+  //         "https://app.agiliux.com/aeon/webservice.php?operation=getchallenge&username=admin",
+  //         5000
+  //       );
+  //       tokenInfo = getToken;
+  //       // add token to store
+  //       updateStore(addToken({ ...getToken }));
+  //       const sessionApiResponse: SessionType = await generateSessionName(
+  //         "https://app.agiliux.com/aeon/webservice.php",
+  //         5000,
+  //         tokenInfo.token,
+  //         "bwJrIhxPdfsdialE"
+  //       );
+  //       sessionInfo = sessionApiResponse;
+  //       // add session name to store state
+  //       updateStore(
+  //         addSessionName({
+  //           userId: sessionApiResponse.userId,
+  //           sessionName: sessionApiResponse.sessionName,
+  //         })
+  //       );
+  //     }
+  //     const apiRespose = await axios.post(
+  //       "https://app.agiliux.com/aeon/webservice.php",
+  //       {
+  //         element: JSON.stringify({
+  //           requestId: requestId,
+  //           tenant_id: "67b61490-fec2-11ed-a640-e19d1712c006",
+  //           region: region === "West Malaysia" ? "W" : "E",
+  //           makeCode: vehicleMake,
+  //           modelCode: vehicleModel,
+  //           makeYear: yearOfManufacture,
+  //         }),
+  //         operation: "getVariant",
+  //         sessionName: sessionInfo?.sessionName,
+  //       },
+  //       {
+  //         headers: {
+  //           "Content-Type": "application/x-www-form-urlencoded",
+  //         },
+  //       }
+  //     );
+  //     console.log(apiRespose);
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // }
+
+  async function updateQuotePremium() {
+    try {
+      let tokenInfo = tokenInStore;
+      let sessionInfo = sessionInStore;
+      if (!tokenInStore || checkTokenIsExpired(tokenInStore)) {
+        // get new token
+        const getToken: TokenType = await generateToken(
+          "https://app.agiliux.com/aeon/webservice.php?operation=getchallenge&username=admin",
+          5000
+        );
+        tokenInfo = getToken;
+        // add token to store
+        updateStore(addToken({ ...getToken }));
+        const sessionApiResponse: SessionType = await generateSessionName(
+          "https://app.agiliux.com/aeon/webservice.php",
+          5000,
+          tokenInfo.token,
+          "bwJrIhxPdfsdialE"
+        );
+        sessionInfo = sessionApiResponse;
+        // add session name to store state
+        updateStore(
+          addSessionName({
+            userId: sessionApiResponse.userId,
+            sessionName: sessionApiResponse.sessionName,
+          })
+        );
+      }
+      const quoteResponse = await axios.post(
+        "https://app.agiliux.com/aeon/webservice.php",
+        {
+          element: JSON.stringify({
+            requestId: requestId,
+            tenant_id: "67b61490-fec2-11ed-a640-e19d1712c006",
+            class: "Private Vehicle",
+            additionalCover: [],
+            unlimitedDriverInd: false,
+            driverDetails: [],
+            sitype:
+              type === "market" ? "MV - Market Value" : "AV - Agreed Value",
+            avCode: type === "market" ? "" : agreed?.avCode,
+            sumInsured:
+              type === "market"
+                ? market.vehicleMarketValue
+                : agreed?.sumInsured,
+            nvicCode: type === "market" ? market.nvic : agreed?.nvic,
+            accountid: productId,
+            inquiryId: inquiryId,
+            insurer: "7x250468",
+            quoteId: "5x23232",
+          }),
+          operation: "updateQuote",
+          sessionName: sessionInfo?.sessionName,
+        },
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        }
+      );
+      if (quoteResponse.status === 200 && quoteResponse.data) {
+        if (quoteResponse.data.error || !quoteResponse.data.success) {
+          throw new Error("INTERVAL_SERVER_ERROR");
+        }
+        if (quoteResponse.data) {
+          if (quoteResponse.data.result.quoteinfo.length === 0) {
+            throw new Error("NO_QUOTE_FOUND");
+          }
+          const data = quoteResponse.data.result;
+          const quoteList = data.quoteinfo.map(
+            ({
+              productid,
+              logoname,
+              displaypremium,
+              benefits,
+              insurer,
+            }: any) => ({
+              id: insurer,
+              insurerId: productid,
+              insurerName: logoname,
+              planType: "comprehensive",
+              imgUrl: logoname.toLowerCase(),
+              price: displaypremium || 672.8,
+              popular: true,
+              isSelected: false,
+              benefits: benefits,
+            })
+          );
+          updateInsuranceDispatch({
+            type: InsuranceProviderTypes.UpdateInsuranceProvider,
+            payload: {
+              companyId: productId,
+              companyName: "Allianz",
+              price: quoteList[0].price,
+            },
+          });
+          updateQuotesDispatch({
+            type: QuotesTypes.UpdateAllQuotes,
+            payload: { quotes: quoteList },
+          });
+          navigate("/insurance/plan-add-ons");
+        }
+        throw new Error("INTERVAL_SERVER_ERROR");
+      }
+      console.log(quoteResponse);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   function changeVariant(val: string, type: "agreed" | "market") {
     const selectedVariant = variants.find((variant) => variant.nvic === val);
     if (!selectedVariant) return;
@@ -147,13 +349,13 @@ function MarketAndAgreedContainer() {
               />
             </svg>
             {/* will be fixed for first time */}
-            <p className="text-sm text-center text-primary-pink font-bold">
+            <p className="ml-1 text-base text-center text-primary-pink font-medium">
               The Current market value for your vehicle is RM{" "}
               {numberWithCommas(Number(previousValue))}
             </p>
           </div>
           <div className="mt-4 flex flex-col items-start w-full">
-            <h2 className="text-base text-center text-primary-black font-bold">
+            <h2 className="text-lg text-center text-primary-black font-bold">
               Select your preferred coverage type
             </h2>
             <div className="mt-2 flex flex-col mobile-l:flex-row items-center justify-start w-full">
@@ -161,7 +363,7 @@ function MarketAndAgreedContainer() {
                 value="market"
                 title="Market Value"
                 selectedValue={type}
-                price={market?.marketValue.toString() || ""}
+                price={market?.vehicleMarketValue.toString() || ""}
                 updateValue={handleTypeChange}
               />
               {reconIndicator === "yes" ? (
@@ -186,8 +388,8 @@ function MarketAndAgreedContainer() {
               )}
             </div>
           </div>
-          <div className="mt-4 flex flex-col items-start w-full">
-            <h2 className="mb-2 text-base text-center text-primary-black font-bold">
+          <div className="mt-8 flex flex-col items-start w-full">
+            <h2 className="mb-2 text-lg text-center text-primary-black font-bold">
               Select your car variant to estimate its value
             </h2>
             {type === "market" ? (
@@ -201,8 +403,8 @@ function MarketAndAgreedContainer() {
               <>
                 <div className="flex flex-col items-start w-full">
                   <div className="relative pb-4 flex flex-col items-start w-full h-auto">
-                    <span className="mb-2 text-lg text-center text-primary-black font-semibold">
-                      Car Type
+                    <span className="mb-2 text-base text-center text-primary-black font-semibold">
+                      Car Specs
                     </span>
                     <SelectDropdown
                       id="asda"
@@ -219,7 +421,7 @@ function MarketAndAgreedContainer() {
                     />
                   </div>
                   <div className="relative pb-4 flex flex-col items-start w-full h-auto">
-                    <span className="mb-2 text-lg text-center text-primary-black font-semibold">
+                    <span className="mb-2 text-base text-center text-primary-black font-semibold">
                       Car Variant
                     </span>
                     <SelectDropdown
@@ -254,15 +456,15 @@ function MarketAndAgreedContainer() {
                 )}
               </>
             )}
-            <div className="mt-4 flex items-center justify-start gap-x-2 w-full">
-              <Link
-                to="/insurance/plan-add-ons"
+            <div className="mt-12 flex items-center justify-start gap-x-2 w-full">
+              <button
+                onClick={() => updateQuotePremium()}
                 className="relative mt-4 py-2.5 px-8 flex items-center justify-center w-auto bg-primary-blue rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
               >
                 <span className="text-base text-center font-medium text-white">
                   Submit
                 </span>
-              </Link>
+              </button>
             </div>
           </div>
         </div>
@@ -281,11 +483,7 @@ function MarketAndAgreedContainer() {
               <span className="text-base text-primary-black text-left font-normal">
                 Market value refers to the current calculated worth of your car.
                 If you choose the market value, your car is covered for what it
-                is currently worth in the market. Say that you choose the market
-                value as the sum insured for your car, your insurer will give
-                you a payout according to the market value of your car at the
-                time of theft or loss (not the market value at the time of your
-                insurance renewal).
+                is currently worth in the market.
               </span>
             </div>
             <div className="flex flex-col items-start w-full">
@@ -296,9 +494,7 @@ function MarketAndAgreedContainer() {
                 Agreed value is the value agreed by both the insurer and
                 policyholder at the time of insurance renewal. Insurers
                 determine the agreed value based on a few underwriting factors
-                and risk assessment. Say that you choose the agreed value as the
-                sum insured for your car, your insurer will give you a payout
-                exactly as the agreed value.
+                and risk assessment.
               </span>
             </div>
           </div>
@@ -327,13 +523,13 @@ function ValuationTypeButton({
     <div className="relative even:mt-4 mobile-l:even:mt-0 even:ml-0 mobile-l:even:ml-4 inline-block w-full mobile-l:w-auto h-auto">
       <button
         onClick={() => updateValue(value)}
-        className={`relative px-4 py-4 flex flex-col items-start justify-center w-full mobile-l:w-[157px] min-h-[82px] h-auto border border-solid rounded-xl outline outline-2 outline-transparent focus-visible:outline-primary-black cursor-pointer ${
+        className={`relative p-4 flex flex-col items-center justify-center w-full mobile-l:w-[165px] min-h-[82px] h-auto border-4 border-solid rounded-xl outline outline-2 outline-transparent focus-visible:outline-primary-black cursor-pointer ${
           selectedValue === value
             ? "border-[#4B5EAA] text-primary-blue"
             : "border-transparent text-primary-black"
         } shadow-[0_8px_10px_0_#00000024]`}
       >
-        <span className="text-sm text-center text-current font-bold">
+        <span className="text-base text-center text-current font-bold">
           {title}
         </span>
         {price !== "" ? (
@@ -341,8 +537,8 @@ function ValuationTypeButton({
             RM {numberWithCommas(Number(price))}
           </span>
         ) : (
-          <span className="text-xs text-left text-current font-normal">
-            Select variant to estimate value
+          <span className="mt-0.5 text-xs text-center text-current font-normal">
+            Select to estimate value
           </span>
         )}
       </button>
