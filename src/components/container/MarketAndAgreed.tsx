@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { numberWithCommas } from "./VehicleCoverage";
 import {
   AgreedVariantType,
@@ -25,7 +25,10 @@ import {
   InsuranceContext,
   InsuranceProviderTypes,
 } from "../../context/InsuranceContext";
-import { QuoteListingContext, QuotesTypes } from "../../context/QuoteListing";
+// import { 
+//   QuoteListingContext,
+//   // QuotesTypes
+// } from "../../context/QuoteListing";
 import { useNavigate } from "react-router-dom";
 
 function createUniqueValues(types: AgreedVariantType[]) {
@@ -77,19 +80,20 @@ function MarketAndAgreedContainer() {
     session: sessionInStore,
     requestId,
     inquiryId,
+    accountId,
   } = useSelector((state: RootState) => state.credentials);
   const {
     state: { id: productId },
     dispatch: updateInsuranceDispatch,
   } = useContext(InsuranceContext);
-  const { dispatch: updateQuotesDispatch } = useContext(QuoteListingContext);
+  // const { dispatch: updateQuotesDispatch } = useContext(QuoteListingContext);
   const updateStore = useDispatch();
   const {
     reconIndicator,
-    // vehicleMake,
-    // vehicleModel,
-    // region,
-    // yearOfManufacture,
+    vehicleMake,
+    vehicleModel,
+    region,
+    yearOfManufacture,
   } = useSelector((state: RootState) => state.vehicle);
 
   const marketVariantOptionList = variants.map(({ nvic, vehicleVariant }) => ({
@@ -152,59 +156,72 @@ function MarketAndAgreedContainer() {
     });
   }
 
-  // async function getAgreedVariantsList() {
-  //   try {
-  //     let tokenInfo = tokenInStore;
-  //     let sessionInfo = sessionInStore;
-  //     if (!tokenInStore || checkTokenIsExpired(tokenInStore)) {
-  //       // get new token
-  //       const getToken: TokenType = await generateToken(
-  //         "https://app.agiliux.com/aeon/webservice.php?operation=getchallenge&username=admin",
-  //         5000
-  //       );
-  //       tokenInfo = getToken;
-  //       // add token to store
-  //       updateStore(addToken({ ...getToken }));
-  //       const sessionApiResponse: SessionType = await generateSessionName(
-  //         "https://app.agiliux.com/aeon/webservice.php",
-  //         5000,
-  //         tokenInfo.token,
-  //         "bwJrIhxPdfsdialE"
-  //       );
-  //       sessionInfo = sessionApiResponse;
-  //       // add session name to store state
-  //       updateStore(
-  //         addSessionName({
-  //           userId: sessionApiResponse.userId,
-  //           sessionName: sessionApiResponse.sessionName,
-  //         })
-  //       );
-  //     }
-  //     const apiRespose = await axios.post(
-  //       "https://app.agiliux.com/aeon/webservice.php",
-  //       {
-  //         element: JSON.stringify({
-  //           requestId: requestId,
-  //           tenant_id: "67b61490-fec2-11ed-a640-e19d1712c006",
-  //           region: region === "West Malaysia" ? "W" : "E",
-  //           makeCode: vehicleMake,
-  //           modelCode: vehicleModel,
-  //           makeYear: yearOfManufacture,
-  //         }),
-  //         operation: "getVariant",
-  //         sessionName: sessionInfo?.sessionName,
-  //       },
-  //       {
-  //         headers: {
-  //           "Content-Type": "application/x-www-form-urlencoded",
-  //         },
-  //       }
-  //     );
-  //     console.log(apiRespose);
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // }
+  async function getAgreedVariantsList() {
+    try {
+      let tokenInfo = tokenInStore;
+      let sessionInfo = sessionInStore;
+      if (!tokenInStore || checkTokenIsExpired(tokenInStore)) {
+        // get new token
+        const getToken: TokenType = await generateToken(
+          "https://app.agiliux.com/aeon/webservice.php?operation=getchallenge&username=admin",
+          5000
+        );
+        tokenInfo = getToken;
+        // add token to store
+        updateStore(addToken({ ...getToken }));
+        const sessionApiResponse: SessionType = await generateSessionName(
+          "https://app.agiliux.com/aeon/webservice.php",
+          5000,
+          tokenInfo.token,
+          "bwJrIhxPdfsdialE"
+        );
+        sessionInfo = sessionApiResponse;
+        // add session name to store state
+        updateStore(
+          addSessionName({
+            userId: sessionApiResponse.userId,
+            sessionName: sessionApiResponse.sessionName,
+          })
+        );
+      }
+      const apiResponse = await axios.post(
+        "https://app.agiliux.com/aeon/webservice.php",
+        {
+          element: JSON.stringify({
+            requestId: requestId,
+            tenant_id: "67b61490-fec2-11ed-a640-e19d1712c006",
+            region: region === "West Malaysia" ? "W" : "E",
+            makeCode: vehicleMake,
+            modelCode: vehicleModel,
+            makeYear: yearOfManufacture,
+          }),
+          operation: "getVariant",
+          sessionName: sessionInfo?.sessionName,
+        },
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        }
+      );
+      if (apiResponse.status !== 200 || !apiResponse.data.success) {
+        throw new Error("Error fetching agreed variants list");
+      }
+      const { data } = apiResponse.data;
+      console.log(data);
+      // if(data.result && data.result.VariantGrp.length === 0){
+      //   set
+      // }
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  useEffect(() => {
+    if (type === "market" && agreed?.type.length === 0) {
+      getAgreedVariantsList();
+    }
+  }, []);
 
   async function updateQuotePremium() {
     try {
@@ -242,7 +259,7 @@ function MarketAndAgreedContainer() {
             tenant_id: "67b61490-fec2-11ed-a640-e19d1712c006",
             class: "Private Vehicle",
             additionalCover: [],
-            unlimitedDriverInd: false,
+            unlimitedDriverInd: "false",
             driverDetails: [],
             sitype:
               type === "market" ? "MV - Market Value" : "AV - Agreed Value",
@@ -252,10 +269,10 @@ function MarketAndAgreedContainer() {
                 ? market.vehicleMarketValue
                 : agreed?.sumInsured,
             nvicCode: type === "market" ? market.nvic : agreed?.nvic,
-            accountid: productId,
+            accountid: accountId,
             inquiryId: inquiryId,
             insurer: "7x250468",
-            quoteId: "5x23232",
+            productid: productId,
           }),
           operation: "updateQuote",
           sessionName: sessionInfo?.sessionName,
@@ -271,41 +288,41 @@ function MarketAndAgreedContainer() {
           throw new Error("INTERVAL_SERVER_ERROR");
         }
         if (quoteResponse.data) {
-          if (quoteResponse.data.result.quoteinfo.length === 0) {
-            throw new Error("NO_QUOTE_FOUND");
-          }
+          // if (quoteResponse.data.result.quoteinfo.length === 0) {
+          //   throw new Error("NO_QUOTE_FOUND");
+          // }
           const data = quoteResponse.data.result;
-          const quoteList = data.quoteinfo.map(
-            ({
-              productid,
-              logoname,
-              displaypremium,
-              benefits,
-              insurer,
-            }: any) => ({
-              id: insurer,
-              insurerId: productid,
-              insurerName: logoname,
-              planType: "comprehensive",
-              imgUrl: logoname.toLowerCase(),
-              price: displaypremium || 672.8,
-              popular: true,
-              isSelected: false,
-              benefits: benefits,
-            })
-          );
+          // const quoteList = data.quoteinfo.map(
+          //   ({
+          //     productid,
+          //     logoname,
+          //     displaypremium,
+          //     benefits,
+          //     insurer,
+          //   }: any) => ({
+          //     id: insurer,
+          //     insurerId: productid,
+          //     insurerName: logoname,
+          //     planType: "comprehensive",
+          //     imgUrl: logoname.toLowerCase(),
+          //     price: displaypremium || 672.8,
+          //     popular: true,
+          //     isSelected: false,
+          //     benefits: benefits,
+          //   })
+          // );
           updateInsuranceDispatch({
             type: InsuranceProviderTypes.UpdateInsuranceProvider,
             payload: {
               companyId: productId,
               companyName: "Allianz",
-              price: quoteList[0].price,
+              price: data.displayPremium,
             },
           });
-          updateQuotesDispatch({
-            type: QuotesTypes.UpdateAllQuotes,
-            payload: { quotes: quoteList },
-          });
+          // updateQuotesDispatch({
+          //   type: QuotesTypes.UpdateAllQuotes,
+          //   payload: { quotes: quoteList },
+          // });
           navigate("/insurance/plan-add-ons");
         }
         throw new Error("INTERVAL_SERVER_ERROR");

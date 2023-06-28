@@ -11,7 +11,7 @@ import axios from "axios";
 import { useState } from "react";
 import DefaultPopup from "../popup/Default";
 import RadioFieldWithRFH from "../rhfFields/RadioField";
-import { addInquiryId } from "../../store/slices/credentials";
+import { addAcountId, addInquiryId } from "../../store/slices/credentials";
 
 const VehicleInfoForm = ({
   setShowLoading,
@@ -114,9 +114,8 @@ const VehicleInfoForm = ({
       }
       if (vehicleResponse.status === 200) {
         dispatch(updateVehicleState(val));
-        dispatch(addInquiryId(
-          vehicleResponse.data.result.inquiryId
-        ))
+        dispatch(addInquiryId(vehicleResponse.data.result.inquiryId));
+        dispatch(addAcountId(vehicleResponse.data.result.accountid));
         setShowLoading((prev) => !prev);
         return;
       } else {
