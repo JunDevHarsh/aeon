@@ -107,7 +107,7 @@ const Footer = () => {
             <li className="w-auto last:ml-8" key={`footer-item-${index + 1}`}>
               <Link
                 to={item.path}
-                className="text-base text-center text-white font-bold"
+                className="text-base text-center text-white font-medium"
                 title={item.name}
                 aria-label={`GoTo: ${item.name}`}
               >

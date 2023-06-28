@@ -17,6 +17,7 @@ export enum QuoteFilterTypes {
 export enum QuotesTypes {
   ToggleQuoteSelection = "TOGGLE_QUOTE_SELECTION",
   AddQuotes = "ADD_QUOTES",
+  UpdateAllQuotes = "UPDATE_ALL_QUOTES"
 }
 
 /*---------------Payload Types---------------*/
@@ -36,6 +37,9 @@ export type QuotesPayload = {
   };
   [QuotesTypes.AddQuotes]: {
     quotes: InsurerQuoteStateType[];
+  }
+  [QuotesTypes.UpdateAllQuotes]: {
+    quotes: InsurerQuoteStateType[]
   }
 };
 

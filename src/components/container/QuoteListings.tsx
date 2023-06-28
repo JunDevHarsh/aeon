@@ -144,7 +144,7 @@ const QuoteListingsContainer = () => {
               class: "Private Vehicle",
               suminsured:
                 type === "market"
-                  ? market?.marketValue.toString()
+                  ? market?.vehicleMarketValue.toString()
                   : agreed?.sumInsured.toString(),
             }),
           },
@@ -164,9 +164,9 @@ const QuoteListingsContainer = () => {
             }
             const data = quoteResponse.data.result;
             const quoteList = data.quoteinfo.map(
-              ({ productid, logoname, displaypremium, benefits }: any) => ({
-                id: productid,
-                insurerId: "1001",
+              ({ productid, logoname, displaypremium, benefits, insurer }: any) => ({
+                id: insurer,
+                insurerId: productid,
                 insurerName: logoname,
                 planType: "comprehensive",
                 imgUrl: logoname.toLowerCase(),

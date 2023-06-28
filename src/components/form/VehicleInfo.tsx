@@ -2,7 +2,7 @@ import { updateVehicleState } from "../../store/slices/vehicle";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { RootState } from "../../store/store";
 import { useSelector, useDispatch } from "react-redux";
-import InputTextField from "../fields/InputText";
+// import InputTextField from "../fields/InputText";
 import SelectDropdown from "../fields/SelectDropdown";
 // import CheckboxWithTextField from "../fields/CheckboxWithText";
 import FixedInputTextField from "../fields/FixedInputText";
@@ -11,6 +11,7 @@ import axios from "axios";
 import { useState } from "react";
 import DefaultPopup from "../popup/Default";
 import RadioFieldWithRFH from "../rhfFields/RadioField";
+import { addAcountId, addInquiryId } from "../../store/slices/credentials";
 
 const VehicleInfoForm = ({
   setShowLoading,
@@ -48,7 +49,7 @@ const VehicleInfoForm = ({
     control,
     setValue,
     clearErrors,
-    formState: { errors },
+    // formState: { errors },
   } = useForm<VehicleStateType>({
     defaultValues: vehicleState,
   });
@@ -113,6 +114,8 @@ const VehicleInfoForm = ({
       }
       if (vehicleResponse.status === 200) {
         dispatch(updateVehicleState(val));
+        dispatch(addInquiryId(vehicleResponse.data.result.inquiryId));
+        dispatch(addAcountId(vehicleResponse.data.result.accountid));
         setShowLoading((prev) => !prev);
         return;
       } else {
@@ -149,7 +152,15 @@ const VehicleInfoForm = ({
             title="Vehicle Registration No."
             value={vehicleState.vehicleLicenseId}
           />
-          <div className="relative pb-5 flex flex-col items-start gap-y-1 w-full h-auto">
+          <FixedInputTextField
+            title="Vehicle Make"
+            value={vehicleState.vehicleMake}
+          />
+          <FixedInputTextField
+            title="Vehicle Model"
+            value={vehicleState.vehicleModel}
+          />
+          {/* <div className="relative pb-5 flex flex-col items-start gap-y-1 w-full h-auto">
             <span className="text-base text-center text-primary-black font-semibold">
               Vehicle Make*
             </span>
@@ -164,7 +175,7 @@ const VehicleInfoForm = ({
             <span className="py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium cursor-default border border-solid border-[#CFD0D7] rounded">
               {watch("vehicleModel")}
             </span>
-          </div>
+          </div> */}
           {/* Vehicle Variant Field  */}
           <div className="relative pb-5 flex flex-col items-start gap-y-1 w-auto h-auto">
             <label
@@ -223,7 +234,7 @@ const VehicleInfoForm = ({
             value={vehicleState.seatingCapacity.toString()}
           />
           {/* Driver Field */}
-          <InputTextField
+          {/* <InputTextField
             label="Drivers"
             name="drivers"
             register={register}
@@ -249,7 +260,7 @@ const VehicleInfoForm = ({
                 event.currentTarget.value = value;
               },
             }}
-          />
+          /> */}
           {/* NCD Field */}
           <FixedInputTextField
             title="NCD"
@@ -302,7 +313,7 @@ const VehicleInfoForm = ({
             name="reconIndicator"
             register={register}
             selectedValue={watch("reconIndicator")}
-            title="Recon Indicator"
+            title="Reconditon Car?"
             options={[
               {
                 value: "yes",

@@ -62,6 +62,7 @@ export type VehicleStateType = {
   nvicList: NvicList[];
   reconIndicator: "yes" | "no";
   requestId: string;
+  inquiryId: string;
 };
 
 export type NvicList = {
