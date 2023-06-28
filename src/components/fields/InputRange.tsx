@@ -60,7 +60,7 @@ const InputRange = ({
 
   return (
     <div className="mt-4 flex flex-col items-start w-full">
-      <h2 className="mb-2 text-base text-center text-primary-black font-bold">
+      <h2 className="mb-2 text-lg text-center text-primary-black font-bold">
         Choose your preferred sum insured
       </h2>
       <div className="relative pt-7 flex items-center justify-center w-full">

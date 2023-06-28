@@ -35,6 +35,7 @@ const initialState: VehicleStateType = {
     },
   ],
   requestId: "",
+  inquiryId: ""
 };
 
 export const vehicleSlice = createSlice({

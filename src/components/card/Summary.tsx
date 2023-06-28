@@ -129,7 +129,7 @@ const SummaryInfoCard = () => {
                 RM{" "}
                 {numberWithCommas(
                   valuationType === "market"
-                    ? valuationMarket.marketValue
+                    ? valuationMarket.vehicleMarketValue
                     : valuationAgreed?.sumInsured
                     ? Number(valuationAgreed?.sumInsured)
                     : 0
@@ -168,7 +168,7 @@ const SummaryInfoCard = () => {
             <span className="text-base text-left text-primary-black font-bold w-1/2">
               NCD ({ncd ?? 30}%)
             </span>
-            <span className="text-base text-right text-primary-black font-medium w-1/2">
+            <span className="text-base text-right text-red-500 font-medium w-1/2">
               <span className="font-semibold">-</span> RM {updatedNCD}
             </span>
           </div>
@@ -201,8 +201,7 @@ const SummaryInfoCard = () => {
                   {addOn.title}
                 </span>
                 <span className="text-base text-right text-primary-black font-medium w-1/2">
-                  <span className="font-semibold">+</span> RM{" "}
-                  {addOn.price.toFixed(2)}
+                  RM {addOn.price.toFixed(2)}
                 </span>
               </div>
             ))
@@ -211,33 +210,33 @@ const SummaryInfoCard = () => {
         <div className="inline-block my-3 w-full h-[1px] bg-[#bcbcbc]" />
         <div className="flex flex-col items-start gap-y-1 w-full">
           <div className="flex items-start justify-between w-full">
-            <span className="text-base text-left text-primary-black font-bold w-1/2">
+            <span className="text-lg text-left text-primary-black font-bold w-1/2">
               Gross Premium
             </span>
-            <span className="text-base text-right text-primary-black font-medium w-1/2">
+            <span className="text-lg text-right text-primary-black font-bold w-1/2">
               RM {grossPremium}
             </span>
           </div>
           {promoCode !== 0 && (
             <div className="flex items-start justify-between w-full">
-              <span className="text-base text-left text-primary-black font-bold w-1/2">
+              <span className="text-base text-left text-primary-black font-medium w-1/2">
                 Discount {`${promoCode}%`}
               </span>
-              <span className="text-base text-right text-primary-black font-medium w-1/2">
+              <span className="text-base text-right text-red-500 font-medium w-1/2">
                 <span className="font-semibold">-</span> RM {discount}
               </span>
             </div>
           )}
           <div className="flex items-start justify-between w-full">
-            <span className="text-base text-left text-primary-black font-bold w-1/2">
+            <span className="text-lg text-left text-primary-black font-bold w-1/2">
               Sub Total
             </span>
-            <span className="text-base text-right text-primary-black font-medium w-1/2">
+            <span className="text-lg text-right text-primary-black font-bold w-1/2">
               RM {subTotal}
             </span>
           </div>
           <div className="flex items-start justify-between w-full">
-            <span className="text-base text-left text-primary-black font-bold w-1/2">
+            <span className="text-base text-left text-primary-black font-medium w-1/2">
               Service Tax (6%)
             </span>
             <span className="text-base text-right text-primary-black font-medium w-1/2">
@@ -245,7 +244,7 @@ const SummaryInfoCard = () => {
             </span>
           </div>
           <div className="flex items-start justify-between w-full">
-            <span className="text-base text-left text-primary-black font-bold w-1/2">
+            <span className="text-base text-left text-primary-black font-medium w-1/2">
               Stamp Duty
             </span>
             <span className="text-base text-right text-primary-black font-medium w-1/2">
@@ -257,7 +256,7 @@ const SummaryInfoCard = () => {
           <Code
             title="Promo Code"
             placeholder="DFS3432"
-            validationList={["ADSN12"]}
+            validationList={["AEON12"]}
             updateCode={setPromoCode}
           />
         </div>

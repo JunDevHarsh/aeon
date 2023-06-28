@@ -55,11 +55,7 @@ type MarketAndAgreedState = {
   variants: MarketVariantType[];
   previousValue: string;
   types: AgreedVariantType[];
-  market: {
-    nvic: string;
-    marketValue: number;
-    variant: string;
-  };
+  market: MarketVariantType;
   agreed: {
     nvic?: string;
     sumInsured: string;
@@ -72,118 +68,17 @@ type MarketAndAgreedState = {
 
 const initialState: MarketAndAgreedState = {
   type: "market",
-  previousValue: "36700",
-  variants: [
-    {
-      nvic: "JAO20A",
-      vehicleMarketValue: 36700,
-      vehicleVariant: "ADVANCE 4 SP AUTOMATIC - 1329",
-    },
-    {
-      nvic: "JAP20A",
-      vehicleMarketValue: 33000,
-      vehicleVariant: "PREMIUM X 4 SP AUTOMATIC - 1329",
-    },
-    {
-      nvic: "JAQ20A",
-      vehicleMarketValue: 31300,
-      vehicleVariant: "PREMIUM X 5 SP MANUAL - 1329",
-    },
-  ],
-  types: [
-    {
-      "Variant": "ZZE142R-GEPGKEEW ALTIS E SALOON (A)GATESHIFT 1.8I [4DOOR 4SPEED FWD] [NON RECOND ONLY] - 1794 CC",
-      "AvCode": "TOYO10AU",
-      "SumInsured": "37000.00",
-      "VehicleEngineCC": 1794,
-      "MakeYear": "2010"
-    },
-    {
-      "Variant": "ZZE142R-GEPGKEEW ALTIS E SALOON (A)GATESHIFT 1.8I [4DOOR 4SPEED FWD] [NON RECOND ONLY]-HIGH - 1794 CC",
-      "AvCode": "TOYO10AU-HI",
-      "SumInsured": "38000.00",
-      "VehicleEngineCC": 1794,
-      "MakeYear": "2010"
-    },
-    {
-      "Variant": "ZZE142R-GEPGKEEW ALTIS E SALOON (A)GATESHIFT 1.8I [4DOOR 4SPEED FWD] [NON RECOND ONLY]-LOW - 1794 CC",
-      "AvCode": "TOYO10AU-LO",
-      "SumInsured": "36000.00",
-      "VehicleEngineCC": 1794,
-      "MakeYear": "2010"
-    },
-    {
-      "Variant": "ZZE142R-GEPGKEEY ALTIS G SALOON (A)GATESHIFT 1.8I [4DOOR 4SPEED FWD] [NON RECOND ONLY] - 1794 CC",
-      "AvCode": "TOYO10AV",
-      "SumInsured": "41000.00",
-      "VehicleEngineCC": 1794,
-      "MakeYear": "2010"
-    },
-    {
-      "Variant": "ZZE142R-GEPGKEEY ALTIS G SALOON (A)GATESHIFT 1.8I [4DOOR 4SPEED FWD] [NON RECOND ONLY]-HIGH - 1794 CC",
-      "AvCode": "TOYO10AV-HI",
-      "SumInsured": "42000.00",
-      "VehicleEngineCC": 1794,
-      "MakeYear": "2010"
-    },
-    {
-      "Variant": "ZZE142R-GEPGKEEY ALTIS G SALOON (A)GATESHIFT 1.8I [4DOOR 4SPEED FWD] [NON RECOND ONLY]-LOW - 1794 CC",
-      "AvCode": "TOYO10AV-LO",
-      "SumInsured": "40000.00",
-      "VehicleEngineCC": 1794,
-      "MakeYear": "2010"
-    },
-    {
-      "Variant": "ZZE142R-GEPGKEEW ALTIS E SALOON (A)GATESHIFT 1.8I [4DOOR 4SPEED FWD (SPORTY)] [NON RECOND ONLY] - 1794 CC",
-      "AvCode": "TOYO10AW",
-      "SumInsured": "38000.00",
-      "VehicleEngineCC": 1794,
-      "MakeYear": "2010"
-    },
-    {
-      "Variant": "ZZE142R-GEPGKEEW ALTIS E SALOON (A)GATESHIFT 1.8I [4DOOR 4SPEED FWD (SPORTY)] [NON RECOND ONLY]-HIGH - 1794 CC",
-      "AvCode": "TOYO10AW-HI",
-      "SumInsured": "39000.00",
-      "VehicleEngineCC": 1794,
-      "MakeYear": "2010"
-    },
-    {
-      "Variant": "ZZE142R-GEPGKEEW ALTIS E SALOON (A)GATESHIFT 1.8I [4DOOR 4SPEED FWD (SPORTY)] [NON RECOND ONLY]-LOW - 1794 CC",
-      "AvCode": "TOYO10AW-LO",
-      "SumInsured": "37000.00",
-      "VehicleEngineCC": 1794,
-      "MakeYear": "2010"
-    },
-    {
-      "Variant": "ZZE142R-GEPGKEEY ALTIS G SALOON (A)GATESHIFT 1.8I [4DOOR 4SPEED FWD (SPORTY)] [NON RECOND ONLY] - 1794 CC",
-      "AvCode": "TOYO10AY",
-      "SumInsured": "42000.00",
-      "VehicleEngineCC": 1794,
-      "MakeYear": "2010"
-    },
-    {
-      "Variant": "ZZE142R-GEPGKEEY ALTIS G SALOON (A)GATESHIFT 1.8I [4DOOR 4SPEED FWD (SPORTY)] [NON RECOND ONLY]-HIGH - 1794 CC",
-      "AvCode": "TOYO10AY-HI",
-      "SumInsured": "43000.00",
-      "VehicleEngineCC": 1794,
-      "MakeYear": "2010"
-    },
-    {
-      "Variant": "ZZE142R-GEPGKEEY ALTIS G SALOON (A)GATESHIFT 1.8I [4DOOR 4SPEED FWD (SPORTY)] [NON RECOND ONLY]-LOW - 1794 CC",
-      "AvCode": "TOYO10AY-LO",
-      "SumInsured": "41000.00",
-      "VehicleEngineCC": 1794,
-      "MakeYear": "2010"
-    },
-  ],
+  previousValue: "",
+  variants: [],
+  types: [],
   market: {
-    nvic: "JAO20A",
-    marketValue: 36700,
-    variant: "ADVANCE 4 SP AUTOMATIC - 1329",
+    nvic: "",
+    vehicleMarketValue: 0,
+    vehicleVariant: "",
   },
   agreed: {
-    nvic: "JAO20A",
-    variant: "ADVANCE 4 SP AUTOMATIC - 1329",
+    nvic: "",
+    variant: "",
     avCode: "",
     sumInsured: "",
     type: "",
@@ -244,8 +139,12 @@ function MarketAndAgreedProvider({ children }: { children: React.ReactNode }) {
   const { nvicList, variant } = useSelector(
     (state: RootState) => state.vehicle
   );
-  console.log(nvicList, variant);
-  const [state, dispatch] = useReducer(marketAgreedReducer, initialState);
+  const [state, dispatch] = useReducer(marketAgreedReducer, {
+    ...initialState,
+    previousValue: variant ? variant.vehicleMarketValue.toString() : "",
+    variants: nvicList,
+    market: variant ? variant : initialState.market,
+  });
   return (
     <MarketAndAgreedContext.Provider value={{ state, dispatch }}>
       {children}

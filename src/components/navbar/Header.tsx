@@ -111,7 +111,7 @@ const Header = () => {
                 <li className="w-auto first:ml-0 ml-8" key={`header-item-${index + 1}`}>
                   <Link
                     to={item.path}
-                    className="text-base text-center text-black font-bold"
+                    className="text-base text-center text-black font-medium"
                     title={item.name}
                     aria-label={`GoTo: ${item.name}`}
                   >

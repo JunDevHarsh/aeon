@@ -79,7 +79,7 @@ const ReferralCodeButton: React.FC<CodeProps> = ({ validationList }) => {
             onClick={handleOnClick}
             className={`px-4 py-1.5 text-sm text-center text-white ${
               isValid ? "bg-gray-400" : "bg-[#4B5EAA]"
-            } font-semibold`}
+            } font-medium`}
           >
             Apply
           </button>

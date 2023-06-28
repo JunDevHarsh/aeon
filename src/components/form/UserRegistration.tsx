@@ -227,39 +227,19 @@ const UserRegistrationForm = () => {
     } catch (err: any) {
       setLoading(false);
       if (err instanceof Error) {
-        const { message } = err;
-        console.log(message);
-        switch (message) {
-          case "DATA_NOT_FOUND":
-            setError({
-              isVisible: true,
-              title: "Data Not Found",
-              description:
-                "Vehicle registration number does not match. Make sure vehicle registration no is entered correctly.",
-            });
-            return;
-          case "INVALID_ID_NUMBER":
-            setError({
-              isVisible: true,
-              title: "Data Not Found",
-              description:
-                "Make sure vehicle registration no or Identity no is entered correctly.",
-            });
-            return;
-          default:
-            setError({
-              isVisible: true,
-              title: "Data Not Found",
-              description: "Intenal server error. Please try again later.",
-            });
-            return;
-        }
+        setError({
+          isVisible: true,
+          title: "Internal Server Error",
+          description:
+            "Sorry, we're having  too many request at the moment. Please try again later.",
+        });
+      } else {
+        setError({
+          isVisible: true,
+          title: err.code,
+          description: err.message,
+        });
       }
-      setError({
-        isVisible: true,
-        title: "Internal Server Error",
-        description: "Intenal server error. Please try again later.",
-      });
     }
   };
 
@@ -381,7 +361,7 @@ const UserRegistrationForm = () => {
                   watchIDType === "Passport"
                     ? "A12365498"
                     : watchIDType === "Company"
-                    ? "1344743-J"
+                    ? "134474-J"
                     : "123456-12-1234"
                 }
                 options={{
@@ -446,6 +426,9 @@ const UserRegistrationForm = () => {
               onChange(event: React.ChangeEvent<HTMLInputElement>) {
                 let { value } = event.currentTarget;
                 value = value.replace(/\D/g, "");
+                if (value.length === 5) {
+                  console.log("Called");
+                }
                 event.currentTarget.value = value;
               },
             }}

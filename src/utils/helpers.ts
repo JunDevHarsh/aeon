@@ -111,23 +111,66 @@ export async function getVehicleInfo(
     );
     if (response.status !== 200 || response.data.success !== true) {
       // throw error if sessionName is not generated
-      throw new Error("INVALID_SESSIONID");
+      throw {
+        code: "101",
+        message: "Session Expired",
+      };
     }
     if (response.data.result) {
       if (response.data.result.errors) {
+        if (!response.data.result.errors[0]) {
+          throw {
+            code: 102,
+            message: response.data.result.errors.message.replace(
+              /<[^<>]+>/g,
+              response.data.result.prevPolExpiryDate
+            ),
+          };
+        }
         if (response.data.result.errors[0] === "Data not found.") {
-          throw new Error("DATA_NOT_FOUND");
+          throw {
+            code: 104,
+            message:
+              "No vehicle is found with the given request. Make sure vehicle registration no is entered correctly.",
+          };
         } else {
-          throw new Error("INVALID_ID_NUMBER");
+          throw {
+            code: 103,
+            message:
+              "Make sure vehicle registration no. or Identity no. are entered correctly.",
+          };
         }
       }
       return response.data.result;
     }
-    throw new Error("SERVER_ERROR");
+    throw {
+      code: 105,
+      message:
+        "Sorry, we're having  too many request at the moment. Please try again later.",
+    };
   } catch (err) {
     throw err;
   }
 }
+
+// export async function checkPostalCode(postalCode: string, sessionName: string) {
+//   try {
+//     const apiResponse = await axios.post(
+//       "https://app.agiliux.com/aeon/webservice.php",
+//       {
+//         operation: "checkPostCode",
+//         sessionName: sessionName,
+//         element: JSON.stringify({
+//           postalcode: postalCode,
+//           tenant_id: "67b61490-fec2-11ed-a640-e19d1712c006",
+//         }),
+//       }
+//     );
+
+//   } catch (err) {
+//     throw err;
+//   }
+// }
 
 export async function generateTokenAndSession() {
   try {
