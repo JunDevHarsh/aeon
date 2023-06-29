@@ -94,6 +94,7 @@ const VehicleInfoForm = ({
             chasisno: vehicleState.vehicleChassis,
             region: val.region,
             variant: val.variant,
+            referalcode: "AEONREFERRAL"
           }),
         },
         {

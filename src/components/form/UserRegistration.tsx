@@ -217,7 +217,12 @@ const UserRegistrationForm = () => {
       dispatch(
         addUserBasicInfo({
           email,
-          gender,
+          gender:
+            idType !== "NRIC"
+              ? gender
+              : Number(idNumber.replace(/-/gi, "")) % 2 === 0
+              ? "Female"
+              : "Male",
           maritalStatus,
           mobileNumber,
           postalCode,
