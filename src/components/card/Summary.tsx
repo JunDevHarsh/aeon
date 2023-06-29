@@ -1,16 +1,17 @@
 import { useContext, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import Code from "../button/Code";
 import { numberWithCommas } from "../container/VehicleCoverage";
 import { InsuranceContext } from "../../context/InsuranceContext";
 import { AddOnsContext } from "../../context/AddOnContext";
 // import { VehicleCoverageContext } from "../../context/VehicleCoverage";
-import { updateFinalPrice } from "../../store/slices/insurance";
+// import { updateFinalPrice } from "../../store/slices/insurance";
 import { Link } from "react-router-dom";
 import { MarketAndAgreedContext } from "../../context/MarketAndAgreedContext";
 import AllianzImg from "../../assets/images/logo-allianz.png";
+import { QuoteListingContext } from "../../context/QuoteListing";
 
 export interface AddBenefitsType {
   id: string;
@@ -29,18 +30,25 @@ const SummaryInfoCard = () => {
     state: { addOns, isEdited },
     dispatch,
   } = useContext(AddOnsContext);
-  const {
-    ncdPercentage: ncd,
-    polExpiryDate,
-    polEffectiveDate,
-  } = useSelector((state: RootState) => state.vehicle);
+
+  const { polExpiryDate, polEffectiveDate } = useSelector(
+    (state: RootState) => state.vehicle
+  );
   const navigate = useNavigate();
   const {
-    state: { price: proPrice, name: proName },
+    state: { name: proName, id },
   } = useContext(InsuranceContext);
   // const {
   //   state: { type, market },
   // } = useContext(VehicleCoverageContext);
+
+  const {
+    state: { quotes },
+  } = useContext(QuoteListingContext);
+
+  const selectedQuotePlan: any = quotes.find((quote) => quote.productId === id);
+
+  const premium = selectedQuotePlan?.premium;
 
   const {
     state: {
@@ -53,22 +61,6 @@ const SummaryInfoCard = () => {
   const { pathname } = useLocation();
 
   const selectedAddOns = addOns.filter((addOn) => addOn.isSelected);
-
-  const providerPrice = proPrice ? Number(proPrice) : 0;
-
-  const updatedNCD = ((providerPrice * Number(ncd)) / 100).toFixed(2);
-  const grossPremium = (
-    providerPrice -
-    Number(updatedNCD) +
-    selectedAddOns.reduce((acc, curr) => (acc += curr.price), 0)
-  ).toFixed(2);
-  const updateFinalPriceToStore = useDispatch();
-  const discount = ((Number(grossPremium) * Number(promoCode)) / 100).toFixed(
-    2
-  );
-  const subTotal = (Number(grossPremium) - Number(discount)).toFixed(2);
-  const serviceTax = ((Number(grossPremium) * 6) / 100).toFixed(2);
-  const totalAmount = (Number(subTotal) + Number(serviceTax) + 10).toFixed(2);
 
   return (
     <div className="mt-8 lg:mt-0 ml-0 lg:ml-8 relative flex flex-col items-center justify-between mobile-l:min-w-[360px] sm:min-w-[375px] max-w-sm w-full h-auto rounded-[20px] shadow-container overflow-hidden">
@@ -158,18 +150,19 @@ const SummaryInfoCard = () => {
         <div className="flex flex-col items-start gap-y-1 w-full">
           <div className="flex items-center justify-between w-full">
             <span className="text-base text-left text-primary-black font-bold w-1/2">
-              Premium
+              Basic Premium
             </span>
             <span className="text-base text-right text-primary-black font-medium w-1/2">
-              RM {providerPrice.toFixed(2) ?? 671.67}
+              RM {premium?.basicPremium.toFixed(2) || "0.00"}
             </span>
           </div>
           <div className="flex items-center justify-between w-full">
             <span className="text-base text-left text-primary-black font-bold w-1/2">
-              NCD ({ncd ?? 30}%)
+              NCD ({premium?.ncdPct || 0}%)
             </span>
             <span className="text-base text-right text-red-500 font-medium w-1/2">
-              <span className="font-semibold">-</span> RM {updatedNCD}
+              <span className="font-semibold">-</span> RM{" "}
+              {premium?.ncdAmt || "0.00"}
             </span>
           </div>
         </div>
@@ -214,7 +207,7 @@ const SummaryInfoCard = () => {
               Gross Premium
             </span>
             <span className="text-lg text-right text-primary-black font-bold w-1/2">
-              RM {grossPremium}
+              RM {premium?.grossPremium || "0.00"}
             </span>
           </div>
           {promoCode !== 0 && (
@@ -223,7 +216,7 @@ const SummaryInfoCard = () => {
                 Discount {`${promoCode}%`}
               </span>
               <span className="text-base text-right text-red-500 font-medium w-1/2">
-                <span className="font-semibold">-</span> RM {discount}
+                <span className="font-semibold">-</span> RM 10.00
               </span>
             </div>
           )}
@@ -232,15 +225,15 @@ const SummaryInfoCard = () => {
               Sub Total
             </span>
             <span className="text-lg text-right text-primary-black font-bold w-1/2">
-              RM {subTotal}
+              RM {premium?.grossPremium || 0.0}
             </span>
           </div>
           <div className="flex items-start justify-between w-full">
             <span className="text-base text-left text-primary-black font-medium w-1/2">
-              Service Tax (6%)
+              Service Tax {`${premium?.serviceTaxPercentage || 0}%`}
             </span>
             <span className="text-base text-right text-primary-black font-medium w-1/2">
-              RM {serviceTax}
+              RM {premium?.serviceTaxAmount || "0.00"}
             </span>
           </div>
           <div className="flex items-start justify-between w-full">
@@ -266,7 +259,7 @@ const SummaryInfoCard = () => {
             Total Amount
           </span>
           <span className="text-xl text-right text-primary-black font-bold w-1/2">
-            RM {totalAmount}
+            RM {premium?.premiumDue || "0.00"}
           </span>
         </div>
         <div className="mt-4 flex flex-col mobile-xl:flex-row items-center justify-center w-full">
@@ -297,7 +290,7 @@ const SummaryInfoCard = () => {
           ) : pathname === "/insurance/review-pay" ? (
             <button
               onClick={() => {
-                updateFinalPriceToStore(updateFinalPrice(totalAmount));
+                // updateFinalPriceToStore(updateFinalPrice(totalAmount));
                 navigate("/payment");
               }}
               className="relative py-2 px-6 min-w-[120px] order-1 mobile-xl:order-2 flex items-center justify-center w-full mobile-xl:w-auto bg-primary-blue rounded mobile-xl:rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"

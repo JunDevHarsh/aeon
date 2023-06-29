@@ -5,12 +5,11 @@ import QuoteListingPlanCard from "../card/QuoteListingPlan";
 // import QuoteComparePopup from "../popup/QuoteCompare";
 import DefaultPopup, { WarningPopupType } from "../popup/Default";
 import {
-  QuoteFilterTypes,
   QuoteListingContext,
   QuotesTypes,
 } from "../../context/QuoteListing";
-import { InsurerQuoteStateType } from "../../context/types";
-import QuoteComparisonPopup from "../popup/QuoteComparison";
+import { InsurerQuoteStateType, QuotesFilterType } from "../../context/types";
+// import QuoteComparisonPopup from "../popup/QuoteComparison";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
@@ -22,10 +21,21 @@ export interface PlanType {
   isSelected: boolean;
 }
 
+// productId: string;
+//   insurerId: string;
+//   insurerName: string;
+//   logoName: string;
+//   planType: string;
+//   displayPremium: string;
+//   popular: boolean;
+//   benefits: string[];
+//   additionalCover: [];
+//   premium: any;
+
 export type QuotePlansType = {
-  id: string;
-  companyId: string;
-  companyName: string;
+  productId: string;
+  insurerId: string;
+  insu: string;
   companyImgHref: string;
   companyRelImgHref: string;
   planType: string;
@@ -71,6 +81,25 @@ const QuoteListingsContainer = () => {
   const {
     state: { type, market, agreed },
   } = useContext(MarketAndAgreedContext);
+  const {
+    state: { quotes: insurerQuotes },
+    dispatch,
+  } = useContext(QuoteListingContext);
+
+  const [filter, setFilter] = useState<QuotesFilterType>({
+    sort: null,
+    plan: [
+      { value: "comprehensive", label: "Comprehensive", isSelected: true },
+      {
+        value: "third-party",
+        label: "Third Party, Fire and Theft",
+        isSelected: false,
+      },
+    ],
+  });
+
+  const [quotePlans, updateQuotePlans] = useState<InsurerQuoteStateType[]>([]);
+
   // console.log(type, market, agreed);
   const [isComparePopupVisible, shouldComparePopupVisible] =
     useState<boolean>(false);
@@ -86,44 +115,33 @@ const QuoteListingsContainer = () => {
     description: string;
   } | null>(null);
 
-  const {
-    state: { filter, quotes: insurerQuotes },
-    dispatch,
-  } = useContext(QuoteListingContext);
-
-  // update the type property of the filter
   const setTypeOfFilter = (updatedFilterTypes: PlanType[]) => {
     // updateQuoteFilter((prev) => ({ ...prev, type: updatedFilterTypes }));
-    dispatch({
-      type: QuoteFilterTypes.UpdateFilterPlan,
-      payload: {
-        list: updatedFilterTypes,
-      },
-    });
+    setFilter((prev) => ({ ...prev, plan: updatedFilterTypes }));
   };
 
   // update the sort property of the filter
   const setSortValueToFilter = (val: string) => {
     // updateQuoteFilter((prev) => ({ ...prev, sort: val }));
-    dispatch({
-      type: QuoteFilterTypes.UpdateFilterSort,
-      payload: { value: val },
-    });
+    setFilter((prev) => ({ ...prev, sort: val }));
   };
 
   // function to update selected quotes when user
   // try to compare different plans
   function updateSelectedQuotePlans(selectedQuoteId: string) {
-    dispatch({
-      type: QuotesTypes.ToggleQuoteSelection,
-      payload: { id: selectedQuoteId },
-    });
-    // updateQuotePlans(updatedQuotePlans);
+    updateQuotePlans((prev) =>
+      prev.map((quote) => {
+        if (quote.productId === selectedQuoteId) {
+          return { ...quote, isSelected: !quote.isSelected };
+        }
+        return quote;
+      })
+    );
   }
 
   useEffect(() => {
     if (isComparePopupVisible) {
-      const quotes = insurerQuotes.filter((quote) => quote.isSelected);
+      const quotes = quotePlans.filter((quote) => quote.isSelected);
       if (quotes.length < 2) {
         shouldComparePopupVisible(false);
       }
@@ -164,22 +182,32 @@ const QuoteListingsContainer = () => {
             }
             const data = quoteResponse.data.result;
             const quoteList = data.quoteinfo.map(
-              ({ productid, logoname, displaypremium, benefits, insurer }: any) => ({
-                id: insurer,
-                insurerId: productid,
+              ({
+                productid,
+                insurer,
+                logoname,
+                displaypremium,
+                benefits,
+                additionalCover,
+                premium
+              }: any) => ({
+                productId: productid,
+                insurerId: insurer,
                 insurerName: logoname,
                 planType: "comprehensive",
-                imgUrl: logoname.toLowerCase(),
-                price: displaypremium || 672.80,
+                logoName: logoname.toLowerCase(),
+                displayPremium: displaypremium || 672.8,
                 popular: true,
-                isSelected: false,
                 benefits: benefits,
+                additionalCover: additionalCover,
+                premium: premium
               })
             );
             dispatch({
               type: QuotesTypes.AddQuotes,
               payload: { quotes: quoteList },
             });
+            updateQuotePlans(quoteList.map((quote: any) => ({ ...quote, isSelected: false })));
             return;
           }
           throw new Error("INTERVAL_SERVER_ERROR");
@@ -213,20 +241,18 @@ const QuoteListingsContainer = () => {
 
   // filter quotes based on user search selection i.e.
   // if user has searching for third-party or comprehensive plans
-  const filterQuotePlansType = insurerQuotes.filter((quotePlan) =>
+  const filterQuotePlansType = quotePlans.filter((quotePlan) =>
     filter.plan
       .filter((a) => a.isSelected)
       .map((b) => b.value)
       .includes(quotePlan.planType)
   );
 
-  // console.log(filterQuotePlansType);
+  const quotesToDisplay =
+    filterQuotePlansType.length === 0 ? quotePlans : filterQuotePlansType;
 
-  const quotesToDisply =
-    filterQuotePlansType.length === 0 ? insurerQuotes : filterQuotePlansType;
-
-  const filterSelectedQuotes: InsurerQuoteStateType[] = quotesToDisply.filter(
-    (quote) => quote.isSelected
+  const filterSelectedQuotes: any = quotesToDisplay.filter(
+    (quote: any) => quote.isSelected
   );
 
   // function to toggle isCompareBoxVisble's state
@@ -234,7 +260,7 @@ const QuoteListingsContainer = () => {
     // check if the box is not opened and also checks
     // if length of selected plans are more than 1
     // then show the comparison box
-    if (!isComparePopupVisible && filterSelectedQuotes.length <= 1) {
+    if (!isComparePopupVisible && filter) {
       setWarningPopup({
         isVisible: true,
         title: "Warning",
@@ -258,13 +284,13 @@ const QuoteListingsContainer = () => {
           setShowWarningPopup={setWarningPopup}
         />
       )}
-      {isComparePopupVisible && (
+      {/* {isComparePopupVisible && (
         <QuoteComparisonPopup
           selectedQuotes={filterSelectedQuotes}
           updateSelectedQuotePlans={updateSelectedQuotePlans}
           shouldComparePopupVisible={shouldComparePopupVisible}
         />
-      )}
+      )} */}
       {/* {isComparePopupVisible && (
         <QuoteComparePopup
           selectedQuotes={filterSelectedQuotes}
@@ -353,7 +379,7 @@ const QuoteListingsContainer = () => {
                 height={40}
                 maxWidth={250}
                 imgAlt="aeon-insurance-brokers-img"
-                imgPath="../../assets/images/AEON_LOGO.png"
+                imgPath="AEON_LOGO"
               />
               <span className="text-lg text-center text-primary-black font-bold">
                 {error.code + " - " + error.description}
@@ -362,7 +388,7 @@ const QuoteListingsContainer = () => {
           </div>
         ) : (
           <div className="mt-8 flex flex-col items-center justify-start w-full h-auto">
-            {quotesToDisply.length === 0 ? (
+            {quotesToDisplay.length === 0 ? (
               // quote skeleton
               <div className="relative w-full">
                 <div className="mt-4 flex flex-col items-center justify-between w-full">
@@ -372,25 +398,31 @@ const QuoteListingsContainer = () => {
                 </div>
               </div>
             ) : (
-              quotesToDisply
+              quotesToDisplay
                 // sort the quote based on pricing
                 .sort((a, b) => {
                   if (filter.sort) {
                     const sortValue: string = filter.sort;
                     if (sortValue === "high-to-low") {
                       // return parseInt(b.price) - parseInt(a.price);
-                      return b.price - a.price;
+                      return Number(b.displayPremium) - Number(a.displayPremium);
                     }
                   }
-                  return a.price - b.price;
+                  return Number(a.displayPremium) - Number(b.displayPremium);
                 })
                 .map((quote) => {
                   return (
                     <QuoteListingPlanCard
-                      key={quote.id}
-                      {...{
-                        ...quote,
-                      }}
+                      key={quote.productId}
+                      benefits={quote.benefits}
+                      id={quote.productId}
+                      imgUrl={quote.logoName}
+                      insurerId={quote.insurerId}
+                      insurerName={quote.insurerName}
+                      isSelected={quote.isSelected}
+                      planType={quote.planType}
+                      popular={quote.popular}
+                      price={Number(quote.displayPremium)}
                       updateSelectedQuotePlans={updateSelectedQuotePlans}
                     />
                   );
@@ -424,7 +456,7 @@ function LazyLoadImage({
 
   useEffect(() => {
     async function importImageDynamically() {
-      const importedImage = await import(imgPath);
+      const importedImage = await import(`../../assets/images/${imgPath}.png`);
       imgRef.current = importedImage.default;
       setPathLoaded(true);
     }

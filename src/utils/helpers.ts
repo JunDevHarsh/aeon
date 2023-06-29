@@ -32,10 +32,57 @@ export async function generateToken(
       (getToken.data.result && getToken.data.success !== true)
     ) {
       // throw error if token is not generated
-      throw new Error("TOKEN_NOT_GENERATED");
+      throw {
+        code: "201",
+        message: "Token not generated",
+      };
     }
     return getToken.data.result;
   } catch (err: any) {
+    throw err;
+  }
+}
+
+export async function checkReferralCode(
+  url: string,
+  timeout: number = 3000,
+  sessionName: string,
+  referralCode: string
+) {
+  try {
+    const apiResponse = await axios.post(
+      url,
+      {
+        sessionName: sessionName,
+        element: JSON.stringify({
+          tenant_id: "67b61490-fec2-11ed-a640-e19d1712c006",
+          referalcode: referralCode,
+        }),
+        operation: "checkReferal",
+      },
+      {
+        timeout: timeout,
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+    );
+    if (apiResponse.status !== 200 || apiResponse.data.success !== true) {
+      throw {
+        code: 108,
+        message:
+          "Can't check referral code at the moment. Please try again later.",
+      };
+    }
+    if (apiResponse.data.result) {
+      return apiResponse.data.result;
+    }
+    throw {
+      code: 108,
+      message:
+        "Can't check referral code at the moment. Please try again later.",
+    };
+  } catch (err) {
     throw err;
   }
 }
@@ -48,7 +95,10 @@ export async function generateSessionName(
 ) {
   try {
     if (!token || !md5Secret) {
-      throw new Error("TOKEN_OR_MD5_SECRET_NOT_FOUND");
+      throw {
+        code: "202",
+        message: "TOKEN_OR_MD5_SECRET_NOT_FOUND",
+      };
     }
     const accessKey: string = md5(token + "bwJrIhxPdfsdialE");
     const response = await axios.post(
@@ -70,7 +120,10 @@ export async function generateSessionName(
       (response.data.result && response.data.success !== true)
     ) {
       // throw error if sessionName is not generated
-      throw new Error("INVALID_AUTH_TOKEN");
+      throw({
+        code: "203",
+        message: "INVALID_AUTH_TOKEN",
+      });
     }
     return response.data.result;
   } catch (err) {

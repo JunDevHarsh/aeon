@@ -25,11 +25,12 @@ import {
   InsuranceContext,
   InsuranceProviderTypes,
 } from "../../context/InsuranceContext";
-// import { 
+// import {
 //   QuoteListingContext,
 //   // QuotesTypes
 // } from "../../context/QuoteListing";
 import { useNavigate } from "react-router-dom";
+import { QuoteListingContext, QuotesTypes } from "../../context/QuoteListing";
 
 function createUniqueValues(types: AgreedVariantType[]) {
   const regEx = /(-HIGH|-LOW|-HI|-LO)\s*-?\s*/;
@@ -87,6 +88,9 @@ function MarketAndAgreedContainer() {
     dispatch: updateInsuranceDispatch,
   } = useContext(InsuranceContext);
   // const { dispatch: updateQuotesDispatch } = useContext(QuoteListingContext);
+
+  const { dispatch: updateQuote } = useContext(QuoteListingContext);
+
   const updateStore = useDispatch();
   const {
     reconIndicator,
@@ -204,21 +208,28 @@ function MarketAndAgreedContainer() {
           },
         }
       );
-      if (apiResponse.status !== 200 || !apiResponse.data.success) {
-        throw new Error("Error fetching agreed variants list");
+      if (apiResponse.status !== 200 || !apiResponse.data) {
+        throw {
+          status: 104,
+          message: "Error getting agreed variant",
+        };
       }
-      const { data } = apiResponse.data;
-      console.log(data);
-      // if(data.result && data.result.VariantGrp.length === 0){
-      //   set
-      // }
+      const { result } = apiResponse.data;
+      if (result.length !== 0 || result.VariantGrp) {
+        dispatch({
+          type: UpdateValuation.AddTypes,
+          payload: {
+            updatedTypes: result.VariantGrp,
+          },
+        });
+      }
     } catch (err) {
       console.log(err);
     }
   }
 
   useEffect(() => {
-    if (type === "market" && agreed?.type.length === 0) {
+    if (reconIndicator !== "yes" && !agreed) {
       getAgreedVariantsList();
     }
   }, []);
@@ -266,7 +277,7 @@ function MarketAndAgreedContainer() {
             avCode: type === "market" ? "" : agreed?.avCode,
             sumInsured:
               type === "market"
-                ? market.vehicleMarketValue
+                ? market.vehicleMarketValue.toString()
                 : agreed?.sumInsured,
             nvicCode: type === "market" ? market.nvic : agreed?.nvic,
             accountid: accountId,
@@ -285,47 +296,50 @@ function MarketAndAgreedContainer() {
       );
       if (quoteResponse.status === 200 && quoteResponse.data) {
         if (quoteResponse.data.error || !quoteResponse.data.success) {
-          throw new Error("INTERVAL_SERVER_ERROR");
+          throw {
+            status: 301,
+            message: "Error updating quote premium, please try again later",
+          };
         }
+        // const data = quoteResponse.data.result;
         if (quoteResponse.data) {
           // if (quoteResponse.data.result.quoteinfo.length === 0) {
           //   throw new Error("NO_QUOTE_FOUND");
           // }
           const data = quoteResponse.data.result;
-          // const quoteList = data.quoteinfo.map(
-          //   ({
-          //     productid,
-          //     logoname,
-          //     displaypremium,
-          //     benefits,
-          //     insurer,
-          //   }: any) => ({
-          //     id: insurer,
-          //     insurerId: productid,
-          //     insurerName: logoname,
-          //     planType: "comprehensive",
-          //     imgUrl: logoname.toLowerCase(),
-          //     price: displaypremium || 672.8,
-          //     popular: true,
-          //     isSelected: false,
-          //     benefits: benefits,
-          //   })
-          // );
+          updateInsuranceDispatch({
+            type: InsuranceProviderTypes.UpdateQuoteId,
+            payload: {
+              quoteId: data.quoteid,
+            },
+          });
+
+          const { displaypremium, premium } = data.quoteinfo;
+          updateQuote({
+            type: QuotesTypes.UpdateQuoteById,
+            payload: {
+              productId: productId,
+              data: {
+                premium,
+                displaypremium,
+              },
+            },
+          });
           updateInsuranceDispatch({
             type: InsuranceProviderTypes.UpdateInsuranceProvider,
             payload: {
               companyId: productId,
               companyName: "Allianz",
-              price: data.quoteinfo.displaypremium,
+              price: displaypremium,
             },
           });
-          // updateQuotesDispatch({
-          //   type: QuotesTypes.UpdateAllQuotes,
-          //   payload: { quotes: quoteList },
-          // });
           navigate("/insurance/plan-add-ons");
+          return;
         }
-        throw new Error("INTERVAL_SERVER_ERROR");
+        throw {
+          status: 302,
+          message: "Receiving some error, please try again later",
+        };
       }
       console.log(quoteResponse);
     } catch (err) {
@@ -383,7 +397,7 @@ function MarketAndAgreedContainer() {
                 price={market?.vehicleMarketValue.toString() || ""}
                 updateValue={handleTypeChange}
               />
-              {reconIndicator === "yes" ? (
+              {reconIndicator === "yes" || agreed === null ? (
                 <div className="relative even:mt-4 mobile-l:even:mt-0 even:ml-0 mobile-l:even:ml-4 inline-block w-full mobile-l:w-auto">
                   <div className="relative px-4 py-4 flex flex-col items-start justify-center w-full mobile-l:w-[157px] h-auto border border-solid border-[#d3d3d3] opacity-70 cursor-no-drop rounded-xl text-primary-black shadow-[0_8px_10px_0_#00000024]">
                     <span className="text-sm text-center text-current font-bold">

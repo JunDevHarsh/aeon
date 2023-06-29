@@ -60,7 +60,7 @@ const QuoteComparisonPopup = ({
   // console.log(getBenefitRows(uniqueBenefits, selectedQuotes, false));
 
   function handleSelectedQuote(id: string) {
-    const quotePlan = selectedQuotes.find((quote) => quote.id === id);
+    const quotePlan = selectedQuotes.find((quote) => quote.productId === id);
     // console.log(quotePlan);
     if (quotePlan) {
       dispatch({
@@ -68,7 +68,7 @@ const QuoteComparisonPopup = ({
         payload: {
           companyId: quotePlan.insurerId,
           companyName: quotePlan.insurerName,
-          price: quotePlan.price.toString(),
+          price: quotePlan.displayPremium.toString(),
         },
       });
       navigate("/insurance/market-agreed-value");
@@ -154,18 +154,18 @@ const QuoteComparisonPopup = ({
               </div>
               {selectedQuotes.map((selectedQuote) => (
                 <div
-                  key={selectedQuote.id}
+                  key={selectedQuote.productId}
                   className="relative py-3 px-5 flex flex-col items-center justify-between w-full col-span-1 bg-[#F4F4F4] rounded-lg"
                 >
                   <div className="flex items-start justify-between w-full h-auto">
                     <img
-                      src={`/providers/${selectedQuote.imgUrl}.png`}
+                      src={`/providers/${selectedQuote.logoName}.png`}
                       alt={`insurur-${selectedQuote.insurerName}-img`}
                       className="h-8 w-auto"
                     />
                     <button
                       className="relative flex items-center justify-center w-5 h-5"
-                      onClick={() => updateSelectedQuotePlans(selectedQuote.id)}
+                      onClick={() => updateSelectedQuotePlans(selectedQuote.productId)}
                     >
                       <svg
                         viewBox="0 0 37 37"
@@ -180,10 +180,10 @@ const QuoteComparisonPopup = ({
                     </button>
                   </div>
                   <p className="my-2 text-2xl text-center text-primary-black font-bold">
-                    RM {selectedQuote.price}/Year
+                    RM {selectedQuote.displayPremium}/Year
                   </p>
                   <button
-                    onClick={() => handleSelectedQuote(selectedQuote.id)}
+                    onClick={() => handleSelectedQuote(selectedQuote.productId)}
                     className="relative py-1 px-3.5 w-auto bg-primary-blue rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
                   >
                     <span className="text-base text-center font-medium text-white">
