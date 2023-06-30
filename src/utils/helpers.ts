@@ -120,12 +120,57 @@ export async function generateSessionName(
       (response.data.result && response.data.success !== true)
     ) {
       // throw error if sessionName is not generated
-      throw({
+      throw {
         code: "203",
         message: "INVALID_AUTH_TOKEN",
-      });
+      };
     }
     return response.data.result;
+  } catch (err) {
+    throw err;
+  }
+}
+
+export async function checkPromoCode(
+  url: string,
+  timeout: number = 3000,
+  sessionName: string,
+  requestId: string,
+  promoCode: string
+) {
+  try {
+    const apiResponse = await axios.post(
+      url,
+      {
+        sessionName: sessionName,
+        element: JSON.stringify({
+          tenant_id: "67b61490-fec2-11ed-a640-e19d1712c006",
+          requestId: requestId,
+          promocode: promoCode,
+        }),
+        operation: "checkPromo",
+      },
+      {
+        timeout: timeout,
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+    );
+    if (apiResponse.status !== 200 || apiResponse.data.success !== true) {
+      throw {
+        code: 104,
+        message:
+          "Not able to process this request at the moment. Please try again later.",
+      };
+    }
+    if (apiResponse.data.result) {
+      return apiResponse.data.result;
+    }
+    throw {
+      code: 108,
+      message: "Can't check promo code at the moment. Please try again later.",
+    };
   } catch (err) {
     throw err;
   }

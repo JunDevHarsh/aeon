@@ -25,7 +25,7 @@ import DriverDetailsForm from "../components/form/DriverDetails";
 import ApplicationDetailsContainer from "../components/container/ApplicationDetails";
 import MarketAndAgreedProvider from "../context/MarketAndAgreedContext";
 import MarketAndAgreedContainer from "../components/container/MarketAndAgreed";
-import AddOnsProvider from "../context/AddOnsContext";
+import NewAddOnsProvider from "../context/AddOnsContext";
 
 const MemoizedQuoteListingsPage = lazy(
   () => import("../components/container/QuoteListings")
@@ -89,13 +89,13 @@ const router = createBrowserRouter(
             <InsuranceContextProvider>
               <VehicleCoverageProvider>
                 <AddOnContextProvider>
-                  <AddOnsProvider>
+                  <NewAddOnsProvider>
                     <MultiFormContextProvider>
                       <MarketAndAgreedProvider>
                         <InsuranceRootLayout />
                       </MarketAndAgreedProvider>
                     </MultiFormContextProvider>
-                  </AddOnsProvider>
+                  </NewAddOnsProvider>
                 </AddOnContextProvider>
               </VehicleCoverageProvider>
             </InsuranceContextProvider>

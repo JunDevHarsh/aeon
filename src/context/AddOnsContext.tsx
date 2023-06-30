@@ -26,7 +26,7 @@ type AddOnsStateType = {
   isEdited: boolean;
 };
 
-export const AddOnContext = React.createContext<{
+export const NewAddOnsContext = React.createContext<{
   state: AddOnsStateType;
   dispatch: React.Dispatch<React.SetStateAction<AddOnsStateType>>;
 }>({
@@ -41,17 +41,17 @@ type AddOnsProviderProps = {
   children: React.ReactNode;
 };
 
-const AddOnsProvider = ({ children }: AddOnsProviderProps) => {
+const NewAddOnsProvider = ({ children }: AddOnsProviderProps) => {
   const [state, dispatch] = useState<AddOnsStateType>({
     addOns: [],
     isEdited: false,
   });
 
   return (
-    <AddOnContext.Provider value={{ state, dispatch }}>
+    <NewAddOnsContext.Provider value={{ state, dispatch }}>
       {children}
-    </AddOnContext.Provider>
+    </NewAddOnsContext.Provider>
   );
 };
 
-export default AddOnsProvider;
+export default NewAddOnsProvider;

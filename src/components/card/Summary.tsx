@@ -1,17 +1,32 @@
 import { useContext, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import Code from "../button/Code";
 import { numberWithCommas } from "../container/VehicleCoverage";
-import { InsuranceContext } from "../../context/InsuranceContext";
-import { AddOnsContext } from "../../context/AddOnContext";
+import {
+  InsuranceContext,
+  InsuranceProviderTypes,
+} from "../../context/InsuranceContext";
 // import { VehicleCoverageContext } from "../../context/VehicleCoverage";
 // import { updateFinalPrice } from "../../store/slices/insurance";
 import { Link } from "react-router-dom";
 import { MarketAndAgreedContext } from "../../context/MarketAndAgreedContext";
 import AllianzImg from "../../assets/images/logo-allianz.png";
-import { QuoteListingContext } from "../../context/QuoteListing";
+import { QuoteListingContext, QuotesTypes } from "../../context/QuoteListing";
+import { NewAddOnsContext } from "../../context/AddOnsContext";
+import {
+  checkTokenIsExpired,
+  generateSessionName,
+  generateToken,
+} from "../../utils/helpers";
+import {
+  SessionType,
+  TokenType,
+  addSessionName,
+  addToken,
+} from "../../store/slices/credentials";
+import axios from "axios";
 
 export interface AddBenefitsType {
   id: string;
@@ -25,11 +40,13 @@ export interface AddBenefitsType {
 const SummaryInfoCard = () => {
   //   const [promoCode, setPromoCode] = useState<string>("");
   // const { provider } = useSelector((state: RootState) => state.insurance);
+  const [loading, setLoading] = useState<boolean>(false);
+
   const [promoCode, setPromoCode] = useState<number>(0);
   const {
     state: { addOns, isEdited },
     dispatch,
-  } = useContext(AddOnsContext);
+  } = useContext(NewAddOnsContext);
 
   const { polExpiryDate, polEffectiveDate } = useSelector(
     (state: RootState) => state.vehicle
@@ -38,12 +55,24 @@ const SummaryInfoCard = () => {
   const {
     state: { name: proName, id },
   } = useContext(InsuranceContext);
-  // const {
-  //   state: { type, market },
-  // } = useContext(VehicleCoverageContext);
+
+  const {
+    token: tokenInStore,
+    session: sessionInStore,
+    requestId,
+    inquiryId,
+    accountId,
+  } = useSelector((state: RootState) => state.credentials);
+  const {
+    state: { id: productId },
+    dispatch: updateInsuranceDispatch,
+  } = useContext(InsuranceContext);
+
+  const updateStore = useDispatch();
 
   const {
     state: { quotes },
+    dispatch: updateQuote,
   } = useContext(QuoteListingContext);
 
   const selectedQuotePlan: any = quotes.find((quote) => quote.productId === id);
@@ -61,6 +90,136 @@ const SummaryInfoCard = () => {
   const { pathname } = useLocation();
 
   const selectedAddOns = addOns.filter((addOn) => addOn.isSelected);
+
+  console.log(selectedAddOns);
+
+  async function updateQuotePremium() {
+    try {
+      setLoading(true);
+      let tokenInfo = tokenInStore;
+      let sessionInfo = sessionInStore;
+      if (!tokenInStore || checkTokenIsExpired(tokenInStore)) {
+        // get new token
+        const getToken: TokenType = await generateToken(
+          "https://app.agiliux.com/aeon/webservice.php?operation=getchallenge&username=admin",
+          5000
+        );
+        tokenInfo = getToken;
+        // add token to store
+        updateStore(addToken({ ...getToken }));
+        const sessionApiResponse: SessionType = await generateSessionName(
+          "https://app.agiliux.com/aeon/webservice.php",
+          5000,
+          tokenInfo.token,
+          "bwJrIhxPdfsdialE"
+        );
+        sessionInfo = sessionApiResponse;
+        // add session name to store state
+        updateStore(
+          addSessionName({
+            userId: sessionApiResponse.userId,
+            sessionName: sessionApiResponse.sessionName,
+          })
+        );
+      }
+
+      const quoteResponse = await axios.post(
+        "https://app.agiliux.com/aeon/webservice.php",
+        {
+          element: JSON.stringify({
+            requestId: requestId,
+            tenant_id: "67b61490-fec2-11ed-a640-e19d1712c006",
+            class: "Private Vehicle",
+            additionalCover:
+              selectedAddOns.map((addOn) => ({
+                coverCode: addOn.coverCode,
+                coverSumInsured: addOn.coverSumInsured,
+              })) || [],
+            unlimitedDriverInd: "false",
+            driverDetails: [],
+            sitype:
+              valuationType === "market"
+                ? "MV - Market Value"
+                : "AV - Agreed Value",
+            avCode: valuationType === "market" ? "" : valuationAgreed?.avCode,
+            sumInsured:
+              valuationType === "market"
+                ? valuationMarket.vehicleMarketValue.toString()
+                : valuationAgreed?.sumInsured,
+            nvicCode:
+              valuationType === "market"
+                ? valuationMarket.nvic
+                : valuationAgreed?.nvic,
+            accountid: accountId,
+            inquiryId: inquiryId,
+            insurer: "7x250468",
+            productid: productId,
+          }),
+          operation: "updateQuote",
+          sessionName: sessionInfo?.sessionName,
+        },
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        }
+      );
+      if (quoteResponse.status === 200 && quoteResponse.data) {
+        if (quoteResponse.data.error || !quoteResponse.data.success) {
+          throw {
+            status: 301,
+            message: "Error updating quote premium, please try again later",
+          };
+        }
+        // const data = quoteResponse.data.result;
+        if (quoteResponse.data) {
+          // if (quoteResponse.data.result.quoteinfo.length === 0) {
+          //   throw new Error("NO_QUOTE_FOUND");
+          // }
+          const data = quoteResponse.data;
+          updateInsuranceDispatch({
+            type: InsuranceProviderTypes.UpdateQuoteId,
+            payload: {
+              quoteId: data.quoteid,
+            },
+          });
+
+          const { premium, displaypremium } = data.result.quoteinfo;
+
+          updateInsuranceDispatch({
+            type: InsuranceProviderTypes.UpdateInsuranceProvider,
+            payload: {
+              companyId: productId,
+              companyName: "Allianz",
+              price: displaypremium,
+            },
+          });
+
+          updateQuote({
+            type: QuotesTypes.UpdateQuoteById,
+            payload: {
+              productId: productId,
+              data: {
+                premium,
+                displaypremium,
+              },
+            },
+          });
+          dispatch((prev) => ({ ...prev, isEdited: false }));
+          setLoading(false);
+          return;
+        }
+        throw {
+          status: 302,
+          message: "Receiving some error, please try again later",
+        };
+      }
+      setLoading(false);
+    } catch (err) {
+      setLoading(false);
+      console.log(err);
+    }
+  }
 
   return (
     <div className="mt-8 lg:mt-0 ml-0 lg:ml-8 relative flex flex-col items-center justify-between mobile-l:min-w-[360px] sm:min-w-[375px] max-w-sm w-full h-auto rounded-[20px] shadow-container overflow-hidden">
@@ -187,14 +346,14 @@ const SummaryInfoCard = () => {
           ) : (
             selectedAddOns.map((addOn) => (
               <div
-                key={`add-benefit-${addOn.id}`}
+                key={`add-benefit-${addOn.coverCode}`}
                 className="flex items-start justify-between w-full"
               >
                 <span className="text-base text-left text-primary-black font-base w-1/2">
-                  {addOn.title}
+                  {addOn.coverName}
                 </span>
                 <span className="text-base text-right text-primary-black font-medium w-1/2">
-                  RM {addOn.price.toFixed(2)}
+                  RM {addOn.displayPremium.toFixed(2)}
                 </span>
               </div>
             ))
@@ -279,14 +438,22 @@ const SummaryInfoCard = () => {
           </Link>
 
           {isEdited ? (
-            <button
-              onClick={() => dispatch((prev) => ({ ...prev, isEdited: false }))}
-              className="relative py-2 px-6 min-w-[120px] order-1 mobile-xl:order-2 w-full mobile-xl:w-auto bg-primary-blue rounded mobile-xl:rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
-            >
-              <span className="text-base text-center font-medium text-white">
-                Update Quote
-              </span>
-            </button>
+            !loading ? (
+              <button
+                onClick={() => updateQuotePremium()}
+                className="relative py-2 px-6 min-w-[120px] order-1 mobile-xl:order-2 w-full mobile-xl:w-auto bg-primary-blue rounded mobile-xl:rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
+              >
+                <span className="text-base text-center font-medium text-white">
+                  Update Quote
+                </span>
+              </button>
+            ) : (
+              <div className="animate-pulse relative py-2 px-6 min-w-[120px] order-1 mobile-xl:order-2 flex items-center justify-center w-full mobile-xl:w-auto bg-primary-blue rounded mobile-xl:rounded-full shadow-[0_1px_2px_0_#C6E4F60D]">
+                <span className="text-base text-center font-medium text-white">
+                  Loading
+                </span>
+              </div>
+            )
           ) : pathname === "/insurance/review-pay" ? (
             <button
               onClick={() => {
@@ -320,21 +487,5 @@ const SummaryInfoCard = () => {
     </div>
   );
 };
-
-// function ImportImageDynamically(imgName: string) {
-//   const [pathLoaded, setPathLoaded] = useState<boolean>(false);
-//   const [isLoaded, setIsLoaded] = useState<boolean>(false);
-//   const imgRef = useRef<string>("");
-
-//   useEffect(() => {
-//     async function importImageDynamically() {
-//       const importedImage = await import(`../../assets/images/${imgName}.png`);
-//       imgRef.current = importedImage.default;
-//       setPathLoaded(true);
-//     }
-//     importImageDynamically();
-//   }, []);
-//   return <div></div>;
-// }
 
 export default SummaryInfoCard;

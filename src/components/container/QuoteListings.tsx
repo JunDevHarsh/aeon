@@ -4,10 +4,7 @@ import SelectDropdown from "../fields/SelectDropdown";
 import QuoteListingPlanCard from "../card/QuoteListingPlan";
 // import QuoteComparePopup from "../popup/QuoteCompare";
 import DefaultPopup, { WarningPopupType } from "../popup/Default";
-import {
-  QuoteListingContext,
-  QuotesTypes,
-} from "../../context/QuoteListing";
+import { QuoteListingContext, QuotesTypes } from "../../context/QuoteListing";
 import { InsurerQuoteStateType, QuotesFilterType } from "../../context/types";
 // import QuoteComparisonPopup from "../popup/QuoteComparison";
 import axios from "axios";
@@ -189,7 +186,7 @@ const QuoteListingsContainer = () => {
                 displaypremium,
                 benefits,
                 additionalCover,
-                premium
+                premium,
               }: any) => ({
                 productId: productid,
                 insurerId: insurer,
@@ -200,14 +197,16 @@ const QuoteListingsContainer = () => {
                 popular: true,
                 benefits: benefits,
                 additionalCover: additionalCover,
-                premium: premium
+                premium: premium,
               })
             );
             dispatch({
               type: QuotesTypes.AddQuotes,
               payload: { quotes: quoteList },
             });
-            updateQuotePlans(quoteList.map((quote: any) => ({ ...quote, isSelected: false })));
+            updateQuotePlans(
+              quoteList.map((quote: any) => ({ ...quote, isSelected: false }))
+            );
             return;
           }
           throw new Error("INTERVAL_SERVER_ERROR");
@@ -236,7 +235,9 @@ const QuoteListingsContainer = () => {
         }
       }
     }
-    fetchQuotes();
+    if (insurerQuotes.length === 0) {
+      fetchQuotes();
+    }
   }, []);
 
   // filter quotes based on user search selection i.e.
@@ -405,7 +406,9 @@ const QuoteListingsContainer = () => {
                     const sortValue: string = filter.sort;
                     if (sortValue === "high-to-low") {
                       // return parseInt(b.price) - parseInt(a.price);
-                      return Number(b.displayPremium) - Number(a.displayPremium);
+                      return (
+                        Number(b.displayPremium) - Number(a.displayPremium)
+                      );
                     }
                   }
                   return Number(a.displayPremium) - Number(b.displayPremium);
