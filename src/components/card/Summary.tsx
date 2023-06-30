@@ -350,7 +350,7 @@ const SummaryInfoCard = () => {
                 className="flex items-start justify-between w-full"
               >
                 <span className="text-base text-left text-primary-black font-base w-1/2">
-                  {addOn.coverName}
+                  {addOn.title}
                 </span>
                 <span className="text-base text-right text-primary-black font-medium w-1/2">
                   RM {addOn.displayPremium.toFixed(2)}

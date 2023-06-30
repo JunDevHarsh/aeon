@@ -2,6 +2,7 @@ import React, { useState } from "react";
 // import { AddOnsTypes } from "./MultiStepForm";
 
 export type AddOnsState = {
+  title: string;
   coverCode: string;
   coverName: string;
   coverDescription: string;
