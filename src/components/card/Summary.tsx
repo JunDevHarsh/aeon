@@ -180,7 +180,7 @@ const SummaryInfoCard = () => {
           updateInsuranceDispatch({
             type: InsuranceProviderTypes.UpdateQuoteId,
             payload: {
-              quoteId: data.quoteId,
+              quoteId: data.result.quoteId,
             },
           });
 
