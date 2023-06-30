@@ -6,36 +6,23 @@ interface AddOnsCardProps {
   id: string;
   title: string;
   isSelected: boolean;
-  isEditable: boolean;
   description: string;
   customImgName: string;
-  localImgName:
-    | "BodyInjuryIcon"
-    | "CarAccidentIcon"
-    | "CarSlideIcon"
-    | "TowingIcon"
-    | "WindScreenIcon"
-    | "CarOilIcon"
-    | "CarProperty1Icon"
-    | "CarRainIcon";
-  price: number;
+  // price: number;
   sumInsured: number;
   updateBenefitList: (id: string) => void;
-  openAddOnPopup: (id: string, title: string, defaultValue: string) => void;
+  // openAddOnPopup: (id: string, title: string, defaultValue: string) => void;
 }
 
 const AddOnsCard: React.FC<AddOnsCardProps> = ({
   id,
   title,
   isSelected,
-  isEditable,
   description,
-  // price,
   customImgName,
   sumInsured,
-  // localImgName,
   updateBenefitList,
-  openAddOnPopup,
+  // openAddOnPopup,
 }) => {
   const uid = useId();
   // const ImageToDisplay = Images[localImgName];
@@ -49,9 +36,9 @@ const AddOnsCard: React.FC<AddOnsCardProps> = ({
         className="peer/checkbox absolute top-0 left-0 -z-10 opacity-0"
         checked={isSelected}
         onChange={() => {
-          if (isEditable && !isSelected) {
-            return openAddOnPopup(id, title, sumInsured.toString());
-          }
+          // if (isEditable && !isSelected) {
+          //   return openAddOnPopup(id, title, sumInsured.toString());
+          // }
           updateBenefitList(id);
         }}
       />
@@ -86,7 +73,7 @@ const AddOnsCard: React.FC<AddOnsCardProps> = ({
         <div className="w-auto h-auto">
           {/* <ImageToDisplay pathColor={isSelected ? "#4B5EAA" : "#BCBCBC"} /> */}
           <img
-            src={`/${customImgName}.png`}
+            src={customImgName}
             alt="addon-img"
             className="max-w-[100px] w-full h-auto"
           />
@@ -94,14 +81,14 @@ const AddOnsCard: React.FC<AddOnsCardProps> = ({
         <p className="text-base text-center text-primary-black font-bold">
           {title}
         </p>
-        {isSelected && isEditable && (
+        {isSelected && (
           <>
             <div className="block my-1.5 h-[2px] w-2/3 bg-[#D9D9D9]" />
             <div className="flex items-center justify-center  w-full">
               <span className="mr-2 text-sm text-center text-primary-black font-medium">
                 Sum Insured
               </span>
-              {isEditable ? (
+              {/* {isEditable ? (
                 <button
                   className="flex items-center justify-center w-auto"
                   onClick={() =>
@@ -125,11 +112,11 @@ const AddOnsCard: React.FC<AddOnsCardProps> = ({
                     />
                   </svg>
                 </button>
-              ) : (
+              ) : ( */}
                 <span className="text-sm text-center text-primary-black font-normal">
                   RM {numberWithCommas(sumInsured)}
                 </span>
-              )}
+              {/* )} */}
             </div>
           </>
         )}

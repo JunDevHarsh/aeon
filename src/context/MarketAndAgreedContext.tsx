@@ -28,11 +28,15 @@ export enum UpdateValuation {
   UpdateType = "UPDATE_TYPE",
   UpdateVariant = "UPDATE_VARIANT",
   UpdateAgreedType = "UPDATE_AGREED_TYPE",
+  AddTypes = "ADD_TYPES",
 }
 
 export type UpdateValuationPayload = {
   [UpdateValuation.UpdateType]: {
     type: "market" | "agreed";
+  };
+  [UpdateValuation.AddTypes]: {
+    updatedTypes: AgreedVariantType[];
   };
   [UpdateValuation.UpdateVariant]: {
     nvic: string;
@@ -76,13 +80,7 @@ const initialState: MarketAndAgreedState = {
     vehicleMarketValue: 0,
     vehicleVariant: "",
   },
-  agreed: {
-    nvic: "",
-    variant: "",
-    avCode: "",
-    sumInsured: "",
-    type: "",
-  },
+  agreed: null,
 };
 
 export const MarketAndAgreedContext = createContext<{
@@ -116,6 +114,13 @@ function marketAgreedReducer(
           variant,
           marketValue,
         },
+      };
+    }
+    case UpdateValuation.AddTypes: {
+      const { updatedTypes } = payload;
+      return {
+        ...state,
+        types: updatedTypes,
       };
     }
     case UpdateValuation.UpdateAgreedType: {

@@ -3,8 +3,7 @@ import {
   AddOns,
   AdditionalDriverDetails,
   DriverDetails,
-  InsurerQuoteStateType,
-  QuotesFilterType,
+  QuoteListingStateType,
 } from "./types";
 import {
   InsuranceProviderAction,
@@ -19,13 +18,7 @@ import {
   DriverDetailsActions,
   DriverTypes,
 } from "./MultiFormContext";
-import {
-  QuoteFilterAction,
-  QuoteFilterTypes,
-  QuotesAction,
-  QuotesTypes,
-} from "./QuoteListing";
-
+import { QuotesAction, QuotesTypes } from "./QuoteListing";
 /*---------------Insurance Reducer---------------*/
 export const insuranceProviderReducer = (
   state: ProviderState,
@@ -35,18 +28,18 @@ export const insuranceProviderReducer = (
   switch (type) {
     case InsuranceProviderTypes.UpdateInsuranceProvider: {
       const { companyId, companyName, price } = payload;
-      if (!state) {
-        return {
-          id: companyId,
-          name: companyName,
-          price: price,
-        };
-      }
       return {
         ...state,
         id: companyId,
         name: companyName,
         price: price,
+      };
+    }
+    case InsuranceProviderTypes.UpdateQuoteId: {
+      const { quoteId } = payload;
+      return {
+        ...state,
+        quoteId: quoteId,
       };
     }
     default:
@@ -140,52 +133,23 @@ export const driverDetailsReducer = (
   }
 };
 
-/*---------------Quote Listing Reducer---------------*/
-export const quoteFilterReducer = (
-  state: QuotesFilterType,
-  action: QuoteFilterAction | QuotesAction
-) => {
-  const { type, payload } = action;
-  switch (type) {
-    case QuoteFilterTypes.UpdateFilterSort: {
-      const updatedState = {
-        ...state,
-        sort: payload.value,
-      };
-      return updatedState;
-    }
-    case QuoteFilterTypes.UpdateFilterPlan: {
-      const updatedState = {
-        ...state,
-        plan: payload.list,
-      };
-      return updatedState;
-    }
-    default:
-      return state;
-  }
-};
-
 export const quotesReducer = (
-  state: InsurerQuoteStateType[],
-  action: QuotesAction | QuoteFilterAction
-) => {
+  state: QuoteListingStateType,
+  action: QuotesAction
+): QuoteListingStateType => {
   const { type, payload } = action;
   switch (type) {
-    case QuotesTypes.ToggleQuoteSelection: {
-      const { id } = payload;
-      const updatedState = state.map((item) =>
-        item.id === id ? { ...item, isSelected: !item.isSelected } : item
-      );
-      return updatedState;
-    }
     case QuotesTypes.AddQuotes: {
       const { quotes } = payload;
-      return [...quotes];
+      // return [...quotes];
+      return { ...state, quotes: [...quotes] };
     }
-    case QuotesTypes.UpdateAllQuotes: {
-      const {quotes} = payload;
-      return [...quotes];
+    case QuotesTypes.UpdateQuoteById: {
+      const { productId, data } = payload;
+      const updatedQuotes = state.quotes.map((quote) =>
+        quote.productId === productId ? { ...quote, ...data } : quote
+      );
+      return { ...state, quotes: updatedQuotes };
     }
     default:
       return state;

@@ -10,6 +10,9 @@ import {
 import { AdditionalDriverDetails } from "../../context/types";
 import AddOnPopup from "../popup/AddOn";
 import { AddOnType, AddOnsContext } from "../../context/AddOnContext";
+import { NewAddOnsContext } from "../../context/AddOnsContext";
+import { QuoteListingContext } from "../../context/QuoteListing";
+import { InsuranceContext } from "../../context/InsuranceContext";
 
 const defaultAddOnsState: AddOnType[] = [
   {
@@ -91,11 +94,28 @@ const AddOnsContainer = () => {
     store: { addDriverDetails },
     dispatch,
   } = useContext(MultiStepFormContext);
+
+  const {
+    state: { id },
+  } = useContext(InsuranceContext);
+
+  const {
+    state: { quotes },
+  } = useContext(QuoteListingContext);
+
+  const selectedQuote = quotes.find((quote) => quote.productId === id);
+
+  const {
+    state: { addOns: newAddOns },
+    dispatch: updateNewAddOnsState,
+  } = useContext(NewAddOnsContext);
+
   // addons context
   const {
     state: { addOns: addOnState },
     dispatch: updateAddOnsState,
   } = useContext(AddOnsContext);
+
   const [addOnPopup, handleAddOnPopup] = useState<{
     id: string;
     isVisible: boolean;
@@ -125,14 +145,14 @@ const AddOnsContainer = () => {
     });
   }
 
-  function openAddOnPopup(id: string, title: string, defaultValue: string) {
-    handleAddOnPopup({
-      id: id,
-      isVisible: true,
-      title: title,
-      defaultValue: defaultValue,
-    });
-  }
+  // function openAddOnPopup(id: string, title: string, defaultValue: string) {
+  //   handleAddOnPopup({
+  //     id: id,
+  //     isVisible: true,
+  //     title: title,
+  //     defaultValue: defaultValue,
+  //   });
+  // }
 
   function closeAddOnPopup() {
     handleAddOnPopup({ id: "", isVisible: false, defaultValue: "", title: "" });
@@ -150,16 +170,27 @@ const AddOnsContainer = () => {
   }
   // update the addOns list in AddOnContext
   function toggleAddById(id: string) {
-    const updatedAddOns = addOnState.map((addOn) =>
-      addOn.id === id ? { ...addOn, isSelected: !addOn.isSelected } : addOn
+    const updatedAddOns = newAddOns.map((addOn) =>
+      addOn.coverCode === id ? { ...addOn, isSelected: !addOn.isSelected } : addOn
     );
-    const isUpdated = updatedAddOns.find((addOn) => addOn.isSelected);
-    if (isUpdated) {
-      updateAddOnsState({ addOns: updatedAddOns, isEdited: true });
-    } else {
-      updateAddOnsState({ addOns: updatedAddOns, isEdited: false });
-    }
+    updateNewAddOnsState({ addOns: updatedAddOns, isEdited: true });
+    // const isUpdated = updatedAddOns.find((addOn) => addOn.isSelected);
+    // if (isUpdated) {
+    //   updateAddOnsState({ addOns: updatedAddOns, isEdited: true });
+    // } else {
+    //   updateAddOnsState({ addOns: updatedAddOns, isEdited: false });
+    // }
   }
+
+  useEffect(() => {
+    if (selectedQuote && newAddOns.length === 0) {
+      const { additionalCover } = selectedQuote;
+      const updatedAddOns = additionalCover.map((addOn: any) => {
+        return { ...addOn, isSelected: false };
+      });
+      updateNewAddOnsState({ addOns: updatedAddOns, isEdited: false });
+    }
+  }, []);
 
   useEffect(() => {
     if (addOnState.length === 0) {
@@ -195,12 +226,18 @@ const AddOnsContainer = () => {
                     key={`addon-skeleton-${index}`}
                   />
                 ))
-              : addOnState.map((addOn) => (
+              : newAddOns.map((addOn) => (
                   <AddOnsCard
-                    key={addOn.id}
-                    {...addOn}
+                    key={addOn.coverCode}
+                    id={addOn.coverCode}
+                    customImgName={addOn.addonimage}
+                    description={addOn.coverDescription}
+                    isSelected={addOn.isSelected}
+                    sumInsured={addOn.coverSumInsured}
+                    title={addOn.coverName}
+                    // {...addOn}
                     updateBenefitList={toggleAddById}
-                    openAddOnPopup={openAddOnPopup}
+                    // openAddOnPopup={openAddOnPopup}
                   />
                 ))}
           </div>
