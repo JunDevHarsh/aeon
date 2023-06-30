@@ -84,7 +84,7 @@ function MarketAndAgreedContainer() {
     accountId,
   } = useSelector((state: RootState) => state.credentials);
   const {
-    state: { id: productId },
+    state: { id: productId, quoteId },
     dispatch: updateInsuranceDispatch,
   } = useContext(InsuranceContext);
   // const { dispatch: updateQuotesDispatch } = useContext(QuoteListingContext);
@@ -284,6 +284,7 @@ function MarketAndAgreedContainer() {
             inquiryId: inquiryId,
             insurer: "7x250468",
             productid: productId,
+            quoteId: quoteId
           }),
           operation: "updateQuote",
           sessionName: sessionInfo?.sessionName,
@@ -310,7 +311,7 @@ function MarketAndAgreedContainer() {
           updateInsuranceDispatch({
             type: InsuranceProviderTypes.UpdateQuoteId,
             payload: {
-              quoteId: data.quoteid,
+              quoteId: data.quoteId,
             },
           });
 

@@ -64,7 +64,7 @@ const SummaryInfoCard = () => {
     accountId,
   } = useSelector((state: RootState) => state.credentials);
   const {
-    state: { id: productId },
+    state: { id: productId, quoteId},
     dispatch: updateInsuranceDispatch,
   } = useContext(InsuranceContext);
 
@@ -90,8 +90,6 @@ const SummaryInfoCard = () => {
   const { pathname } = useLocation();
 
   const selectedAddOns = addOns.filter((addOn) => addOn.isSelected);
-
-  console.log(selectedAddOns);
 
   async function updateQuotePremium() {
     try {
@@ -154,6 +152,7 @@ const SummaryInfoCard = () => {
             inquiryId: inquiryId,
             insurer: "7x250468",
             productid: productId,
+            quoteId: quoteId
           }),
           operation: "updateQuote",
           sessionName: sessionInfo?.sessionName,
