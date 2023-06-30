@@ -99,7 +99,6 @@ export type InsuranceStateType = {
   vehicle: string;
   provider: ProviderStateType | null;
   coverage: CoverageStateType | null;
-  referralCode: string | null;
   currentStep: number;
   finalPrice: string;
 };

@@ -1,0 +1,22 @@
+{
+    "201": {
+        "code": 201,
+        "message": "Token not generated"
+    },
+    "202": {
+        "code": "202",
+        "message": "TOKEN_OR_MD5_SECRET_NOT_FOUND"
+    },
+    "203": {
+        "code": "203",
+        "message": "INVALID_AUTH_TOKEN"
+    },
+    "101": {
+        "code": "101",
+        "message": "Session Expired"
+    },
+    "102": {
+        "code": "102",
+        "message": "ERC"
+    }
+}

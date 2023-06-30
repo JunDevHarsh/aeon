@@ -72,7 +72,7 @@ const QuoteListingPlanCard = ({
     dispatch({
       type: InsuranceProviderTypes.UpdateInsuranceProvider,
       payload: {
-        companyId: insurerId,
+        companyId: id,
         companyName: insurerName,
         price: price.toString(),
       },

@@ -106,8 +106,7 @@ export interface InsurerQuoteStateType extends InsurerQuoteType {
 
 // type for context
 export type QuoteListingStateType = {
-  quotes: InsurerQuoteStateType[];
-  filter: QuotesFilterType;
+  quotes: InsurerQuoteType[];
 }
 
 // type for sort dropdown

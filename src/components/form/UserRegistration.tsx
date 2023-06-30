@@ -553,7 +553,7 @@ const UserRegistrationForm = () => {
             }}
           />
           {/* Referral Code Button */}
-          <ReferralCodeButton validationList={["HG23434"]} />
+          <ReferralCodeButton />
         </div>
         {/* Submit Button Stripe */}
         <div className="mt-4 flex flex-col items-center justify-center w-full">

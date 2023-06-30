@@ -11,7 +11,6 @@ const initialState: InsuranceStateType = {
   type: "renewal",
   vehicle: "car",
   coverage: null,
-  referralCode: null,
   provider: {
     companyId: "1001",
     companyName: "Allianz",
@@ -35,9 +34,6 @@ export const insuranceSlice = createSlice({
       const { type, vehicle } = action.payload;
       state.type = type;
       state.vehicle = vehicle;
-    },
-    updateReferralCode: (state, action: PayloadAction<string>) => {
-      state.referralCode = action.payload;
     },
     updateCurrentStep: (state, action: PayloadAction<number>) => {
       state.currentStep = action.payload;
@@ -67,7 +63,6 @@ export const getCurrentStep = (state: RootState) => state.insurance.currentStep;
 
 export const {
   updateInsuranceState,
-  updateReferralCode,
   updateCurrentStep,
   updateInsuranceProvider,
   updateInsuranceCoverage,

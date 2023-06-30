@@ -9,6 +9,7 @@ type InsuranceContextProps = {
 export type ProviderState = {
   id: string;
   name: string;
+  quoteId: string;
   price: string;
 };
 
@@ -16,6 +17,7 @@ export type ProviderState = {
 // Provider
 export enum InsuranceProviderTypes {
   UpdateInsuranceProvider = "UPDATE_INSURANCE_PROVIDER",
+  UpdateQuoteId = "UPDATE_QUOTE_ID",
 }
 
 /*---------------Payload Types---------------*/
@@ -25,6 +27,9 @@ export type InsuranceProviderPayload = {
     companyId: string;
     companyName: string;
     price: string;
+  };
+  [InsuranceProviderTypes.UpdateQuoteId]: {
+    quoteId: string;
   };
 };
 
@@ -38,6 +43,7 @@ const initialInsuranceState: ProviderState = {
   id: "",
   name: "",
   price: "",
+  quoteId: "",
 };
 
 /*---------------Context---------------*/

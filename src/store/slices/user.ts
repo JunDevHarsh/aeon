@@ -28,6 +28,7 @@ type UserInfoType = {
   polEffectiveDate: string;
   polExpiryDate: string;
   drivingExp: string;
+  referralCode: string;
 };
 
 const initialState: UserInfoType = {
@@ -55,6 +56,7 @@ const initialState: UserInfoType = {
   polEffectiveDate: "",
   polExpiryDate: "",
   drivingExp: "",
+  referralCode: "",
 };
 
 export const userInfoSlice = createSlice({
@@ -72,6 +74,9 @@ export const userInfoSlice = createSlice({
     // it will update the basic user state's properties
     addUserBasicInfo: (state, action: PayloadAction<Partial<UserInfoType>>) => {
       return { ...state, ...action.payload };
+    },
+    addReferralCode: (state, action: PayloadAction<string>) => {
+      state.referralCode = action.payload;
     },
     // update user state
     updateUserStateInfo: (
@@ -98,6 +103,7 @@ export const {
   addUserID,
   updateUserStateInfo,
   updateAPIcredentials,
+  addReferralCode
 } = userInfoSlice.actions;
 
 export default userInfoSlice.reducer;
