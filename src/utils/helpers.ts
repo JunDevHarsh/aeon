@@ -176,6 +176,45 @@ export async function checkPromoCode(
   }
 }
 
+export async function checkPostalCode(
+  url: string,
+  timeout: number = 3000,
+  sessionName: string,
+  postalCode: string,
+  tenantId: string
+){
+  try{
+    const response = await axios.post(
+      url,
+      {
+        sessionName: sessionName,
+        element: JSON.stringify({
+          postalcode: postalCode,
+          tenant_id: tenantId,
+        }),
+        operation: "checkPostCode",
+      },
+      {
+        timeout: timeout,
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+    );
+    if (response.status !== 200 || response.data.success !== true) {
+      // throw error if sessionName is not generated
+      throw {
+        code: "101",
+        message: "Session Expired",
+      };
+    }
+    return response.data.result;
+  }
+  catch(err){
+    throw err;
+  }
+}
+
 export async function getVehicleInfo(
   url: string,
   timeout: number = 3000,
