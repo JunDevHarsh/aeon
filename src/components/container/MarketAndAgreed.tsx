@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { numberWithCommas } from "./VehicleCoverage";
 import {
   AgreedVariantType,
@@ -99,6 +99,8 @@ function MarketAndAgreedContainer() {
     region,
     yearOfManufacture,
   } = useSelector((state: RootState) => state.vehicle);
+
+  const [loading, setLoading] = useState<boolean>(false);
 
   const marketVariantOptionList = variants.map(({ nvic, vehicleVariant }) => ({
     label: vehicleVariant,
@@ -236,6 +238,7 @@ function MarketAndAgreedContainer() {
 
   async function updateQuotePremium() {
     try {
+      setLoading(true);
       let tokenInfo = tokenInStore;
       let sessionInfo = sessionInStore;
       if (!tokenInStore || checkTokenIsExpired(tokenInStore)) {
@@ -284,7 +287,7 @@ function MarketAndAgreedContainer() {
             inquiryId: inquiryId,
             insurer: "7x250468",
             productid: productId,
-            quoteId: quoteId
+            quoteId: quoteId,
           }),
           operation: "updateQuote",
           sessionName: sessionInfo?.sessionName,
@@ -334,6 +337,7 @@ function MarketAndAgreedContainer() {
               price: displaypremium,
             },
           });
+          setLoading(false);
           navigate("/insurance/plan-add-ons");
           return;
         }
@@ -344,6 +348,7 @@ function MarketAndAgreedContainer() {
       }
       console.log(quoteResponse);
     } catch (err) {
+      setLoading(false);
       console.log(err);
     }
   }
@@ -489,14 +494,23 @@ function MarketAndAgreedContainer() {
               </>
             )}
             <div className="mt-12 flex items-center justify-start gap-x-2 w-full">
-              <button
-                onClick={() => updateQuotePremium()}
-                className="relative mt-4 py-2.5 px-8 flex items-center justify-center w-auto bg-primary-blue rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
-              >
-                <span className="text-base text-center font-medium text-white">
-                  Submit
-                </span>
-              </button>
+              {loading ? (
+                <div className="relative mt-4 py-2.5 px-8 flex items-center justify-center w-auto h-auto bg-primary-blue rounded-full">
+                  <span className="animate-spin duration-300 inline-block w-5 h-5 border-[3px] border-solid border-white border-y-transparent rounded-full"></span>
+                  <span className="ml-2 text-base text-center text-white font-medium">
+                    Loading...
+                  </span>
+                </div>
+              ) : (
+                <button
+                  onClick={() => updateQuotePremium()}
+                  className="relative mt-4 py-2.5 px-8 flex items-center justify-center w-auto bg-primary-blue rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
+                >
+                  <span className="text-base text-center font-medium text-white">
+                    Submit
+                  </span>
+                </button>
+              )}
             </div>
           </div>
         </div>

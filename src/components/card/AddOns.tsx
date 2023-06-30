@@ -44,7 +44,7 @@ const AddOnsCard: React.FC<AddOnsCardProps> = ({
       />
       <label
         htmlFor={uid}
-        className={`p-2 flex flex-col items-center justify-start h-full border border-solid ${
+        className={`p-2 flex flex-col items-center justify-center h-full border border-solid ${
           isSelected
             ? "border-transparent shadow-add-selected"
             : "border-[#bcbcbc] shadow-none"
