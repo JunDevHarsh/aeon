@@ -64,7 +64,7 @@ const SummaryInfoCard = () => {
     accountId,
   } = useSelector((state: RootState) => state.credentials);
   const {
-    state: { id: productId, quoteId},
+    state: { id: productId, quoteId },
     dispatch: updateInsuranceDispatch,
   } = useContext(InsuranceContext);
 
@@ -78,6 +78,7 @@ const SummaryInfoCard = () => {
   const selectedQuotePlan: any = quotes.find((quote) => quote.productId === id);
 
   const premium = selectedQuotePlan?.premium;
+  const selectedQuoteAddOns = selectedQuotePlan?.additionalCover;
 
   const {
     state: {
@@ -152,7 +153,7 @@ const SummaryInfoCard = () => {
             inquiryId: inquiryId,
             insurer: "7x250468",
             productid: productId,
-            quoteId: quoteId
+            quoteId: quoteId,
           }),
           operation: "updateQuote",
           sessionName: sessionInfo?.sessionName,
@@ -179,11 +180,35 @@ const SummaryInfoCard = () => {
           updateInsuranceDispatch({
             type: InsuranceProviderTypes.UpdateQuoteId,
             payload: {
-              quoteId: data.quoteid,
+              quoteId: data.quoteId,
             },
           });
 
-          const { premium, displaypremium } = data.result.quoteinfo;
+          const { premium, displaypremium, additionalCover } =
+            data.result.quoteinfo;
+
+          const updatedAdditionalCover = selectedQuoteAddOns.map(
+            (selectedQuoteAddOn: any) => {
+              const matched = additionalCover.find(
+                (additional: any) =>
+                  additional.coverCode === selectedQuoteAddOn.coverCode
+              );
+              return matched ? matched : selectedQuoteAddOn;
+            }
+          );
+
+          const newAddOnsList = addOns.map((addOn) => {
+            const matched = additionalCover.find(
+              (additional: any) => additional.coverCode === addOn.coverCode
+            );
+            return matched
+              ? {
+                  ...addOn,
+                  displayPremium: matched.displayPremium,
+                  selectedIndicator: matched.selectedIndicator,
+                }
+              : addOn;
+          });
 
           updateInsuranceDispatch({
             type: InsuranceProviderTypes.UpdateInsuranceProvider,
@@ -201,10 +226,11 @@ const SummaryInfoCard = () => {
               data: {
                 premium,
                 displaypremium,
+                additionalCover: updatedAdditionalCover,
               },
             },
           });
-          dispatch((prev) => ({ ...prev, isEdited: false }));
+          dispatch({ addOns: newAddOnsList, isEdited: false });
           setLoading(false);
           return;
         }

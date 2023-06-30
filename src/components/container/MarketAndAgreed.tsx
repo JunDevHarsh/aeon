@@ -31,6 +31,7 @@ import {
 // } from "../../context/QuoteListing";
 import { useNavigate } from "react-router-dom";
 import { QuoteListingContext, QuotesTypes } from "../../context/QuoteListing";
+import { NewAddOnsContext } from "../../context/AddOnsContext";
 
 function createUniqueValues(types: AgreedVariantType[]) {
   const regEx = /(-HIGH|-LOW|-HI|-LO)\s*-?\s*/;
@@ -90,6 +91,10 @@ function MarketAndAgreedContainer() {
   // const { dispatch: updateQuotesDispatch } = useContext(QuoteListingContext);
 
   const { dispatch: updateQuote } = useContext(QuoteListingContext);
+
+  const {
+    state: { addOns },
+  } = useContext(NewAddOnsContext);
 
   const updateStore = useDispatch();
   const {
@@ -272,7 +277,12 @@ function MarketAndAgreedContainer() {
             requestId: requestId,
             tenant_id: "67b61490-fec2-11ed-a640-e19d1712c006",
             class: "Private Vehicle",
-            additionalCover: [],
+            additionalCover: addOns
+              .filter((addOn) => addOn.selectedIndicator)
+              .map((addOn) => ({
+                coverCode: addOn.coverCode,
+                coverSumInsured: addOn.coverSumInsured,
+              })),
             unlimitedDriverInd: "false",
             driverDetails: [],
             sitype:
