@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { numberWithCommas } from "./VehicleCoverage";
 import {
   AgreedVariantType,
@@ -31,6 +31,7 @@ import {
 // } from "../../context/QuoteListing";
 import { useNavigate } from "react-router-dom";
 import { QuoteListingContext, QuotesTypes } from "../../context/QuoteListing";
+import { NewAddOnsContext } from "../../context/AddOnsContext";
 
 function createUniqueValues(types: AgreedVariantType[]) {
   const regEx = /(-HIGH|-LOW|-HI|-LO)\s*-?\s*/;
@@ -84,12 +85,16 @@ function MarketAndAgreedContainer() {
     accountId,
   } = useSelector((state: RootState) => state.credentials);
   const {
-    state: { id: productId },
+    state: { id: productId, quoteId },
     dispatch: updateInsuranceDispatch,
   } = useContext(InsuranceContext);
   // const { dispatch: updateQuotesDispatch } = useContext(QuoteListingContext);
 
   const { dispatch: updateQuote } = useContext(QuoteListingContext);
+
+  const {
+    state: { addOns },
+  } = useContext(NewAddOnsContext);
 
   const updateStore = useDispatch();
   const {
@@ -99,6 +104,8 @@ function MarketAndAgreedContainer() {
     region,
     yearOfManufacture,
   } = useSelector((state: RootState) => state.vehicle);
+
+  const [loading, setLoading] = useState<boolean>(false);
 
   const marketVariantOptionList = variants.map(({ nvic, vehicleVariant }) => ({
     label: vehicleVariant,
@@ -236,6 +243,7 @@ function MarketAndAgreedContainer() {
 
   async function updateQuotePremium() {
     try {
+      setLoading(true);
       let tokenInfo = tokenInStore;
       let sessionInfo = sessionInStore;
       if (!tokenInStore || checkTokenIsExpired(tokenInStore)) {
@@ -269,7 +277,12 @@ function MarketAndAgreedContainer() {
             requestId: requestId,
             tenant_id: "67b61490-fec2-11ed-a640-e19d1712c006",
             class: "Private Vehicle",
-            additionalCover: [],
+            additionalCover: addOns
+              .filter((addOn) => addOn.selectedIndicator)
+              .map((addOn) => ({
+                coverCode: addOn.coverCode,
+                coverSumInsured: addOn.coverSumInsured,
+              })),
             unlimitedDriverInd: "false",
             driverDetails: [],
             sitype:
@@ -284,6 +297,7 @@ function MarketAndAgreedContainer() {
             inquiryId: inquiryId,
             insurer: "7x250468",
             productid: productId,
+            quoteId: quoteId,
           }),
           operation: "updateQuote",
           sessionName: sessionInfo?.sessionName,
@@ -310,7 +324,7 @@ function MarketAndAgreedContainer() {
           updateInsuranceDispatch({
             type: InsuranceProviderTypes.UpdateQuoteId,
             payload: {
-              quoteId: data.quoteid,
+              quoteId: data.quoteId,
             },
           });
 
@@ -333,6 +347,7 @@ function MarketAndAgreedContainer() {
               price: displaypremium,
             },
           });
+          setLoading(false);
           navigate("/insurance/plan-add-ons");
           return;
         }
@@ -343,6 +358,7 @@ function MarketAndAgreedContainer() {
       }
       console.log(quoteResponse);
     } catch (err) {
+      setLoading(false);
       console.log(err);
     }
   }
@@ -399,7 +415,7 @@ function MarketAndAgreedContainer() {
               />
               {reconIndicator === "yes" || agreed === null ? (
                 <div className="relative even:mt-4 mobile-l:even:mt-0 even:ml-0 mobile-l:even:ml-4 inline-block w-full mobile-l:w-auto">
-                  <div className="relative px-4 py-4 flex flex-col items-start justify-center w-full mobile-l:w-[157px] h-auto border border-solid border-[#d3d3d3] opacity-70 cursor-no-drop rounded-xl text-primary-black shadow-[0_8px_10px_0_#00000024]">
+                  <div className="relative px-4 py-4 flex flex-col items-center justify-center w-full mobile-l:w-[157px] h-auto border border-solid border-[#d3d3d3] opacity-70 cursor-no-drop rounded-xl text-primary-black shadow-[0_8px_10px_0_#00000024]">
                     <span className="text-sm text-center text-current font-bold">
                       Agreed Value
                     </span>
@@ -488,14 +504,23 @@ function MarketAndAgreedContainer() {
               </>
             )}
             <div className="mt-12 flex items-center justify-start gap-x-2 w-full">
-              <button
-                onClick={() => updateQuotePremium()}
-                className="relative mt-4 py-2.5 px-8 flex items-center justify-center w-auto bg-primary-blue rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
-              >
-                <span className="text-base text-center font-medium text-white">
-                  Submit
-                </span>
-              </button>
+              {loading ? (
+                <div className="relative mt-4 py-2.5 px-8 flex items-center justify-center w-auto h-auto bg-primary-blue rounded-full">
+                  <span className="animate-spin duration-300 inline-block w-5 h-5 border-[3px] border-solid border-white border-y-transparent rounded-full"></span>
+                  <span className="ml-2 text-base text-center text-white font-medium">
+                    Loading...
+                  </span>
+                </div>
+              ) : (
+                <button
+                  onClick={() => updateQuotePremium()}
+                  className="relative mt-4 py-2.5 px-8 flex items-center justify-center w-auto bg-primary-blue rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
+                >
+                  <span className="text-base text-center font-medium text-white">
+                    Submit
+                  </span>
+                </button>
+              )}
             </div>
           </div>
         </div>

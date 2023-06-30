@@ -26,9 +26,9 @@ const AddOnsCard: React.FC<AddOnsCardProps> = ({
 }) => {
   const uid = useId();
   // const ImageToDisplay = Images[localImgName];
-  
+
   return (
-    <div className="relative w-full h-[184px]">
+    <div className="relative w-full min-h-[184px] h-full">
       <input
         type="checkbox"
         name="addOns"
@@ -44,7 +44,7 @@ const AddOnsCard: React.FC<AddOnsCardProps> = ({
       />
       <label
         htmlFor={uid}
-        className={`p-2 flex flex-col items-center justify-start h-full border border-solid ${
+        className={`p-2 flex flex-col items-center justify-center h-full border border-solid ${
           isSelected
             ? "border-transparent shadow-add-selected"
             : "border-[#bcbcbc] shadow-none"
@@ -81,7 +81,7 @@ const AddOnsCard: React.FC<AddOnsCardProps> = ({
         <p className="text-base text-center text-primary-black font-bold">
           {title}
         </p>
-        {isSelected && (
+        {isSelected && sumInsured !== 0 && (
           <>
             <div className="block my-1.5 h-[2px] w-2/3 bg-[#D9D9D9]" />
             <div className="flex items-center justify-center  w-full">
@@ -113,9 +113,9 @@ const AddOnsCard: React.FC<AddOnsCardProps> = ({
                   </svg>
                 </button>
               ) : ( */}
-                <span className="text-sm text-center text-primary-black font-normal">
-                  RM {numberWithCommas(sumInsured)}
-                </span>
+              <span className="text-sm text-center text-primary-black font-normal">
+                RM {numberWithCommas(sumInsured)}
+              </span>
               {/* )} */}
             </div>
           </>

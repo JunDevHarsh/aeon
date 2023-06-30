@@ -234,7 +234,7 @@ const AddOnsContainer = () => {
                     description={addOn.coverDescription}
                     isSelected={addOn.isSelected}
                     sumInsured={addOn.coverSumInsured}
-                    title={addOn.coverName}
+                    title={addOn.title}
                     // {...addOn}
                     updateBenefitList={toggleAddById}
                     // openAddOnPopup={openAddOnPopup}
