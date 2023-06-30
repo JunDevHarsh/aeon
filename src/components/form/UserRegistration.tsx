@@ -19,6 +19,7 @@ import ReferralCodeButton from "../button/ReferralCode";
 import DefaultPopup from "../popup/Default";
 import { RootState } from "../../store/store";
 import {
+  checkPostalCode,
   checkTokenIsExpired,
   generateSessionName,
   generateToken,
@@ -149,6 +150,20 @@ const UserRegistrationForm = () => {
           })
         );
       }
+      let region: string = "West Malaysia";
+      const postalApiResponse = await checkPostalCode(
+        "https://app.agiliux.com/aeon/webservice.php",
+        5000,
+        sessionInfo.sessionName,
+        postalCode,
+        tenantId
+      );
+      if (postalApiResponse.length !== 0) {
+        region =
+          postalApiResponse[0].Region === "W"
+            ? "West Malaysia"
+            : "East Malaysia";
+      }
       const vehicleApiResponse = await getVehicleInfo(
         "https://app.agiliux.com/aeon/webservice.php",
         5000,
@@ -198,6 +213,7 @@ const UserRegistrationForm = () => {
           vehicleEngineCC,
           vehicleEngine,
           vehicleChassis,
+          region: region,
           yearOfManufacture,
           seatingCapacity,
           periodOfCoverage: polEffectiveDate + " to " + polExpiryDate,
@@ -431,9 +447,6 @@ const UserRegistrationForm = () => {
               onChange(event: React.ChangeEvent<HTMLInputElement>) {
                 let { value } = event.currentTarget;
                 value = value.replace(/\D/g, "");
-                if (value.length === 5) {
-                  console.log("Called");
-                }
                 event.currentTarget.value = value;
               },
             }}
