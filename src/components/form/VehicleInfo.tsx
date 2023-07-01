@@ -80,7 +80,6 @@ const VehicleInfoForm = ({
             maritalstatus: userState.maritalStatus,
             postalcode: userState.postalCode,
             class: "Private Vehicle",
-            sales_stage: "Inquiry Created",
             periodfrom: vehicleState.polEffectiveDate,
             periodto: vehicleState.polExpiryDate,
             regno: vehicleState.vehicleLicenseId,
@@ -93,8 +92,9 @@ const VehicleInfoForm = ({
             yearmanufacture: vehicleState.yearOfManufacture,
             chasisno: vehicleState.vehicleChassis,
             region: val.region,
-            variant: val.variant,
-            referalcode: "AEONREFERRAL"
+            variant: val.variant?.vehicleVariant,
+            suminsured: val.variant?.vehicleMarketValue,
+            referalcode: userState.referralCode
           }),
         },
         {

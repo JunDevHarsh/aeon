@@ -1,14 +1,14 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { nanoid } from "@reduxjs/toolkit";
 import AddOnsCard from "../card/AddOns";
 import SelectDropdown from "../fields/SelectDropdown";
 import {
   AddDriverTypes,
-  AddOnsTypes,
+  // AddOnsTypes,
   MultiStepFormContext,
 } from "../../context/MultiFormContext";
 import { AdditionalDriverDetails } from "../../context/types";
-import AddOnPopup from "../popup/AddOn";
+// import AddOnPopup from "../popup/AddOn";
 import { AddOnType, AddOnsContext } from "../../context/AddOnContext";
 import { NewAddOnsContext } from "../../context/AddOnsContext";
 import { QuoteListingContext } from "../../context/QuoteListing";
@@ -116,17 +116,17 @@ const AddOnsContainer = () => {
     dispatch: updateAddOnsState,
   } = useContext(AddOnsContext);
 
-  const [addOnPopup, handleAddOnPopup] = useState<{
-    id: string;
-    isVisible: boolean;
-    title: string;
-    defaultValue: string;
-  }>({
-    id: "",
-    isVisible: false,
-    title: "",
-    defaultValue: "",
-  });
+  // const [addOnPopup, handleAddOnPopup] = useState<{
+  //   id: string;
+  //   isVisible: boolean;
+  //   title: string;
+  //   defaultValue: string;
+  // }>({
+  //   id: "",
+  //   isVisible: false,
+  //   title: "",
+  //   defaultValue: "",
+  // });
 
   // function toggleAddOnsById(id: string) {
   //   dispatch({
@@ -154,32 +154,38 @@ const AddOnsContainer = () => {
   //   });
   // }
 
-  function closeAddOnPopup() {
-    handleAddOnPopup({ id: "", isVisible: false, defaultValue: "", title: "" });
-  }
-
-  function updateAddOnPrice(id: string, price: string) {
-    handleAddOnPopup({ id: "", defaultValue: "", isVisible: false, title: "" });
-    dispatch({
-      type: AddOnsTypes.UpdateAddOnPrice,
-      payload: {
-        id: id,
-        price: Number(price),
-      },
-    });
-  }
+  // ------ the below function is commented by me ----
+  // function closeAddOnPopup() {
+  //   handleAddOnPopup({ id: "", isVisible: false, defaultValue: "", title: "" });
+  // }
+  // function updateAddOnPrice(id: string, price: string) {
+  //   handleAddOnPopup({ id: "", defaultValue: "", isVisible: false, title: "" });
+  //   dispatch({
+  //     type: AddOnsTypes.UpdateAddOnPrice,
+  //     payload: {
+  //       id: id,
+  //       price: Number(price),
+  //     },
+  //   });
+  // }
   // update the addOns list in AddOnContext
-  function toggleAddById(id: string) {
+
+  function updateNormalAddOn(id: string) {
     const updatedAddOns = newAddOns.map((addOn) =>
-      addOn.coverCode === id ? { ...addOn, isSelected: !addOn.isSelected } : addOn
+      addOn.coverCode === id
+        ? { ...addOn, isSelected: !addOn.isSelected }
+        : addOn
     );
-    updateNewAddOnsState({ addOns: updatedAddOns, isEdited: true });
-    // const isUpdated = updatedAddOns.find((addOn) => addOn.isSelected);
-    // if (isUpdated) {
-    //   updateAddOnsState({ addOns: updatedAddOns, isEdited: true });
-    // } else {
-    //   updateAddOnsState({ addOns: updatedAddOns, isEdited: false });
-    // }
+    // console.log(updatedAddOns);
+    const checkIfAnyAddOnSelected = updatedAddOns.some(
+      ({ isSelected, selectedIndicator }) =>
+        (isSelected && !selectedIndicator) || (!isSelected && selectedIndicator)
+    );
+    if (checkIfAnyAddOnSelected) {
+      updateNewAddOnsState({ addOns: updatedAddOns, isEdited: true });
+      return;
+    }
+    updateNewAddOnsState({ addOns: updatedAddOns, isEdited: false });
   }
 
   useEffect(() => {
@@ -203,16 +209,6 @@ const AddOnsContainer = () => {
 
   return (
     <>
-      {addOnPopup.isVisible && (
-        <AddOnPopup
-          id={addOnPopup.id}
-          title={addOnPopup.title}
-          defaultValue={addOnPopup.defaultValue}
-          closeAddOnPopup={closeAddOnPopup}
-          updateAddOnPrice={updateAddOnPrice}
-          toggleAddOnsById={toggleAddById}
-        />
-      )}
       <div className="flex flex-col items-start max-w-[39rem] w-full">
         <div className="relative py-4 w-full">
           <h2 className="text-2xl text-left text-primary-black font-bold">
@@ -235,9 +231,8 @@ const AddOnsContainer = () => {
                     isSelected={addOn.isSelected}
                     sumInsured={addOn.coverSumInsured}
                     title={addOn.title}
-                    // {...addOn}
-                    updateBenefitList={toggleAddById}
-                    // openAddOnPopup={openAddOnPopup}
+                    requiredinfo={addOn.requiredinfo}
+                    updateNormalAddOn={updateNormalAddOn}
                   />
                 ))}
           </div>

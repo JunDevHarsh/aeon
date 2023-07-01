@@ -197,17 +197,17 @@ const SummaryInfoCard = () => {
             }
           );
 
-          const newAddOnsList = addOns.map((addOn) => {
-            const matched = additionalCover.find(
-              (additional: any) => additional.coverCode === addOn.coverCode
+          const newAddOnsList = updatedAdditionalCover.map((updatedAddOn: any) => {
+            const matched = addOns.find(
+              (addOn: any) => addOn.coverCode === updatedAddOn.coverCode
             );
             return matched
               ? {
-                  ...addOn,
-                  displayPremium: matched.displayPremium,
-                  selectedIndicator: matched.selectedIndicator,
+                  ...matched,
+                  displayPremium: updatedAddOn.displayPremium,
+                  selectedIndicator: updatedAddOn.selectedIndicator,
                 }
-              : addOn;
+              : updatedAddOn;
           });
 
           updateInsuranceDispatch({
@@ -226,7 +226,7 @@ const SummaryInfoCard = () => {
               data: {
                 premium,
                 displaypremium,
-                additionalCover: updatedAdditionalCover,
+                // additionalCover: updatedAdditionalCover,
               },
             },
           });

@@ -1,6 +1,5 @@
 import { useId } from "react";
 import { numberWithCommas } from "../container/VehicleCoverage";
-// import * as Images from "../../assets/icons/addOns";
 
 interface AddOnsCardProps {
   id: string;
@@ -8,10 +7,9 @@ interface AddOnsCardProps {
   isSelected: boolean;
   description: string;
   customImgName: string;
-  // price: number;
+  requiredinfo: "0" | "1";
   sumInsured: number;
-  updateBenefitList: (id: string) => void;
-  // openAddOnPopup: (id: string, title: string, defaultValue: string) => void;
+  updateNormalAddOn: (id: string) => void;
 }
 
 const AddOnsCard: React.FC<AddOnsCardProps> = ({
@@ -21,11 +19,17 @@ const AddOnsCard: React.FC<AddOnsCardProps> = ({
   description,
   customImgName,
   sumInsured,
-  updateBenefitList,
-  // openAddOnPopup,
+  requiredinfo,
+  updateNormalAddOn,
 }) => {
   const uid = useId();
-  // const ImageToDisplay = Images[localImgName];
+
+  function handleAddOnChange(coverCode: string) {
+    if (requiredinfo === "0") {
+      updateNormalAddOn(coverCode);
+      return;
+    }
+  }
 
   return (
     <div className="relative w-full min-h-[184px] h-full">
@@ -36,10 +40,7 @@ const AddOnsCard: React.FC<AddOnsCardProps> = ({
         className="peer/checkbox absolute top-0 left-0 -z-10 opacity-0"
         checked={isSelected}
         onChange={() => {
-          // if (isEditable && !isSelected) {
-          //   return openAddOnPopup(id, title, sumInsured.toString());
-          // }
-          updateBenefitList(id);
+          handleAddOnChange(id);
         }}
       />
       <label
