@@ -175,20 +175,26 @@ const AddOnsContainer = () => {
     isSelected: boolean,
     coverSumInsured: number
   ) {
-    const updatedAddOns = newAddOns.map((addOn) =>
-      addOn.coverCode === id
-        ? {
-            ...addOn,
-            isSelected: !isSelected,
-            coverSumInsured,
-          }
-        : addOn
-    );
+    let isChanged: boolean = false;
+    const updatedAddOns = newAddOns.map((addOn) => {
+      if(addOn.coverCode === id) {
+        if(addOn.coverSumInsured !== coverSumInsured) {
+          isChanged = true;
+        }
+        const updatedAddOn = {
+          ...addOn,
+          isSelected: !isSelected,
+          coverSumInsured,
+        }
+        return updatedAddOn;
+      }
+      return addOn;
+    });
     const checkIfAnyAddOnSelected = updatedAddOns.some(
       ({ isSelected, selectedIndicator }) =>
         (isSelected && !selectedIndicator) || (!isSelected && selectedIndicator)
     );
-    if (checkIfAnyAddOnSelected) {
+    if (checkIfAnyAddOnSelected || isChanged) {
       updateNewAddOnsState({ addOns: updatedAddOns, isEdited: true });
       return;
     }
