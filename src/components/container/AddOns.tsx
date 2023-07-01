@@ -170,13 +170,20 @@ const AddOnsContainer = () => {
   // }
   // update the addOns list in AddOnContext
 
-  function updateNormalAddOn(id: string) {
+  function updateAddOn(
+    id: string,
+    isSelected: boolean,
+    coverSumInsured: number
+  ) {
     const updatedAddOns = newAddOns.map((addOn) =>
       addOn.coverCode === id
-        ? { ...addOn, isSelected: !addOn.isSelected }
+        ? {
+            ...addOn,
+            isSelected: !isSelected,
+            coverSumInsured,
+          }
         : addOn
     );
-    // console.log(updatedAddOns);
     const checkIfAnyAddOnSelected = updatedAddOns.some(
       ({ isSelected, selectedIndicator }) =>
         (isSelected && !selectedIndicator) || (!isSelected && selectedIndicator)
@@ -232,7 +239,8 @@ const AddOnsContainer = () => {
                     sumInsured={addOn.coverSumInsured}
                     title={addOn.title}
                     requiredinfo={addOn.requiredinfo}
-                    updateNormalAddOn={updateNormalAddOn}
+                    moredetail={addOn.moredetail}
+                    updateAddOn={updateAddOn}
                   />
                 ))}
           </div>

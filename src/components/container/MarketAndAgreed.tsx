@@ -270,6 +270,24 @@ function MarketAndAgreedContainer() {
           })
         );
       }
+
+      const addOnsRequest = addOns
+        .filter((addOn) => addOn.selectedIndicator)
+        .map((addOn) => {
+          let request: any = {};
+          request.coverCode = addOn.coverCode;
+          request.coverSumInsured = addOn.coverSumInsured;
+          if (addOn.coverCode === "PAB-ERW") {
+            if (addOn.moredetail?.options instanceof Array) {
+              request.planCode = addOn.moredetail?.options.find(
+                (option: any) =>
+                  option.value === addOn.coverSumInsured.toString()
+              )?.code;
+            }
+          }
+          return request;
+        });
+
       const quoteResponse = await axios.post(
         "https://app.agiliux.com/aeon/webservice.php",
         {
@@ -277,12 +295,7 @@ function MarketAndAgreedContainer() {
             requestId: requestId,
             tenant_id: "67b61490-fec2-11ed-a640-e19d1712c006",
             class: "Private Vehicle",
-            additionalCover: addOns
-              .filter((addOn) => addOn.selectedIndicator)
-              .map((addOn) => ({
-                coverCode: addOn.coverCode,
-                coverSumInsured: addOn.coverSumInsured,
-              })),
+            additionalCover: addOnsRequest,
             unlimitedDriverInd: "false",
             driverDetails: [],
             sitype:

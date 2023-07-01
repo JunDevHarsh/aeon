@@ -122,6 +122,20 @@ const SummaryInfoCard = () => {
         );
       }
 
+      const addOnsRequest = selectedAddOns.map((addOn: any) => {
+        let request: any = {};
+        request.coverCode = addOn.coverCode;
+        request.coverSumInsured = addOn.coverSumInsured;
+        if (addOn.coverCode === "PAB-ERW") {
+          if (addOn.moredetail?.options instanceof Array) {
+            request.planCode = addOn.moredetail?.options.find(
+              (option: any) => option.value === addOn.coverSumInsured.toString()
+            )?.code;
+          }
+        }
+        return request;
+      });
+
       const quoteResponse = await axios.post(
         "https://app.agiliux.com/aeon/webservice.php",
         {
@@ -129,11 +143,7 @@ const SummaryInfoCard = () => {
             requestId: requestId,
             tenant_id: "67b61490-fec2-11ed-a640-e19d1712c006",
             class: "Private Vehicle",
-            additionalCover:
-              selectedAddOns.map((addOn) => ({
-                coverCode: addOn.coverCode,
-                coverSumInsured: addOn.coverSumInsured,
-              })) || [],
+            additionalCover: addOnsRequest || [],
             unlimitedDriverInd: "false",
             driverDetails: [],
             sitype:
@@ -197,18 +207,20 @@ const SummaryInfoCard = () => {
             }
           );
 
-          const newAddOnsList = updatedAdditionalCover.map((updatedAddOn: any) => {
-            const matched = addOns.find(
-              (addOn: any) => addOn.coverCode === updatedAddOn.coverCode
-            );
-            return matched
-              ? {
-                  ...matched,
-                  displayPremium: updatedAddOn.displayPremium,
-                  selectedIndicator: updatedAddOn.selectedIndicator,
-                }
-              : updatedAddOn;
-          });
+          const newAddOnsList = updatedAdditionalCover.map(
+            (updatedAddOn: any) => {
+              const matched = addOns.find(
+                (addOn: any) => addOn.coverCode === updatedAddOn.coverCode
+              );
+              return matched
+                ? {
+                    ...matched,
+                    displayPremium: updatedAddOn.displayPremium,
+                    selectedIndicator: updatedAddOn.selectedIndicator,
+                  }
+                : updatedAddOn;
+            }
+          );
 
           updateInsuranceDispatch({
             type: InsuranceProviderTypes.UpdateInsuranceProvider,

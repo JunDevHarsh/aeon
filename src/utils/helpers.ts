@@ -205,7 +205,7 @@ export async function checkPostalCode(
       // throw error if sessionName is not generated
       throw {
         code: "101",
-        message: "Session Expired",
+        message: "Something went wrong. Please try again later.",
       };
     }
     return response.data.result;
@@ -250,7 +250,7 @@ export async function getVehicleInfo(
       // throw error if sessionName is not generated
       throw {
         code: "101",
-        message: "Session Expired",
+        message: "Something went wrong. Please try again later.",
       };
     }
     if (response.data.result) {

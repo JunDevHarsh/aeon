@@ -15,14 +15,16 @@ export type AddOnsState = {
   sequence: number;
   addonimage: string;
   requiredinfo: "0" | "1";
-  moredetail?: {
-    question: string;
-    fieldtype: "Dropdown" | "Text Box";
-    options: Option | string;
-  };
+  moredetail?: MoreDetail;
 };
 
-type Option = {
+export type MoreDetail = {
+  question: string;
+  fieldtype: "Dropdown" | "Text Box";
+  options: Option[] | string;
+}
+
+export type Option = {
   code: string;
   label: string;
   value: string;
