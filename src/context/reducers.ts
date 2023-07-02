@@ -17,6 +17,8 @@ import {
   AddOnsTypes,
   DriverDetailsActions,
   DriverTypes,
+  RoadTaxActions,
+  RoadTaxTypes,
 } from "./MultiFormContext";
 import { QuotesAction, QuotesTypes } from "./QuoteListing";
 /*---------------Insurance Reducer---------------*/
@@ -50,7 +52,11 @@ export const insuranceProviderReducer = (
 /*---------------MultiStepForm Reducer---------------*/
 export const addOnsReducer = (
   state: AddOns[],
-  action: AddOnsActions | AddDriverActions | DriverDetailsActions
+  action:
+    | AddOnsActions
+    | AddDriverActions
+    | DriverDetailsActions
+    | RoadTaxActions
 ) => {
   const { type, payload } = action;
   switch (type) {
@@ -80,7 +86,11 @@ export const addOnsReducer = (
 /*---------------Additional Driver Details Reducer---------------*/
 export const addDriverDetailsReducer = (
   state: AdditionalDriverDetails[],
-  action: AddDriverActions | AddOnsActions | DriverDetailsActions
+  action:
+    | AddDriverActions
+    | AddOnsActions
+    | DriverDetailsActions
+    | RoadTaxActions
 ) => {
   const { type, payload } = action;
   switch (type) {
@@ -117,7 +127,11 @@ export const addDriverDetailsReducer = (
 /*---------------Driver Details Reducer---------------*/
 export const driverDetailsReducer = (
   state: DriverDetails,
-  action: AddOnsActions | AddDriverActions | DriverDetailsActions
+  action:
+    | AddOnsActions
+    | AddDriverActions
+    | DriverDetailsActions
+    | RoadTaxActions
 ) => {
   const { type, payload } = action;
   switch (type) {
@@ -150,6 +164,25 @@ export const quotesReducer = (
         quote.productId === productId ? { ...quote, ...data } : quote
       );
       return { ...state, quotes: updatedQuotes };
+    }
+    default:
+      return state;
+  }
+};
+
+export const roadTaxReducer = (
+  state: boolean,
+  action:
+    | AddDriverActions
+    | AddOnsActions
+    | DriverDetailsActions
+    | RoadTaxActions
+) => {
+  const { type, payload } = action;
+  switch (type) {
+    case RoadTaxTypes.UpdateRoadTax: {
+      const { roadTax } = payload;
+      return roadTax;
     }
     default:
       return state;

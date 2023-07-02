@@ -32,6 +32,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { QuoteListingContext, QuotesTypes } from "../../context/QuoteListing";
 import { NewAddOnsContext } from "../../context/AddOnsContext";
+import { MultiStepFormContext } from "../../context/MultiFormContext";
 
 function createUniqueValues(types: AgreedVariantType[]) {
   const regEx = /(-HIGH|-LOW|-HI|-LO)\s*-?\s*/;
@@ -108,6 +109,10 @@ function MarketAndAgreedContainer() {
       vehicleId,
     },
   } = useSelector((state: RootState) => state);
+
+  const {
+    store: { roadTax },
+  } = useContext(MultiStepFormContext);
 
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -316,7 +321,7 @@ function MarketAndAgreedContainer() {
             productid: productId,
             quoteId: quoteId,
             vehicleId: vehicleId,
-            roadtax: "",
+            roadtax: roadTax ? "1" : "0",
             promoid: promoId,
             promocode: promoCode,
             percent_off: percentOff,

@@ -95,7 +95,9 @@ const QuoteListingsContainer = () => {
     ],
   });
 
-  const [quotePlans, updateQuotePlans] = useState<InsurerQuoteStateType[]>([]);
+  const [quotePlans, updateQuotePlans] = useState<InsurerQuoteStateType[]>(() =>
+    insurerQuotes.map((quote) => ({ ...quote, isSelected: false }))
+  );
 
   // console.log(type, market, agreed);
   const [isComparePopupVisible, shouldComparePopupVisible] =
@@ -184,6 +186,7 @@ const QuoteListingsContainer = () => {
                 insurer,
                 logoname,
                 displaypremium,
+                doclink,
                 benefits,
                 additionalCover,
                 premium,
@@ -191,6 +194,7 @@ const QuoteListingsContainer = () => {
                 productId: productid,
                 insurerId: insurer,
                 insurerName: logoname,
+                docLink: doclink,
                 planType: "comprehensive",
                 logoName: logoname.toLowerCase(),
                 displayPremium: displaypremium || 672.8,
@@ -420,6 +424,7 @@ const QuoteListingsContainer = () => {
                       benefits={quote.benefits}
                       id={quote.productId}
                       imgUrl={quote.logoName}
+                      docLink={quote.docLink}
                       insurerId={quote.insurerId}
                       insurerName={quote.insurerName}
                       isSelected={quote.isSelected}

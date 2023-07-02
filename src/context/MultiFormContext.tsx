@@ -10,6 +10,7 @@ import {
   addDriverDetailsReducer,
   addOnsReducer,
   driverDetailsReducer,
+  roadTaxReducer,
 } from "./reducers";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
@@ -34,6 +35,7 @@ const initialMultiStepFormState: MultiStepFormState = {
     state: "",
     postalCode: "",
   },
+  roadTax: false,
 };
 
 /*---------------ENum types---------------*/
@@ -51,6 +53,10 @@ export enum AddDriverTypes {
 
 export enum DriverTypes {
   UpdateDriverInfo = "UPDATE_DRIVER_INFO",
+}
+
+export enum RoadTaxTypes {
+  UpdateRoadTax = "UPDATE_ROAD_TAX",
 }
 
 /*---------------Payload---------------*/
@@ -86,6 +92,12 @@ export type DriverDetailsPayload = {
   };
 };
 
+export type RoadTaxPayload = {
+  [RoadTaxTypes.UpdateRoadTax]: {
+    roadTax: boolean;
+  };
+};
+
 export type AddOnsActions =
   ActionMap<AddOnsPayload>[keyof ActionMap<AddOnsPayload>];
 
@@ -95,11 +107,14 @@ export type AddDriverActions =
 export type DriverDetailsActions =
   ActionMap<DriverDetailsPayload>[keyof ActionMap<DriverDetailsPayload>];
 
+export type RoadTaxActions =
+  ActionMap<RoadTaxPayload>[keyof ActionMap<RoadTaxPayload>];
+
 /*---------------MultiForm Context---------------*/
 export const MultiStepFormContext = createContext<{
   store: MultiStepFormState;
   dispatch: React.Dispatch<
-    AddOnsActions | AddDriverActions | DriverDetailsActions
+    AddOnsActions | AddDriverActions | DriverDetailsActions | RoadTaxActions
   >;
 }>({
   store: initialMultiStepFormState,
@@ -108,12 +123,13 @@ export const MultiStepFormContext = createContext<{
 
 /*---------------Multiple Reducers---------------*/
 const mainReducer = (
-  { addOns, addDriverDetails, driverDetails }: MultiStepFormState,
-  action: AddOnsActions | AddDriverActions | DriverDetailsActions
+  { addOns, addDriverDetails, driverDetails, roadTax }: MultiStepFormState,
+  action: AddOnsActions | AddDriverActions | DriverDetailsActions | RoadTaxActions
 ): MultiStepFormState => ({
   addOns: addOnsReducer(addOns, action),
   addDriverDetails: addDriverDetailsReducer(addDriverDetails, action),
   driverDetails: driverDetailsReducer(driverDetails, action),
+  roadTax: roadTaxReducer(roadTax, action),
 });
 
 const MultiFormContextProvider = ({

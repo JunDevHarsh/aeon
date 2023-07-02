@@ -4,6 +4,7 @@ export type InsurerQuoteType = {
   insurerName: string;
   logoName: string;
   planType: string;
+  docLink: string;
   displayPremium: string;
   popular: boolean;
   benefits: string[];

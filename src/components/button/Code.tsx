@@ -22,6 +22,7 @@ import {
 } from "../../context/InsuranceContext";
 import { QuoteListingContext, QuotesTypes } from "../../context/QuoteListing";
 import { NewAddOnsContext } from "../../context/AddOnsContext";
+import { MultiStepFormContext } from "../../context/MultiFormContext";
 
 type CodeProps = {
   title: string;
@@ -51,6 +52,12 @@ const Code: React.FC<CodeProps> = ({ title, placeholder = "Placeholder" }) => {
 
   const { token, session, requestId, accountId, inquiryId, vehicleId } =
     useSelector((state: RootState) => state.credentials);
+
+    const {
+      store: {
+        roadTax
+      }
+    } = useContext(MultiStepFormContext);
 
   const {
     state: { id: productId, quoteId },
@@ -168,7 +175,7 @@ const Code: React.FC<CodeProps> = ({ title, placeholder = "Placeholder" }) => {
               productid: productId,
               quoteId: quoteId,
               vehicleId: vehicleId,
-              roadtax: "",
+              roadtax: roadTax ? "1" : "0",
               promoid: promoid,
               promocode: code,
               percent_off: percent_off,

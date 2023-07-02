@@ -78,7 +78,8 @@ const SummaryInfoCard = () => {
       drivingExp,
       state,
       city,
-    }
+    },
+    roadTax
   }} = useContext(MultiStepFormContext);
 
   const updateStore = useDispatch();
@@ -180,7 +181,7 @@ const SummaryInfoCard = () => {
             productid: productId,
             quoteId: quoteId,
             vehicleId: vehicleId,
-            roadtax: "",
+            roadtax: roadTax ? "1" : "0",
             promoid: promoId,
             promocode: promoCode,
             percent_off: percentOff,
@@ -587,7 +588,6 @@ const SummaryInfoCard = () => {
                   navigate("/insurance/application-details");
                 } else if (pathname === "/insurance/application-details") {
                   updateClient();
-                  console.log("Ried");
                   navigate("/insurance/review-pay");
                 } else {
                   navigate("/insurance/payment");
