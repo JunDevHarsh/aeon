@@ -18,7 +18,14 @@ import { RootState } from "../store/store";
 /*---------------Initial State---------------*/
 const initialMultiStepFormState: MultiStepFormState = {
   addOns: [],
-  addDriverDetails: [],
+  addDriverDetails: {
+    selectedDriverType: "",
+    driverDetails: [],
+    hasSubmitted: false,
+    shouldUpdate: false,
+    hasUpdated: false,
+    isSelected: false,
+  },
   driverDetails: {
     name: "",
     email: "",
@@ -49,6 +56,8 @@ export enum AddDriverTypes {
   AddNewDriverDetails = "ADD_NEW_DRIVER_DETAILS",
   UpdateDriverDetails = "UPDATE_DRIVER_DETAILS",
   RemoveDriverDetailsById = "REMOVE_DRIVER_DETAILS",
+  SelectAdditionalDriver = "SELECT_ADDITIONAL_DRIVER",
+  UnSelectAdditionalDriver = "UNSELECT_ADDITIONAL_DRIVER",
 }
 
 export enum DriverTypes {
@@ -83,6 +92,12 @@ export type AddDriverDetailsPayload = {
   };
   [AddDriverTypes.RemoveDriverDetailsById]: {
     id: string;
+  };
+  [AddDriverTypes.SelectAdditionalDriver]: {
+    val: string;
+  };
+  [AddDriverTypes.UnSelectAdditionalDriver]: {
+    val: string
   };
 };
 
@@ -124,7 +139,11 @@ export const MultiStepFormContext = createContext<{
 /*---------------Multiple Reducers---------------*/
 const mainReducer = (
   { addOns, addDriverDetails, driverDetails, roadTax }: MultiStepFormState,
-  action: AddOnsActions | AddDriverActions | DriverDetailsActions | RoadTaxActions
+  action:
+    | AddOnsActions
+    | AddDriverActions
+    | DriverDetailsActions
+    | RoadTaxActions
 ): MultiStepFormState => ({
   addOns: addOnsReducer(addOns, action),
   addDriverDetails: addDriverDetailsReducer(addDriverDetails, action),

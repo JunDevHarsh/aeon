@@ -2,6 +2,7 @@
 import {
   AddOns,
   AdditionalDriverDetails,
+  AdditionalDriverState,
   DriverDetails,
   QuoteListingStateType,
 } from "./types";
@@ -85,7 +86,7 @@ export const addOnsReducer = (
 
 /*---------------Additional Driver Details Reducer---------------*/
 export const addDriverDetailsReducer = (
-  state: AdditionalDriverDetails[],
+  state: AdditionalDriverState,
   action:
     | AddDriverActions
     | AddOnsActions
@@ -103,21 +104,58 @@ export const addDriverDetailsReducer = (
         nationality: "Malaysia",
         relationship: "Insured",
       };
-      return [...state, newDetails];
+      return {
+        ...state,
+        hasUpdated: true,
+        shouldUpdate: true,
+        driverDetails: [...state.driverDetails, newDetails],
+      };
     }
     case AddDriverTypes.UpdateDriverDetails: {
-      const updatedProp = state.map((detail) =>
+      const updatedProp = state.driverDetails.map((detail) =>
         detail.id === payload.id
           ? { ...detail, ...payload.updatedValue }
           : detail
       );
-      return updatedProp;
+      return {
+        ...state,
+        hasUpdated: true,
+        shouldUpdate: true,
+        driverDetails: [...updatedProp],
+      };
     }
     case AddDriverTypes.RemoveDriverDetailsById: {
-      const updatedDrivderDetails = state.filter(
+      const updatedDrivderDetails = state.driverDetails.filter(
         (detail) => detail.id !== payload.id
       );
-      return updatedDrivderDetails;
+      return {
+        ...state,
+        hasUpdated: true,
+        shouldUpdate: true,
+        driverDetails: updatedDrivderDetails,
+      };
+    }
+    case AddDriverTypes.SelectAdditionalDriver: {
+      const { val } = payload;
+      return {
+        ...state,
+        selectedDriverType: val,
+        isSelected: true,
+        hasUpdated: true,
+        shouldUpdate: true,
+        driverDetails: []
+      };
+    }
+    case AddDriverTypes.UnSelectAdditionalDriver: {
+      const { val } = payload;
+      return {
+        ...state,
+        selectedDriverType: val,
+        isSelected: false,
+        hasUpdated: state.hasSubmitted,
+        shouldUpdate: state.hasSubmitted,
+        driverDetails: [],
+      };
     }
     default:
       return state;

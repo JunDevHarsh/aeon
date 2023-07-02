@@ -67,20 +67,23 @@ const SummaryInfoCard = () => {
     dispatch: updateInsuranceDispatch,
   } = useContext(InsuranceContext);
 
-  const {store: {
-    driverDetails: {
-      name,
-      nationality,
-      address1,
-      postalCode,
-      race,
-      occupation,
-      drivingExp,
-      state,
-      city,
+  const {
+    store: {
+      driverDetails: {
+        name,
+        nationality,
+        address1,
+        postalCode,
+        race,
+        occupation,
+        drivingExp,
+        state,
+        city,
+      },
+      addDriverDetails: { shouldUpdate, selectedDriverType, driverDetails },
+      roadTax,
     },
-    roadTax
-  }} = useContext(MultiStepFormContext);
+  } = useContext(MultiStepFormContext);
 
   const updateStore = useDispatch();
 
@@ -160,8 +163,15 @@ const SummaryInfoCard = () => {
             tenant_id: "67b61490-fec2-11ed-a640-e19d1712c006",
             class: "Private Vehicle",
             additionalCover: addOnsRequest || [],
-            unlimitedDriverInd: "false",
-            driverDetails: [],
+            unlimitedDriverInd:
+              selectedDriverType === "unlimited" ? "true" : "false",
+            driverDetails:
+              selectedDriverType === "unlimited" || driverDetails.length === 0
+                ? []
+                : driverDetails.map(({ idNo, name }) => ({
+                    fullName: name,
+                    identityNumber: idNo,
+                  })),
             sitype:
               valuationType === "market"
                 ? "MV - Market Value"
@@ -553,7 +563,7 @@ const SummaryInfoCard = () => {
             </span>
           </Link>
 
-          {isEdited ? (
+          {isEdited || shouldUpdate ? (
             !loading ? (
               <button
                 onClick={() => updateQuotePremium()}

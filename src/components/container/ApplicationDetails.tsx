@@ -58,7 +58,11 @@ const ApplicationDetailsContainer = () => {
   const updateStore = useDispatch();
 
   const {
-    store: { addDriverDetails, driverDetails, roadTax },
+    store: {
+      addDriverDetails: { driverDetails: addDriverDetails, selectedDriverType },
+      driverDetails,
+      roadTax,
+    },
     dispatch: updateMultiStepFormDispatch,
   } = useContext(MultiStepFormContext);
 
@@ -166,8 +170,16 @@ const ApplicationDetailsContainer = () => {
             tenant_id: "67b61490-fec2-11ed-a640-e19d1712c006",
             class: "Private Vehicle",
             additionalCover: addOnsRequest || [],
-            unlimitedDriverInd: "false",
-            driverDetails: [],
+            unlimitedDriverInd:
+              selectedDriverType === "unlimited" ? "true" : "false",
+            driverDetails:
+              selectedDriverType === "unlimited" ||
+              addDriverDetails.length === 0
+                ? []
+                : addDriverDetails.map(({ idNo, name }) => ({
+                    fullName: name,
+                    identityNumber: idNo,
+                  })),
             sitype:
               valuationType === "market"
                 ? "MV - Market Value"

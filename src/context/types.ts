@@ -34,7 +34,7 @@ export type Steps = {
 // MultiFormState Types
 export type MultiStepFormState = {
   addOns: AddOns[];
-  addDriverDetails: AdditionalDriverDetails[];
+  addDriverDetails: AdditionalDriverState;
   driverDetails: DriverDetails;
   roadTax: boolean;
 };
@@ -49,6 +49,15 @@ export type AddOns = {
   price: number;
   imgName: string;
 };
+
+export type AdditionalDriverState = {
+  isSelected: boolean;
+  hasUpdated: boolean;
+  shouldUpdate: boolean;
+  hasSubmitted: boolean;
+  selectedDriverType: string;
+  driverDetails: AdditionalDriverDetails[];
+}
 
 // Additional Driver Details
 export type AdditionalDriverDetails = {

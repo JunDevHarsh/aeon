@@ -111,7 +111,10 @@ function MarketAndAgreedContainer() {
   } = useSelector((state: RootState) => state);
 
   const {
-    store: { roadTax },
+    store: {
+      roadTax,
+      addDriverDetails: { driverDetails, shouldUpdate, selectedDriverType },
+    },
   } = useContext(MultiStepFormContext);
 
   const [loading, setLoading] = useState<boolean>(false);
@@ -305,8 +308,19 @@ function MarketAndAgreedContainer() {
             tenant_id: "67b61490-fec2-11ed-a640-e19d1712c006",
             class: "Private Vehicle",
             additionalCover: addOnsRequest,
-            unlimitedDriverInd: "false",
-            driverDetails: [],
+            unlimitedDriverInd:
+              selectedDriverType === "unlimited" && !shouldUpdate
+                ? "true"
+                : "false",
+            driverDetails:
+              selectedDriverType === "unlimited" ||
+              driverDetails.length === 0 ||
+              !shouldUpdate
+                ? []
+                : driverDetails.map(({ idNo, name }) => ({
+                    fullName: name,
+                    identityNumber: idNo,
+                  })),
             sitype:
               type === "market" ? "MV - Market Value" : "AV - Agreed Value",
             avCode: type === "market" ? "" : agreed?.avCode,
