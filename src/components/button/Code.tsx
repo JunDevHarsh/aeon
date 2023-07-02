@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useContext, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import {
@@ -13,19 +13,22 @@ import {
   addSessionName,
   addToken,
 } from "../../store/slices/credentials";
+import { addPromoCode } from "../../store/slices/user";
+import { MarketAndAgreedContext } from "../../context/MarketAndAgreedContext";
+import axios from "axios";
+import {
+  InsuranceContext,
+  InsuranceProviderTypes,
+} from "../../context/InsuranceContext";
+import { QuoteListingContext, QuotesTypes } from "../../context/QuoteListing";
+import { NewAddOnsContext } from "../../context/AddOnsContext";
 
 type CodeProps = {
   title: string;
   placeholder?: string;
-  validationList: Array<string>;
-  updateCode?: React.Dispatch<React.SetStateAction<any>>;
 };
 
-const Code: React.FC<CodeProps> = ({
-  title,
-  placeholder = "Placeholder",
-  // updateCode,
-}) => {
+const Code: React.FC<CodeProps> = ({ title, placeholder = "Placeholder" }) => {
   const [state, setState] = useState<{
     code: string;
     error: string | null;
@@ -38,11 +41,25 @@ const Code: React.FC<CodeProps> = ({
     isLoading: false,
   });
 
-  const { token, session, requestId } = useSelector(
-    (state: RootState) => state.credentials
-  );
+  const {
+    state: { type, market, agreed },
+  } = useContext(MarketAndAgreedContext);
 
-  const dispatch = useDispatch();
+  const {
+    state: { addOns },
+  } = useContext(NewAddOnsContext);
+
+  const { token, session, requestId, accountId, inquiryId, vehicleId } =
+    useSelector((state: RootState) => state.credentials);
+
+  const {
+    state: { id: productId, quoteId },
+    dispatch: updateInsuranceDispatch,
+  } = useContext(InsuranceContext);
+
+  const { dispatch: updateQuote } = useContext(QuoteListingContext);
+
+  const updateStore = useDispatch();
 
   const { code, error, isLoading, isValid } = state;
 
@@ -75,7 +92,7 @@ const Code: React.FC<CodeProps> = ({
           10000
         );
         tokenInfo = getToken;
-        dispatch(addToken({ ...getToken }));
+        updateStore(addToken({ ...getToken }));
         const sessionApiResponse: SessionType = await generateSessionName(
           "https://app.agiliux.com/aeon/webservice.php",
           10000,
@@ -84,7 +101,7 @@ const Code: React.FC<CodeProps> = ({
         );
         sessionInfo = sessionApiResponse;
         // update credentials context with new token and session
-        dispatch(
+        updateStore(
           addSessionName({
             userId: sessionApiResponse.userId,
             sessionName: sessionApiResponse.sessionName,
@@ -100,17 +117,131 @@ const Code: React.FC<CodeProps> = ({
         code
       );
       if (apiResponse.isValid === 1) {
-        setState((prev) => ({
-          ...prev,
-          error: null,
-          isValid: true,
-          isLoading: false,
-        }));
+        const { promoid, percent_off } = apiResponse;
+
+        updateStore(
+          addPromoCode({
+            promoCode: code,
+            promoId: promoid,
+            percentOff: percent_off,
+          })
+        );
+
+        const addOnsRequest = addOns
+          .filter((addOn) => addOn.selectedIndicator)
+          .map((addOn) => {
+            let request: any = {};
+            request.coverCode = addOn.coverCode;
+            request.coverSumInsured = addOn.coverSumInsured;
+            if (addOn.coverCode === "PAB-ERW") {
+              if (addOn.moredetail?.options instanceof Array) {
+                request.planCode = addOn.moredetail?.options.find(
+                  (option: any) =>
+                    option.value === addOn.coverSumInsured.toString()
+                )?.code;
+              }
+            }
+            return request;
+          });
+
+        const quoteResponse = await axios.post(
+          "https://app.agiliux.com/aeon/webservice.php",
+          {
+            element: JSON.stringify({
+              requestId: requestId,
+              tenant_id: "67b61490-fec2-11ed-a640-e19d1712c006",
+              class: "Private Vehicle",
+              additionalCover: addOnsRequest,
+              unlimitedDriverInd: "false",
+              driverDetails: [],
+              sitype:
+                type === "market" ? "MV - Market Value" : "AV - Agreed Value",
+              avCode: type === "market" ? "" : agreed?.avCode,
+              sumInsured:
+                type === "market"
+                  ? market.vehicleMarketValue.toString()
+                  : agreed?.sumInsured,
+              nvicCode: type === "market" ? market.nvic : agreed?.nvic,
+              accountid: accountId,
+              inquiryId: inquiryId,
+              insurer: "7x250468",
+              productid: productId,
+              quoteId: quoteId,
+              vehicleId: vehicleId,
+              roadtax: "",
+              promoid: promoid,
+              promocode: code,
+              percent_off: percent_off,
+            }),
+            operation: "updateQuote",
+            sessionName: sessionInfo?.sessionName,
+          },
+          {
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+          }
+        );
+        if (quoteResponse.status === 200 && quoteResponse.data) {
+          if (quoteResponse.data.error || !quoteResponse.data.success) {
+            throw {
+              status: 301,
+              message: "Error updating quote premium, please try again later",
+            };
+          }
+          // const data = quoteResponse.data.result;
+          if (quoteResponse.data) {
+            // if (quoteResponse.data.result.quoteinfo.length === 0) {
+            //   throw new Error("NO_QUOTE_FOUND");
+            // }
+            const data = quoteResponse.data.result;
+            updateInsuranceDispatch({
+              type: InsuranceProviderTypes.UpdateQuoteId,
+              payload: {
+                quoteId: data.quoteId,
+              },
+            });
+
+            const { displaypremium, premium } = data.quoteinfo;
+            updateQuote({
+              type: QuotesTypes.UpdateQuoteById,
+              payload: {
+                productId: productId,
+                data: {
+                  premium,
+                  displaypremium,
+                },
+              },
+            });
+            updateInsuranceDispatch({
+              type: InsuranceProviderTypes.UpdateInsuranceProvider,
+              payload: {
+                companyId: productId,
+                companyName: "Allianz",
+                price: displaypremium,
+              },
+            });
+
+            setState((prev) => ({
+              ...prev,
+              error: null,
+              isValid: true,
+              isLoading: false,
+            }));
+
+            return;
+          }
+          throw {
+            status: 302,
+            message: "Receiving some error, please try again later",
+          };
+        }
+
         return;
       }
       setState((prev) => ({
         ...prev,
-        error: apiResponse.message,
+        error: "Promo Code is invalid!",
         isValid: false,
         isLoading: false,
       }));

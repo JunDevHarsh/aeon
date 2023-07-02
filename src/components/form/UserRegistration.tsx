@@ -163,6 +163,13 @@ const UserRegistrationForm = () => {
           postalApiResponse[0].Region === "W"
             ? "West Malaysia"
             : "East Malaysia";
+        const postCodeInfo: any = postalApiResponse[0];
+        dispatch(
+          addUserBasicInfo({
+            state: postCodeInfo.StateDescp,
+            city: postCodeInfo.CityDescp,
+          })
+        );
       }
       const vehicleApiResponse = await getVehicleInfo(
         "https://app.agiliux.com/aeon/webservice.php",

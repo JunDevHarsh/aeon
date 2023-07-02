@@ -27,6 +27,7 @@ import {
   addToken,
 } from "../../store/slices/credentials";
 import axios from "axios";
+import { MultiStepFormContext } from "../../context/MultiFormContext";
 
 export interface AddBenefitsType {
   id: string;
@@ -42,31 +43,43 @@ const SummaryInfoCard = () => {
   // const { provider } = useSelector((state: RootState) => state.insurance);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const [promoCode, setPromoCode] = useState<number>(0);
   const {
     state: { addOns, isEdited },
     dispatch,
   } = useContext(NewAddOnsContext);
 
-  const { polExpiryDate, polEffectiveDate } = useSelector(
-    (state: RootState) => state.vehicle
-  );
+  const {
+    vehicle: { polExpiryDate, polEffectiveDate },
+    user: { promoCode, promoId, percentOff },
+    credentials: {
+      token: tokenInStore,
+      session: sessionInStore,
+      requestId,
+      inquiryId,
+      accountId,
+      vehicleId,
+    },
+  } = useSelector((state: RootState) => state);
+
   const navigate = useNavigate();
   const {
-    state: { name: proName, id },
-  } = useContext(InsuranceContext);
-
-  const {
-    token: tokenInStore,
-    session: sessionInStore,
-    requestId,
-    inquiryId,
-    accountId,
-  } = useSelector((state: RootState) => state.credentials);
-  const {
-    state: { id: productId, quoteId },
+    state: { name: proName, id: productId, quoteId },
     dispatch: updateInsuranceDispatch,
   } = useContext(InsuranceContext);
+
+  const {store: {
+    driverDetails: {
+      name,
+      nationality,
+      address1,
+      postalCode,
+      race,
+      occupation,
+      drivingExp,
+      state,
+      city,
+    }
+  }} = useContext(MultiStepFormContext);
 
   const updateStore = useDispatch();
 
@@ -75,7 +88,9 @@ const SummaryInfoCard = () => {
     dispatch: updateQuote,
   } = useContext(QuoteListingContext);
 
-  const selectedQuotePlan: any = quotes.find((quote) => quote.productId === id);
+  const selectedQuotePlan: any = quotes.find(
+    (quote) => quote.productId === productId
+  );
 
   const premium = selectedQuotePlan?.premium;
   const selectedQuoteAddOns = selectedQuotePlan?.additionalCover;
@@ -164,6 +179,11 @@ const SummaryInfoCard = () => {
             insurer: "7x250468",
             productid: productId,
             quoteId: quoteId,
+            vehicleId: vehicleId,
+            roadtax: "",
+            promoid: promoId,
+            promocode: promoCode,
+            percent_off: percentOff,
           }),
           operation: "updateQuote",
           sessionName: sessionInfo?.sessionName,
@@ -251,6 +271,69 @@ const SummaryInfoCard = () => {
           message: "Receiving some error, please try again later",
         };
       }
+      setLoading(false);
+    } catch (err) {
+      setLoading(false);
+      console.log(err);
+    }
+  }
+
+  async function updateClient() {
+    try {
+      setLoading(true);
+      let tokenInfo = tokenInStore;
+      let sessionInfo = sessionInStore;
+      if (!tokenInStore || checkTokenIsExpired(tokenInStore)) {
+        // get new token
+        const getToken: TokenType = await generateToken(
+          "https://app.agiliux.com/aeon/webservice.php?operation=getchallenge&username=admin",
+          5000
+        );
+        tokenInfo = getToken;
+        // add token to store
+        updateStore(addToken({ ...getToken }));
+        const sessionApiResponse: SessionType = await generateSessionName(
+          "https://app.agiliux.com/aeon/webservice.php",
+          5000,
+          tokenInfo.token,
+          "bwJrIhxPdfsdialE"
+        );
+        sessionInfo = sessionApiResponse;
+        // add session name to store state
+        updateStore(
+          addSessionName({
+            userId: sessionInfo.userId,
+            sessionName: sessionInfo.sessionName,
+          })
+        );
+      }
+      const updateClientResponse = await axios.post(
+        "https://app.agiliux.com/aeon/webservice.php",
+        {
+          element: JSON.stringify({
+            requestId: requestId,
+            tenant_id: "67b61490-fec2-11ed-a640-e19d1712c006",
+            name: name,
+            nationality: nationality,
+            race: race,
+            occupation: occupation,
+            driving_exp: drivingExp,
+            address_1: address1,
+            address_3: postalCode,
+            state: state,
+            city: city,
+            accountid: accountId,
+          }),
+          operation: "updateInsured",
+          sessionName: sessionInfo?.sessionName,
+        },
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        }
+      );
+      console.log(updateClientResponse);
       setLoading(false);
     } catch (err) {
       setLoading(false);
@@ -406,7 +489,7 @@ const SummaryInfoCard = () => {
               RM {premium?.grossPremium || "0.00"}
             </span>
           </div>
-          {promoCode !== 0 && (
+          {/* {promoCode !== 0 && (
             <div className="flex items-start justify-between w-full">
               <span className="text-base text-left text-primary-black font-medium w-1/2">
                 Discount {`${promoCode}%`}
@@ -415,7 +498,7 @@ const SummaryInfoCard = () => {
                 <span className="font-semibold">-</span> RM 10.00
               </span>
             </div>
-          )}
+          )} */}
           <div className="flex items-start justify-between w-full">
             <span className="text-lg text-left text-primary-black font-bold w-1/2">
               Sub Total
@@ -442,12 +525,7 @@ const SummaryInfoCard = () => {
           </div>
         </div>
         <div className="relative my-2 w-full">
-          <Code
-            title="Promo Code"
-            placeholder="DFS3432"
-            validationList={["AEON12"]}
-            updateCode={setPromoCode}
-          />
+          <Code title="Promo Code" placeholder="DFS3432" />
         </div>
         <div className="inline-block my-3 w-full h-[1px] bg-[#bcbcbc]" />
         <div className="flex items-center justify-between w-full">
@@ -494,7 +572,6 @@ const SummaryInfoCard = () => {
           ) : pathname === "/insurance/review-pay" ? (
             <button
               onClick={() => {
-                // updateFinalPriceToStore(updateFinalPrice(totalAmount));
                 navigate("/payment");
               }}
               className="relative py-2 px-6 min-w-[120px] order-1 mobile-xl:order-2 flex items-center justify-center w-full mobile-xl:w-auto bg-primary-blue rounded mobile-xl:rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
@@ -504,12 +581,18 @@ const SummaryInfoCard = () => {
               </span>
             </button>
           ) : (
-            <Link
-              to={
-                pathname === "/insurance/plan-add-ons"
-                  ? "/insurance/application-details"
-                  : "/insurance/review-pay"
-              }
+            <button
+              onClick={() => {
+                if (pathname === "/insurance/plan-add-ons") {
+                  navigate("/insurance/application-details");
+                } else if (pathname === "/insurance/application-details") {
+                  updateClient();
+                  console.log("Ried");
+                  navigate("/insurance/review-pay");
+                } else {
+                  navigate("/insurance/payment");
+                }
+              }}
               className="relative py-2 px-6 min-w-[120px] flex items-center justify-center order-1 mobile-xl:order-2 w-full mobile-xl:w-auto bg-primary-blue rounded mobile-xl:rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
             >
               <span className="text-base text-center font-medium text-white">
@@ -517,7 +600,7 @@ const SummaryInfoCard = () => {
                   ? "Proceed To Confirm"
                   : "Next"}
               </span>
-            </Link>
+            </button>
           )}
         </div>
       </div>

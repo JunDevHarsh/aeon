@@ -78,13 +78,6 @@ function MarketAndAgreedContainer() {
   } = useContext(MarketAndAgreedContext);
   // get token from store
   const {
-    token: tokenInStore,
-    session: sessionInStore,
-    requestId,
-    inquiryId,
-    accountId,
-  } = useSelector((state: RootState) => state.credentials);
-  const {
     state: { id: productId, quoteId },
     dispatch: updateInsuranceDispatch,
   } = useContext(InsuranceContext);
@@ -98,12 +91,23 @@ function MarketAndAgreedContainer() {
 
   const updateStore = useDispatch();
   const {
-    reconIndicator,
-    vehicleMake,
-    vehicleModel,
-    region,
-    yearOfManufacture,
-  } = useSelector((state: RootState) => state.vehicle);
+    vehicle: {
+      reconIndicator,
+      vehicleMake,
+      vehicleModel,
+      region,
+      yearOfManufacture,
+    },
+    user: { promoCode, promoId, percentOff },
+    credentials: {
+      token: tokenInStore,
+      session: sessionInStore,
+      requestId,
+      inquiryId,
+      accountId,
+      vehicleId,
+    },
+  } = useSelector((state: RootState) => state);
 
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -311,6 +315,11 @@ function MarketAndAgreedContainer() {
             insurer: "7x250468",
             productid: productId,
             quoteId: quoteId,
+            vehicleId: vehicleId,
+            roadtax: "",
+            promoid: promoId,
+            promocode: promoCode,
+            percent_off: percentOff,
           }),
           operation: "updateQuote",
           sessionName: sessionInfo?.sessionName,
