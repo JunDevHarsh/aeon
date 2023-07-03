@@ -55,6 +55,13 @@ function AddOnInputPopup({
 
   function handleOnSave() {
     if (error) return;
+    if(fieldtype === "Text Box" && value === "0") {
+      setState({
+        error: "Enter a valid suminsured value",
+        value: value,
+      });
+      return;
+    }
     if (!value || value === "0") {
       setState({
         error: "Select an option from the dropdown",
