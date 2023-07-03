@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { nanoid } from "@reduxjs/toolkit";
 import AddOnsCard from "../card/AddOns";
 import SelectDropdown from "../fields/SelectDropdown";
@@ -15,6 +15,7 @@ import { QuoteListingContext } from "../../context/QuoteListing";
 import { InsuranceContext } from "../../context/InsuranceContext";
 import AddOnDriver from "../card/AddOnDriver";
 import { OptionContext } from "../../context/OptionContext";
+import AddOnDriverWarning from "../popup/AddOnDriverWarning";
 
 const defaultAddOnsState: AddOnType[] = [
   {
@@ -118,16 +119,20 @@ const AddOnsContainer = () => {
     dispatch: updateAddOnsState,
   } = useContext(AddOnsContext);
 
-  const { nationality, relationShip } = useContext(OptionContext);
+  const [open, setOpen] = useState<boolean>(false);
+
+  const {
+    store: { nationality },
+  } = useContext(OptionContext);
 
   const nationalityOption = nationality.map((item: any) => ({
     label: item.Description,
     value: item.Code,
   }));
-  const relationshipOption = relationShip.map((item: any) => ({
-    label: item.Description,
-    value: item.Code,
-  }));
+  // const relationshipOption = relationShip.map((item: any) => ({
+  //   label: item.Description,
+  //   value: item.Code,
+  // }));
   // const nationalityOption = nationality.map((item: any) => ({label: item.Description, value: item.Code}));
 
   // const [addOnPopup, handleAddOnPopup] = useState<{
@@ -250,6 +255,13 @@ const AddOnsContainer = () => {
 
   return (
     <>
+      {open && (
+        <AddOnDriverWarning
+          open={open}
+          setOpen={setOpen}
+          updateAddOnDriver={updateAddOnDriver}
+        />
+      )}
       <div className="flex flex-col items-start max-w-[39rem] w-full">
         <div className="relative py-4 w-full">
           <h2 className="text-2xl text-left text-primary-black font-bold">
@@ -415,7 +427,7 @@ const AddOnsContainer = () => {
                   />
                 </div>
                 {/* Relationship Field */}
-                <div className="relative pb-5 flex flex-col items-start gap-y-1 flex-[1_1_40%] w-auto h-auto">
+                {/* <div className="relative pb-5 flex flex-col items-start gap-y-1 flex-[1_1_40%] w-auto h-auto">
                   <span className="text-base text-center text-primary-black font-semibold">
                     Relationship
                   </span>
@@ -430,7 +442,7 @@ const AddOnsContainer = () => {
                     selected={driverDetails.relationship}
                     optionList={relationshipOption}
                   />
-                </div>
+                </div> */}
                 {/* Relationship Field */}
                 <div className="relative pb-5 flex flex-col items-start gap-y-1 flex-[1_1_40%] w-auto h-auto">
                   <span className="text-base text-center text-primary-black font-semibold">
@@ -456,7 +468,10 @@ const AddOnsContainer = () => {
               <button
                 className="flex items-center justify-start w-auto"
                 onClick={() => {
-                  if(driverDetails.length >= 2) return;
+                  if (driverDetails.length >= 2) {
+                    setOpen(true);
+                    return;
+                  }
                   dispatch({
                     type: AddDriverTypes.AddNewDriverDetails,
                     payload: {

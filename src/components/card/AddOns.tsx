@@ -110,14 +110,13 @@ const AddOnsCard: React.FC<AddOnsCardProps> = ({
           <p className="text-base text-center text-primary-black font-bold">
             {title}
           </p>
-          {isSelected && sumInsured !== 0 && (
+          {isSelected && requiredinfo === "1" && (
             <>
               <div className="block my-1.5 h-[2px] w-2/3 bg-[#D9D9D9]" />
               <div className="flex items-center justify-center  w-full">
                 <span className="mr-2 text-sm text-center text-primary-black font-medium">
                   Sum Insured
                 </span>
-                {requiredinfo === "1" ? (
                   <button
                     className="flex items-center justify-center w-auto"
                     onClick={() => setOpen(true)}
@@ -139,11 +138,6 @@ const AddOnsCard: React.FC<AddOnsCardProps> = ({
                       />
                     </svg>
                   </button>
-                ) : (
-                  <span className="text-sm text-center text-primary-black font-normal">
-                    RM {numberWithCommas(sumInsured)}
-                  </span>
-                )}
               </div>
             </>
           )}

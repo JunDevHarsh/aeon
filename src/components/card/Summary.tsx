@@ -272,7 +272,7 @@ const SummaryInfoCard = () => {
               productId: productId,
               data: {
                 premium,
-                displaypremium,
+                displayPremium: displaypremium,
                 // additionalCover: updatedAdditionalCover,
               },
             },
@@ -512,7 +512,7 @@ const SummaryInfoCard = () => {
               RM {premium?.grossPremium || "0.00"}
             </span>
           </div>
-          {promoCode !== "" && (
+          {premium?.promoamount && (
             <div className="flex items-start justify-between w-full">
               <span className="text-base text-left text-primary-black font-medium w-1/2">
                 Discount {`${percentOff}%`}
@@ -561,7 +561,7 @@ const SummaryInfoCard = () => {
             Total Amount
           </span>
           <span className="text-xl text-right text-primary-black font-bold w-1/2">
-            RM {premium?.premiumDue || "0.00"}
+            RM {(premium?.premiumDue)?.toFixed(2) || "0.00"}
           </span>
         </div>
         <div className="mt-4 flex flex-col mobile-xl:flex-row items-center justify-center w-full">

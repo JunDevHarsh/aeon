@@ -1,99 +1,1702 @@
-import { useState, createContext, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../store/store";
-import {
-  checkTokenIsExpired,
-  generateSessionName,
-  generateToken,
-  getLovListApi,
-} from "../utils/helpers";
-import {
-  SessionType,
-  TokenType,
-  addSessionName,
-  addToken,
-} from "../store/slices/credentials";
+import { useState, createContext } from "react";
 
-export const OptionContext = createContext<{
-  occupation: [];
-  relationShip: [];
-  nationality: [];
-}>({
-  occupation: [],
-  relationShip: [],
-  nationality: [],
+type OptionState = {
+  occupation: any;
+  relationShip: any;
+  nationality: any;
+};
+
+type OptionContextStore = {
+  store: OptionState;
+  dispatch: React.Dispatch<React.SetStateAction<OptionState>>;
+};
+
+const initialState: OptionState = {
+  nationality: [
+    {
+      Description: "Afghanistan",
+      Code: "AFG",
+      DefaultInd: false,
+      Sequence: 1,
+    },
+    {
+      Description: "Albania",
+      Code: "ALB",
+      DefaultInd: false,
+      Sequence: 2,
+    },
+    {
+      Description: "Algeria",
+      Code: "DZA",
+      DefaultInd: false,
+      Sequence: 3,
+    },
+    {
+      Description: "American Samoa",
+      Code: "ASM",
+      DefaultInd: false,
+      Sequence: 4,
+    },
+    {
+      Description: "Andorra",
+      Code: "AND",
+      DefaultInd: false,
+      Sequence: 5,
+    },
+    {
+      Description: "Angola",
+      Code: "AGO",
+      DefaultInd: false,
+      Sequence: 6,
+    },
+    {
+      Description: "Anguilla",
+      Code: "AIA",
+      DefaultInd: false,
+      Sequence: 7,
+    },
+    {
+      Description: "Antarctica",
+      Code: "ATA",
+      DefaultInd: false,
+      Sequence: 8,
+    },
+    {
+      Description: "Antigua And Barbuda",
+      Code: "ATG",
+      DefaultInd: false,
+      Sequence: 9,
+    },
+    {
+      Description: "Argentina",
+      Code: "ARG",
+      DefaultInd: false,
+      Sequence: 10,
+    },
+    {
+      Description: "Armenia",
+      Code: "ARM",
+      DefaultInd: false,
+      Sequence: 11,
+    },
+    {
+      Description: "Aruba",
+      Code: "ABW",
+      DefaultInd: false,
+      Sequence: 12,
+    },
+    {
+      Description: "Australia",
+      Code: "AUS",
+      DefaultInd: false,
+      Sequence: 13,
+    },
+    {
+      Description: "Austria",
+      Code: "AUT",
+      DefaultInd: false,
+      Sequence: 14,
+    },
+    {
+      Description: "Azerbaijan",
+      Code: "AZE",
+      DefaultInd: false,
+      Sequence: 15,
+    },
+    {
+      Description: "Bahamas",
+      Code: "BHS",
+      DefaultInd: false,
+      Sequence: 16,
+    },
+    {
+      Description: "Bahrain",
+      Code: "BHR",
+      DefaultInd: false,
+      Sequence: 17,
+    },
+    {
+      Description: "Bangladesh",
+      Code: "BGD",
+      DefaultInd: false,
+      Sequence: 18,
+    },
+    {
+      Description: "Barbados",
+      Code: "BRB",
+      DefaultInd: false,
+      Sequence: 19,
+    },
+    {
+      Description: "Belarus",
+      Code: "BLR",
+      DefaultInd: false,
+      Sequence: 20,
+    },
+    {
+      Description: "Belgium",
+      Code: "BEL",
+      DefaultInd: false,
+      Sequence: 21,
+    },
+    {
+      Description: "Belize",
+      Code: "BLZ",
+      DefaultInd: false,
+      Sequence: 22,
+    },
+    {
+      Description: "Benin",
+      Code: "BEN",
+      DefaultInd: false,
+      Sequence: 23,
+    },
+    {
+      Description: "Bermuda",
+      Code: "BMU",
+      DefaultInd: false,
+      Sequence: 24,
+    },
+    {
+      Description: "Bhutan",
+      Code: "BTN",
+      DefaultInd: false,
+      Sequence: 25,
+    },
+    {
+      Description: "Bolivia",
+      Code: "BOL",
+      DefaultInd: false,
+      Sequence: 26,
+    },
+    {
+      Description: "Bosnia And Herzegowina",
+      Code: "BIH",
+      DefaultInd: false,
+      Sequence: 27,
+    },
+    {
+      Description: "Botswana",
+      Code: "BWA",
+      DefaultInd: false,
+      Sequence: 28,
+    },
+    {
+      Description: "Bouvet Island",
+      Code: "BVT",
+      DefaultInd: false,
+      Sequence: 29,
+    },
+    {
+      Description: "Brazil",
+      Code: "BRA",
+      DefaultInd: false,
+      Sequence: 30,
+    },
+    {
+      Description: "British Indian Ocean Territory",
+      Code: "IOT",
+      DefaultInd: false,
+      Sequence: 31,
+    },
+    {
+      Description: "Brunei Darussalam",
+      Code: "BRN",
+      DefaultInd: false,
+      Sequence: 32,
+    },
+    {
+      Description: "Bulgaria",
+      Code: "BGR",
+      DefaultInd: false,
+      Sequence: 33,
+    },
+    {
+      Description: "Burkina Faso",
+      Code: "BFA",
+      DefaultInd: false,
+      Sequence: 34,
+    },
+    {
+      Description: "Burundi",
+      Code: "BDI",
+      DefaultInd: false,
+      Sequence: 35,
+    },
+    {
+      Description: "Cambodia",
+      Code: "KHM",
+      DefaultInd: false,
+      Sequence: 36,
+    },
+    {
+      Description: "Cameroon",
+      Code: "CMR",
+      DefaultInd: false,
+      Sequence: 37,
+    },
+    {
+      Description: "Canada",
+      Code: "CAN",
+      DefaultInd: false,
+      Sequence: 38,
+    },
+    {
+      Description: "Cape Verde",
+      Code: "CPV",
+      DefaultInd: false,
+      Sequence: 39,
+    },
+    {
+      Description: "Cayman Islands",
+      Code: "CYM",
+      DefaultInd: false,
+      Sequence: 40,
+    },
+    {
+      Description: "Central African Republic",
+      Code: "CAF",
+      DefaultInd: false,
+      Sequence: 41,
+    },
+    {
+      Description: "Chad",
+      Code: "TCD",
+      DefaultInd: false,
+      Sequence: 42,
+    },
+    {
+      Description: "Chile",
+      Code: "CHL",
+      DefaultInd: false,
+      Sequence: 43,
+    },
+    {
+      Description: "China",
+      Code: "CHN",
+      DefaultInd: false,
+      Sequence: 44,
+    },
+    {
+      Description: "Christmas Island",
+      Code: "CXR",
+      DefaultInd: false,
+      Sequence: 45,
+    },
+    {
+      Description: "Cocos (Keeling) Islands",
+      Code: "CCK",
+      DefaultInd: false,
+      Sequence: 46,
+    },
+    {
+      Description: "Colombia",
+      Code: "COL",
+      DefaultInd: false,
+      Sequence: 47,
+    },
+    {
+      Description: "Comoros",
+      Code: "COM",
+      DefaultInd: false,
+      Sequence: 48,
+    },
+    {
+      Description: "Congo",
+      Code: "COG",
+      DefaultInd: false,
+      Sequence: 49,
+    },
+    {
+      Description: "Congo, The Drc",
+      Code: "COD",
+      DefaultInd: false,
+      Sequence: 50,
+    },
+    {
+      Description: "Cook Islands",
+      Code: "COK",
+      DefaultInd: false,
+      Sequence: 51,
+    },
+    {
+      Description: "Costa Rica",
+      Code: "CRI",
+      DefaultInd: false,
+      Sequence: 52,
+    },
+    {
+      Description: 'Cote D"Ivoire',
+      Code: "CIV",
+      DefaultInd: false,
+      Sequence: 53,
+    },
+    {
+      Description: "Croatia (Local Name: Hrvatska",
+      Code: "HRV",
+      DefaultInd: false,
+      Sequence: 54,
+    },
+    {
+      Description: "Cuba",
+      Code: "CUB",
+      DefaultInd: false,
+      Sequence: 55,
+    },
+    {
+      Description: "Cyprus",
+      Code: "CYP",
+      DefaultInd: false,
+      Sequence: 56,
+    },
+    {
+      Description: "Czech Republic",
+      Code: "CZE",
+      DefaultInd: false,
+      Sequence: 57,
+    },
+    {
+      Description: "Denmark",
+      Code: "DNK",
+      DefaultInd: false,
+      Sequence: 58,
+    },
+    {
+      Description: "Djibouti",
+      Code: "DJI",
+      DefaultInd: false,
+      Sequence: 59,
+    },
+    {
+      Description: "Dominica",
+      Code: "DMA",
+      DefaultInd: false,
+      Sequence: 60,
+    },
+    {
+      Description: "Dominican Republic",
+      Code: "DOM",
+      DefaultInd: false,
+      Sequence: 61,
+    },
+    {
+      Description: "East Timor",
+      Code: "TMP",
+      DefaultInd: false,
+      Sequence: 62,
+    },
+    {
+      Description: "Ecuador",
+      Code: "ECU",
+      DefaultInd: false,
+      Sequence: 63,
+    },
+    {
+      Description: "Egypt",
+      Code: "EGY",
+      DefaultInd: false,
+      Sequence: 64,
+    },
+    {
+      Description: "El Salvador",
+      Code: "SLV",
+      DefaultInd: false,
+      Sequence: 65,
+    },
+    {
+      Description: "Equatorial Guinea",
+      Code: "GNQ",
+      DefaultInd: false,
+      Sequence: 66,
+    },
+    {
+      Description: "Eritrea",
+      Code: "ERI",
+      DefaultInd: false,
+      Sequence: 67,
+    },
+    {
+      Description: "Estonia",
+      Code: "EST",
+      DefaultInd: false,
+      Sequence: 68,
+    },
+    {
+      Description: "Ethiopia",
+      Code: "ETH",
+      DefaultInd: false,
+      Sequence: 69,
+    },
+    {
+      Description: "Falkland Islands (Malvinas)",
+      Code: "FLK",
+      DefaultInd: false,
+      Sequence: 70,
+    },
+    {
+      Description: "Faroe Islands",
+      Code: "FRO",
+      DefaultInd: false,
+      Sequence: 71,
+    },
+    {
+      Description: "Fiji",
+      Code: "FJI",
+      DefaultInd: false,
+      Sequence: 72,
+    },
+    {
+      Description: "Finland",
+      Code: "FIN",
+      DefaultInd: false,
+      Sequence: 73,
+    },
+    {
+      Description: "France",
+      Code: "FRA",
+      DefaultInd: false,
+      Sequence: 74,
+    },
+    {
+      Description: "France, Metropolitan",
+      Code: "FXX",
+      DefaultInd: false,
+      Sequence: 75,
+    },
+    {
+      Description: "French Guiana",
+      Code: "GUF",
+      DefaultInd: false,
+      Sequence: 76,
+    },
+    {
+      Description: "French Polynesia",
+      Code: "PYF",
+      DefaultInd: false,
+      Sequence: 77,
+    },
+    {
+      Description: "French Southern Territories",
+      Code: "ATF",
+      DefaultInd: false,
+      Sequence: 78,
+    },
+    {
+      Description: "Gabon",
+      Code: "GAB",
+      DefaultInd: false,
+      Sequence: 79,
+    },
+    {
+      Description: "Gambia",
+      Code: "GMB",
+      DefaultInd: false,
+      Sequence: 80,
+    },
+    {
+      Description: "Georgia",
+      Code: "GEO",
+      DefaultInd: false,
+      Sequence: 81,
+    },
+    {
+      Description: "Germany",
+      Code: "DEU",
+      DefaultInd: false,
+      Sequence: 82,
+    },
+    {
+      Description: "Ghana",
+      Code: "GHA",
+      DefaultInd: false,
+      Sequence: 83,
+    },
+    {
+      Description: "Gibraltar",
+      Code: "GIB",
+      DefaultInd: false,
+      Sequence: 84,
+    },
+    {
+      Description: "Greece",
+      Code: "GRC",
+      DefaultInd: false,
+      Sequence: 85,
+    },
+    {
+      Description: "Greenland",
+      Code: "GRL",
+      DefaultInd: false,
+      Sequence: 86,
+    },
+    {
+      Description: "Grenada",
+      Code: "GRD",
+      DefaultInd: false,
+      Sequence: 87,
+    },
+    {
+      Description: "Guadeloupe",
+      Code: "GLP",
+      DefaultInd: false,
+      Sequence: 88,
+    },
+    {
+      Description: "Guam",
+      Code: "GUM",
+      DefaultInd: false,
+      Sequence: 89,
+    },
+    {
+      Description: "Guatemala",
+      Code: "GTM",
+      DefaultInd: false,
+      Sequence: 90,
+    },
+    {
+      Description: "Guinea",
+      Code: "GIN",
+      DefaultInd: false,
+      Sequence: 91,
+    },
+    {
+      Description: "Guinea-Bissau",
+      Code: "GNB",
+      DefaultInd: false,
+      Sequence: 92,
+    },
+    {
+      Description: "Guyana",
+      Code: "GUY",
+      DefaultInd: false,
+      Sequence: 93,
+    },
+    {
+      Description: "Haiti",
+      Code: "HTI",
+      DefaultInd: false,
+      Sequence: 94,
+    },
+    {
+      Description: "Heard And Mc Donald Islands",
+      Code: "HMD",
+      DefaultInd: false,
+      Sequence: 95,
+    },
+    {
+      Description: "Holy See (Vatican City State)",
+      Code: "VAT",
+      DefaultInd: false,
+      Sequence: 96,
+    },
+    {
+      Description: "Honduras",
+      Code: "HND",
+      DefaultInd: false,
+      Sequence: 97,
+    },
+    {
+      Description: "Hong Kong",
+      Code: "HKG",
+      DefaultInd: false,
+      Sequence: 98,
+    },
+    {
+      Description: "Hungary",
+      Code: "HUN",
+      DefaultInd: false,
+      Sequence: 99,
+    },
+    {
+      Description: "Iceland",
+      Code: "ISL",
+      DefaultInd: false,
+      Sequence: 100,
+    },
+    {
+      Description: "India",
+      Code: "IND",
+      DefaultInd: false,
+      Sequence: 101,
+    },
+    {
+      Description: "Indonesia",
+      Code: "IDN",
+      DefaultInd: false,
+      Sequence: 102,
+    },
+    {
+      Description: "Iran (Islamic Republic Of)",
+      Code: "IRN",
+      DefaultInd: false,
+      Sequence: 103,
+    },
+    {
+      Description: "Iraq",
+      Code: "IRQ",
+      DefaultInd: false,
+      Sequence: 104,
+    },
+    {
+      Description: "Ireland",
+      Code: "IRL",
+      DefaultInd: false,
+      Sequence: 105,
+    },
+    {
+      Description: "Israel",
+      Code: "ISR",
+      DefaultInd: false,
+      Sequence: 106,
+    },
+    {
+      Description: "Italy",
+      Code: "ITA",
+      DefaultInd: false,
+      Sequence: 107,
+    },
+    {
+      Description: "Jamaica",
+      Code: "JAM",
+      DefaultInd: false,
+      Sequence: 108,
+    },
+    {
+      Description: "Japan",
+      Code: "JPN",
+      DefaultInd: false,
+      Sequence: 109,
+    },
+    {
+      Description: "Jordan",
+      Code: "JOR",
+      DefaultInd: false,
+      Sequence: 110,
+    },
+    {
+      Description: "Kazakhstan",
+      Code: "KAZ",
+      DefaultInd: false,
+      Sequence: 111,
+    },
+    {
+      Description: "Kenya",
+      Code: "KEN",
+      DefaultInd: false,
+      Sequence: 112,
+    },
+    {
+      Description: "Kiribati",
+      Code: "KIR",
+      DefaultInd: false,
+      Sequence: 113,
+    },
+    {
+      Description: "Kuwait",
+      Code: "KWT",
+      DefaultInd: false,
+      Sequence: 114,
+    },
+    {
+      Description: "Kyrgyzstan",
+      Code: "KGZ",
+      DefaultInd: false,
+      Sequence: 115,
+    },
+    {
+      Description: "Laos",
+      Code: "LAO",
+      DefaultInd: false,
+      Sequence: 116,
+    },
+    {
+      Description: "Latvia",
+      Code: "LVA",
+      DefaultInd: false,
+      Sequence: 117,
+    },
+    {
+      Description: "Lebanon",
+      Code: "LBN",
+      DefaultInd: false,
+      Sequence: 118,
+    },
+    {
+      Description: "Lesotho",
+      Code: "LSO",
+      DefaultInd: false,
+      Sequence: 119,
+    },
+    {
+      Description: "Liberia",
+      Code: "LBR",
+      DefaultInd: false,
+      Sequence: 120,
+    },
+    {
+      Description: "Libyan Arab Jamahiriya",
+      Code: "LBY",
+      DefaultInd: false,
+      Sequence: 121,
+    },
+    {
+      Description: "Liechtenstein",
+      Code: "LIE",
+      DefaultInd: false,
+      Sequence: 122,
+    },
+    {
+      Description: "Lithuania",
+      Code: "LTU",
+      DefaultInd: false,
+      Sequence: 123,
+    },
+    {
+      Description: "Luxembourg",
+      Code: "LUX",
+      DefaultInd: false,
+      Sequence: 124,
+    },
+    {
+      Description: "Macau",
+      Code: "MAC",
+      DefaultInd: false,
+      Sequence: 125,
+    },
+    {
+      Description: "Macedonia",
+      Code: "MKD",
+      DefaultInd: false,
+      Sequence: 126,
+    },
+    {
+      Description: "Madagascar",
+      Code: "MDG",
+      DefaultInd: false,
+      Sequence: 127,
+    },
+    {
+      Description: "Malawi",
+      Code: "MWI",
+      DefaultInd: false,
+      Sequence: 128,
+    },
+    {
+      Description: "Malaysia",
+      Code: "MAL",
+      DefaultInd: false,
+      Sequence: 129,
+    },
+    {
+      Description: "Maldives",
+      Code: "MDV",
+      DefaultInd: false,
+      Sequence: 130,
+    },
+    {
+      Description: "Mali",
+      Code: "MLI",
+      DefaultInd: false,
+      Sequence: 131,
+    },
+    {
+      Description: "Malta",
+      Code: "MLT",
+      DefaultInd: false,
+      Sequence: 132,
+    },
+    {
+      Description: "Marshall Islands",
+      Code: "MHL",
+      DefaultInd: false,
+      Sequence: 133,
+    },
+    {
+      Description: "Martinique",
+      Code: "MTQ",
+      DefaultInd: false,
+      Sequence: 134,
+    },
+    {
+      Description: "Mauritania",
+      Code: "MRT",
+      DefaultInd: false,
+      Sequence: 135,
+    },
+    {
+      Description: "Mauritius",
+      Code: "MUS",
+      DefaultInd: false,
+      Sequence: 136,
+    },
+    {
+      Description: "Mayotte",
+      Code: "MYT",
+      DefaultInd: false,
+      Sequence: 137,
+    },
+    {
+      Description: "Mexico",
+      Code: "MEX",
+      DefaultInd: false,
+      Sequence: 138,
+    },
+    {
+      Description: "Micronesia, Federated States Of",
+      Code: "FSM",
+      DefaultInd: false,
+      Sequence: 139,
+    },
+    {
+      Description: "Moldova, Republic Of",
+      Code: "MDA",
+      DefaultInd: false,
+      Sequence: 140,
+    },
+    {
+      Description: "Monaco",
+      Code: "MCO",
+      DefaultInd: false,
+      Sequence: 141,
+    },
+    {
+      Description: "Mongolia",
+      Code: "MNG",
+      DefaultInd: false,
+      Sequence: 142,
+    },
+    {
+      Description: "Montenegro",
+      Code: "MNE",
+      DefaultInd: false,
+      Sequence: 143,
+    },
+    {
+      Description: "Montserrat",
+      Code: "MSR",
+      DefaultInd: false,
+      Sequence: 144,
+    },
+    {
+      Description: "Morocco",
+      Code: "MAR",
+      DefaultInd: false,
+      Sequence: 145,
+    },
+    {
+      Description: "Mozambique",
+      Code: "MOZ",
+      DefaultInd: false,
+      Sequence: 146,
+    },
+    {
+      Description: "Myanmar (Burma)",
+      Code: "MMR",
+      DefaultInd: false,
+      Sequence: 147,
+    },
+    {
+      Description: "Namibia",
+      Code: "NAM",
+      DefaultInd: false,
+      Sequence: 148,
+    },
+    {
+      Description: "Nauru",
+      Code: "NRU",
+      DefaultInd: false,
+      Sequence: 149,
+    },
+    {
+      Description: "Nepal",
+      Code: "NPL",
+      DefaultInd: false,
+      Sequence: 150,
+    },
+    {
+      Description: "Netherlands",
+      Code: "NLD",
+      DefaultInd: false,
+      Sequence: 151,
+    },
+    {
+      Description: "Netherlands Antilles",
+      Code: "ANT",
+      DefaultInd: false,
+      Sequence: 152,
+    },
+    {
+      Description: "New Caledonia",
+      Code: "NCL",
+      DefaultInd: false,
+      Sequence: 153,
+    },
+    {
+      Description: "New Zealand",
+      Code: "NZL",
+      DefaultInd: false,
+      Sequence: 154,
+    },
+    {
+      Description: "Nicaragua",
+      Code: "NIC",
+      DefaultInd: false,
+      Sequence: 155,
+    },
+    {
+      Description: "Niger",
+      Code: "NER",
+      DefaultInd: false,
+      Sequence: 156,
+    },
+    {
+      Description: "Nigeria",
+      Code: "NGA",
+      DefaultInd: false,
+      Sequence: 157,
+    },
+    {
+      Description: "Niue",
+      Code: "NIU",
+      DefaultInd: false,
+      Sequence: 158,
+    },
+    {
+      Description: "Norfolk Island",
+      Code: "NFK",
+      DefaultInd: false,
+      Sequence: 159,
+    },
+    {
+      Description: "North Korea",
+      Code: "PRK",
+      DefaultInd: false,
+      Sequence: 160,
+    },
+    {
+      Description: "Northern Mariana Islands",
+      Code: "MNP",
+      DefaultInd: false,
+      Sequence: 161,
+    },
+    {
+      Description: "Norway",
+      Code: "NOR",
+      DefaultInd: false,
+      Sequence: 162,
+    },
+    {
+      Description: "Oman",
+      Code: "OMN",
+      DefaultInd: false,
+      Sequence: 163,
+    },
+    {
+      Description: "Other",
+      Code: "OTH",
+      DefaultInd: false,
+      Sequence: 164,
+    },
+    {
+      Description: "Pakistan",
+      Code: "PAK",
+      DefaultInd: false,
+      Sequence: 165,
+    },
+    {
+      Description: "Palau",
+      Code: "PLW",
+      DefaultInd: false,
+      Sequence: 166,
+    },
+    {
+      Description: "Palestine",
+      Code: "PSE",
+      DefaultInd: false,
+      Sequence: 167,
+    },
+    {
+      Description: "Panama",
+      Code: "PAN",
+      DefaultInd: false,
+      Sequence: 168,
+    },
+    {
+      Description: "Papua New Guinea",
+      Code: "PNG",
+      DefaultInd: false,
+      Sequence: 169,
+    },
+    {
+      Description: "Paraguay",
+      Code: "PRY",
+      DefaultInd: false,
+      Sequence: 170,
+    },
+    {
+      Description: "Peru",
+      Code: "PER",
+      DefaultInd: false,
+      Sequence: 171,
+    },
+    {
+      Description: "Philippines",
+      Code: "PHL",
+      DefaultInd: false,
+      Sequence: 172,
+    },
+    {
+      Description: "Pitcairn",
+      Code: "PCN",
+      DefaultInd: false,
+      Sequence: 173,
+    },
+    {
+      Description: "Poland",
+      Code: "POL",
+      DefaultInd: false,
+      Sequence: 174,
+    },
+    {
+      Description: "Portugal",
+      Code: "PRT",
+      DefaultInd: false,
+      Sequence: 175,
+    },
+    {
+      Description: "Puerto Rico",
+      Code: "PRI",
+      DefaultInd: false,
+      Sequence: 176,
+    },
+    {
+      Description: "Qatar",
+      Code: "QAT",
+      DefaultInd: false,
+      Sequence: 177,
+    },
+    {
+      Description: "Reunion",
+      Code: "REU",
+      DefaultInd: false,
+      Sequence: 178,
+    },
+    {
+      Description: "Romania",
+      Code: "ROM",
+      DefaultInd: false,
+      Sequence: 179,
+    },
+    {
+      Description: "Russian Federation",
+      Code: "RUS",
+      DefaultInd: false,
+      Sequence: 180,
+    },
+    {
+      Description: "Rwanda",
+      Code: "RWA",
+      DefaultInd: false,
+      Sequence: 181,
+    },
+    {
+      Description: "Saint Kitts And Nevis",
+      Code: "KNA",
+      DefaultInd: false,
+      Sequence: 182,
+    },
+    {
+      Description: "Saint Lucia",
+      Code: "LCA",
+      DefaultInd: false,
+      Sequence: 183,
+    },
+    {
+      Description: "Saint Vincent And The Grenadines",
+      Code: "VCT",
+      DefaultInd: false,
+      Sequence: 184,
+    },
+    {
+      Description: "Samoa",
+      Code: "WSM",
+      DefaultInd: false,
+      Sequence: 185,
+    },
+    {
+      Description: "San Marino",
+      Code: "SMR",
+      DefaultInd: false,
+      Sequence: 186,
+    },
+    {
+      Description: "Sao Tome And Principe",
+      Code: "STP",
+      DefaultInd: false,
+      Sequence: 187,
+    },
+    {
+      Description: "Saudi Arabia",
+      Code: "SAU",
+      DefaultInd: false,
+      Sequence: 188,
+    },
+    {
+      Description: "Senegal",
+      Code: "SEN",
+      DefaultInd: false,
+      Sequence: 189,
+    },
+    {
+      Description: "Serbia",
+      Code: "SRB",
+      DefaultInd: false,
+      Sequence: 190,
+    },
+    {
+      Description: "Seychelles",
+      Code: "SYC",
+      DefaultInd: false,
+      Sequence: 191,
+    },
+    {
+      Description: "Sierra Leone",
+      Code: "SLE",
+      DefaultInd: false,
+      Sequence: 192,
+    },
+    {
+      Description: "Singapore",
+      Code: "SGP",
+      DefaultInd: false,
+      Sequence: 193,
+    },
+    {
+      Description: "Slovakia (Slovak Republic)",
+      Code: "SVK",
+      DefaultInd: false,
+      Sequence: 194,
+    },
+    {
+      Description: "Slovenia",
+      Code: "SVN",
+      DefaultInd: false,
+      Sequence: 195,
+    },
+    {
+      Description: "Solomon Islands",
+      Code: "SLB",
+      DefaultInd: false,
+      Sequence: 196,
+    },
+    {
+      Description: "Somalia",
+      Code: "SOM",
+      DefaultInd: false,
+      Sequence: 197,
+    },
+    {
+      Description: "South Africa",
+      Code: "ZAF",
+      DefaultInd: false,
+      Sequence: 198,
+    },
+    {
+      Description: "South Georgia And South S.S.",
+      Code: "SGS",
+      DefaultInd: false,
+      Sequence: 199,
+    },
+    {
+      Description: "South Korea",
+      Code: "KOR",
+      DefaultInd: false,
+      Sequence: 200,
+    },
+    {
+      Description: "South Sudan",
+      Code: "SSD",
+      DefaultInd: false,
+      Sequence: 201,
+    },
+    {
+      Description: "Spain",
+      Code: "ESP",
+      DefaultInd: false,
+      Sequence: 202,
+    },
+    {
+      Description: "Sri Lanka",
+      Code: "LKA",
+      DefaultInd: false,
+      Sequence: 203,
+    },
+    {
+      Description: "St. Helena",
+      Code: "SHN",
+      DefaultInd: false,
+      Sequence: 204,
+    },
+    {
+      Description: "St. Pierre And Miquelon",
+      Code: "SPM",
+      DefaultInd: false,
+      Sequence: 205,
+    },
+    {
+      Description: "Sudan",
+      Code: "SDN",
+      DefaultInd: false,
+      Sequence: 206,
+    },
+    {
+      Description: "Suriname",
+      Code: "SUR",
+      DefaultInd: false,
+      Sequence: 207,
+    },
+    {
+      Description: "Svalbard And Jan Mayen Islands",
+      Code: "SJM",
+      DefaultInd: false,
+      Sequence: 208,
+    },
+    {
+      Description: "Swaziland",
+      Code: "SWZ",
+      DefaultInd: false,
+      Sequence: 209,
+    },
+    {
+      Description: "Sweden",
+      Code: "SWE",
+      DefaultInd: false,
+      Sequence: 210,
+    },
+    {
+      Description: "Switzerland",
+      Code: "CHE",
+      DefaultInd: false,
+      Sequence: 211,
+    },
+    {
+      Description: "Syrian Arab Republic",
+      Code: "SYR",
+      DefaultInd: false,
+      Sequence: 212,
+    },
+    {
+      Description: "Taiwan, Province Of China",
+      Code: "TWN",
+      DefaultInd: false,
+      Sequence: 213,
+    },
+    {
+      Description: "Tajikistan",
+      Code: "TJK",
+      DefaultInd: false,
+      Sequence: 214,
+    },
+    {
+      Description: "Tanzania, United Republic Of",
+      Code: "TZA",
+      DefaultInd: false,
+      Sequence: 215,
+    },
+    {
+      Description: "Thailand",
+      Code: "THA",
+      DefaultInd: false,
+      Sequence: 216,
+    },
+    {
+      Description: "Togo",
+      Code: "TGO",
+      DefaultInd: false,
+      Sequence: 217,
+    },
+    {
+      Description: "Tokelau",
+      Code: "TKL",
+      DefaultInd: false,
+      Sequence: 218,
+    },
+    {
+      Description: "Tonga",
+      Code: "TON",
+      DefaultInd: false,
+      Sequence: 219,
+    },
+    {
+      Description: "Trinidad And Tobago",
+      Code: "TTO",
+      DefaultInd: false,
+      Sequence: 220,
+    },
+    {
+      Description: "Tunisia",
+      Code: "TUN",
+      DefaultInd: false,
+      Sequence: 221,
+    },
+    {
+      Description: "Turkey",
+      Code: "TUR",
+      DefaultInd: false,
+      Sequence: 222,
+    },
+    {
+      Description: "Turkmenistan",
+      Code: "TKM",
+      DefaultInd: false,
+      Sequence: 223,
+    },
+    {
+      Description: "Turks And Caicos Islands",
+      Code: "TCA",
+      DefaultInd: false,
+      Sequence: 224,
+    },
+    {
+      Description: "Tuvalu",
+      Code: "TUV",
+      DefaultInd: false,
+      Sequence: 225,
+    },
+    {
+      Description: "U.S. Minor Islands",
+      Code: "UMI",
+      DefaultInd: false,
+      Sequence: 226,
+    },
+    {
+      Description: "Uganda",
+      Code: "UGA",
+      DefaultInd: false,
+      Sequence: 227,
+    },
+    {
+      Description: "Ukraine",
+      Code: "UKR",
+      DefaultInd: false,
+      Sequence: 228,
+    },
+    {
+      Description: "United Arab Emirates",
+      Code: "ARE",
+      DefaultInd: false,
+      Sequence: 229,
+    },
+    {
+      Description: "United Kingdom",
+      Code: "GBR",
+      DefaultInd: false,
+      Sequence: 230,
+    },
+    {
+      Description: "United States",
+      Code: "USA",
+      DefaultInd: false,
+      Sequence: 231,
+    },
+    {
+      Description: "Uruguay",
+      Code: "URY",
+      DefaultInd: false,
+      Sequence: 232,
+    },
+    {
+      Description: "Uzbekistan",
+      Code: "UZB",
+      DefaultInd: false,
+      Sequence: 233,
+    },
+    {
+      Description: "Vanuatu",
+      Code: "VUT",
+      DefaultInd: false,
+      Sequence: 234,
+    },
+    {
+      Description: "Venezuela",
+      Code: "VEN",
+      DefaultInd: false,
+      Sequence: 235,
+    },
+    {
+      Description: "Viet Nam",
+      Code: "VNM",
+      DefaultInd: false,
+      Sequence: 236,
+    },
+    {
+      Description: "Virgin Islands (British)",
+      Code: "VGB",
+      DefaultInd: false,
+      Sequence: 237,
+    },
+    {
+      Description: "Virgin Islands (U.S.)",
+      Code: "VIR",
+      DefaultInd: false,
+      Sequence: 238,
+    },
+    {
+      Description: "Wallis And Futuna Islands",
+      Code: "WLF",
+      DefaultInd: false,
+      Sequence: 239,
+    },
+    {
+      Description: "Western Sahara",
+      Code: "ESH",
+      DefaultInd: false,
+      Sequence: 240,
+    },
+    {
+      Description: "Yemen",
+      Code: "YEM",
+      DefaultInd: false,
+      Sequence: 241,
+    },
+    {
+      Description: "Zambia",
+      Code: "ZMB",
+      DefaultInd: false,
+      Sequence: 242,
+    },
+    {
+      Description: "Zimbabwe",
+      Code: "ZWE",
+      DefaultInd: false,
+      Sequence: 243,
+    },
+  ],
+  relationShip: [
+    {
+      Description: "WIFE",
+      Code: "02",
+      DefaultInd: false,
+      Sequence: 0,
+    },
+    {
+      Description: "HUSBAND",
+      Code: "03",
+      DefaultInd: false,
+      Sequence: 1,
+    },
+    {
+      Description: "SON",
+      Code: "04",
+      DefaultInd: false,
+      Sequence: 2,
+    },
+    {
+      Description: "DAUGHTER",
+      Code: "05",
+      DefaultInd: false,
+      Sequence: 3,
+    },
+    {
+      Description: "SISTER",
+      Code: "06",
+      DefaultInd: false,
+      Sequence: 4,
+    },
+    {
+      Description: "BROTHER",
+      Code: "07",
+      DefaultInd: false,
+      Sequence: 5,
+    },
+    {
+      Description: "COUSIN",
+      Code: "08",
+      DefaultInd: false,
+      Sequence: 6,
+    },
+    {
+      Description: "MOTHER",
+      Code: "10",
+      DefaultInd: false,
+      Sequence: 7,
+    },
+    {
+      Description: "FATHER",
+      Code: "11",
+      DefaultInd: false,
+      Sequence: 8,
+    },
+    {
+      Description: "UNCLE",
+      Code: "12",
+      DefaultInd: false,
+      Sequence: 9,
+    },
+    {
+      Description: "AUNT",
+      Code: "13",
+      DefaultInd: false,
+      Sequence: 10,
+    },
+    {
+      Description: "GRANDFATHER",
+      Code: "14",
+      DefaultInd: false,
+      Sequence: 11,
+    },
+    {
+      Description: "GRANDMOTHER",
+      Code: "15",
+      DefaultInd: false,
+      Sequence: 12,
+    },
+    {
+      Description: "GRANDSON",
+      Code: "16",
+      DefaultInd: false,
+      Sequence: 13,
+    },
+    {
+      Description: "GRANDDAUGHTER",
+      Code: "17",
+      DefaultInd: false,
+      Sequence: 14,
+    },
+    {
+      Description: "NEPHEW",
+      Code: "18",
+      DefaultInd: false,
+      Sequence: 15,
+    },
+    {
+      Description: "NIECE",
+      Code: "19",
+      DefaultInd: false,
+      Sequence: 16,
+    },
+    {
+      Description: "MOTHER-IN-LAW",
+      Code: "22",
+      DefaultInd: false,
+      Sequence: 17,
+    },
+    {
+      Description: "FATHER-IN-LAW",
+      Code: "23",
+      DefaultInd: false,
+      Sequence: 18,
+    },
+    {
+      Description: "BROTHER-IN-LAW",
+      Code: "24",
+      DefaultInd: false,
+      Sequence: 19,
+    },
+    {
+      Description: "SISTER-IN-LAW",
+      Code: "25",
+      DefaultInd: false,
+      Sequence: 20,
+    },
+    {
+      Description: "DAUGHTER-IN-LAW",
+      Code: "26",
+      DefaultInd: false,
+      Sequence: 21,
+    },
+    {
+      Description: "SON-IN-LAW",
+      Code: "27",
+      DefaultInd: false,
+      Sequence: 22,
+    },
+    {
+      Description: "HALF-BROTHER",
+      Code: "OP2",
+      DefaultInd: false,
+      Sequence: 24,
+    },
+    {
+      Description: "HALF-SISTER",
+      Code: "OP3",
+      DefaultInd: false,
+      Sequence: 25,
+    },
+    {
+      Description: "STEP BROTHER",
+      Code: "OP4",
+      DefaultInd: false,
+      Sequence: 26,
+    },
+    {
+      Description: "STEP DAUGHTER",
+      Code: "OP5",
+      DefaultInd: false,
+      Sequence: 27,
+    },
+    {
+      Description: "STEP FATHER",
+      Code: "OP6",
+      DefaultInd: false,
+      Sequence: 28,
+    },
+    {
+      Description: "STEP MOTHER",
+      Code: "OP7",
+      DefaultInd: false,
+      Sequence: 29,
+    },
+    {
+      Description: "STEP SISTER",
+      Code: "OP8",
+      DefaultInd: false,
+      Sequence: 30,
+    },
+    {
+      Description: "STEP SON",
+      Code: "OP9",
+      DefaultInd: false,
+      Sequence: 31,
+    },
+  ],
+  occupation: [
+    "MD and Above",
+    "General Manager/ Asst. General Manager",
+    "Manager",
+    "Assistant Manager",
+    "Officer/ Executive",
+    "Clerical",
+    "Supervisor",
+    "Teacher/ Lecturer",
+    "Professional (Lawyer, Doctor, Accountant, Pilot etc)",
+    "Police/ Navy/ Army/ Post Man",
+    "Cabin Crew",
+    "Skill Worker (Technician/ Mechanic/ Nurse etc)",
+    "Insurance Agent/ Salesman/ Promoter/ Direct Selling",
+    "Factory Worker",
+    "Driver/ Security/ Dispatch",
+    "Bar Tender/ Waitress/ Housekeeper/ Cashier",
+    "General Worker",
+    "Own Business",
+    "Hawker/ Taxi Driver",
+    "Pensioner",
+    "Others",
+  ],
+};
+
+export const OptionContext = createContext<OptionContextStore>({
+  store: initialState,
+  dispatch: () => null,
 });
 
 function OptionProvider({ children }: { children: React.ReactNode }) {
-  const {
-    credentials: { session, token, requestId },
-  } = useSelector((state: RootState) => state);
+  const [store, dispatch] = useState<OptionState>(initialState);
 
-  const updateStore = useDispatch();
-
-  const [state, setState] = useState<{
-    relationShip: [];
-    occupation: [];
-    nationality: [];
-  }>({
-    relationShip: [],
-    occupation: [],
-    nationality: [],
-  });
-
-  async function getLovlist() {
-    try {
-      let tokenInfo = token;
-      let sessionInfo = session;
-      if (!token || checkTokenIsExpired(token)) {
-        // get new token
-        const getToken: TokenType = await generateToken(
-          "https://app.agiliux.com/aeon/webservice.php?operation=getchallenge&username=admin",
-          5000
-        );
-        tokenInfo = getToken;
-        // add token to store
-        updateStore(addToken({ ...getToken }));
-        const sessionApiResponse: SessionType = await generateSessionName(
-          "https://app.agiliux.com/aeon/webservice.php",
-          5000,
-          tokenInfo.token,
-          "bwJrIhxPdfsdialE"
-        );
-        sessionInfo = sessionApiResponse;
-        // add session name to store state
-        updateStore(
-          addSessionName({
-            userId: sessionApiResponse.userId,
-            sessionName: sessionApiResponse.sessionName,
-          })
-        );
-
-        const getLovList = await getLovListApi(
-          requestId,
-          sessionInfo.sessionName
-        );
-        setState({
-          ...state,
-          relationShip: getLovList.RELATIONSHIP,
-          nationality: getLovList.NATIONALITY,
-        });
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
-  useEffect(() => {
-    if (!state.relationShip.length || !state.nationality.length) {
-      getLovlist();
-    }
-  }, []);
-
-  const { nationality, occupation, relationShip } = state;
+  // const { nationality, occupation, relationShip } = state;
 
   return (
-    <OptionContext.Provider value={{ nationality, occupation, relationShip }}>
+    <OptionContext.Provider value={{ store, dispatch }}>
       {children}
     </OptionContext.Provider>
   );

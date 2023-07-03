@@ -11,7 +11,11 @@ import axios from "axios";
 import { useState } from "react";
 import DefaultPopup from "../popup/Default";
 import RadioFieldWithRFH from "../rhfFields/RadioField";
-import { addAcountId, addInquiryId, addVehicleId } from "../../store/slices/credentials";
+import {
+  addAcountId,
+  addInquiryId,
+  addVehicleId,
+} from "../../store/slices/credentials";
 
 const VehicleInfoForm = ({
   setShowLoading,
@@ -94,7 +98,7 @@ const VehicleInfoForm = ({
             region: val.region,
             variant: val.variant?.vehicleVariant,
             suminsured: val.variant?.vehicleMarketValue,
-            referalcode: userState.referralCode
+            referalcode: userState.referralCode,
           }),
         },
         {
@@ -311,22 +315,46 @@ const VehicleInfoForm = ({
             value={vehicleState.periodOfCoverage}
           />
           {/* Recond Indicator */}
-          <RadioFieldWithRFH
-            name="reconIndicator"
-            register={register}
-            selectedValue={watch("reconIndicator")}
-            title="Reconditon Car?"
-            options={[
-              {
-                value: "yes",
-                title: "Yes",
-              },
-              {
-                value: "no",
-                title: "No",
-              },
-            ]}
-          />
+          <div className="relative w-full">
+            <div className="group/info absolute top-[3px] left-[120px] h-4 w-4 cursor-pointer z-10">
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 18 18"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M8.43734 13.1667H9.68734V8.16669H8.43734V13.1667ZM8.99984 6.62502C9.19428 6.62502 9.35748 6.56252 9.48942 6.43752C9.62136 6.31252 9.68734 6.1528 9.68734 5.95835C9.68734 5.76391 9.62136 5.59724 9.48942 5.45835C9.35748 5.31946 9.19428 5.25002 8.99984 5.25002C8.80539 5.25002 8.6422 5.31946 8.51025 5.45835C8.37831 5.59724 8.31234 5.76391 8.31234 5.95835C8.31234 6.1528 8.37831 6.31252 8.51025 6.43752C8.6422 6.56252 8.80539 6.62502 8.99984 6.62502ZM8.99984 17.3334C7.86095 17.3334 6.78456 17.1146 5.77067 16.6771C4.75678 16.2396 3.87137 15.6424 3.11442 14.8854C2.35748 14.1285 1.76025 13.2431 1.32275 12.2292C0.885254 11.2153 0.666504 10.132 0.666504 8.97919C0.666504 7.8403 0.885254 6.76391 1.32275 5.75002C1.76025 4.73613 2.35748 3.85419 3.11442 3.10419C3.87137 2.35419 4.75678 1.76044 5.77067 1.32294C6.78456 0.885437 7.86789 0.666687 9.02067 0.666687C10.1596 0.666687 11.2359 0.885437 12.2498 1.32294C13.2637 1.76044 14.1457 2.35419 14.8957 3.10419C15.6457 3.85419 16.2394 4.73613 16.6769 5.75002C17.1144 6.76391 17.3332 7.84724 17.3332 9.00002C17.3332 10.1389 17.1144 11.2153 16.6769 12.2292C16.2394 13.2431 15.6457 14.1285 14.8957 14.8854C14.1457 15.6424 13.2637 16.2396 12.2498 16.6771C11.2359 17.1146 10.1526 17.3334 8.99984 17.3334Z"
+                  fill="#959698"
+                />
+              </svg>
+              <div className="group-hover/info:inline-block hidden absolute top-[calc(100%+14px)] left-2 -translate-x-1/2 py-2 px-3 min-w-[250px] max-w-[250px] w-auto bg-[#959698] rounded-xl z-[2]">
+                <div className="absolute -top-2 left-1/2 -translate-x-1/2 inline-block w-4 h-4 bg-[#959698] rotate-45" />
+                <p className="text-xs text-center text-white font-normal">
+                  A recond or recon car is a used car imported from another
+                  countries and sold by recon or used car dealers in Malaysia.
+                </p>
+              </div>
+            </div>
+            <RadioFieldWithRFH
+              name="reconIndicator"
+              register={register}
+              selectedValue={watch("reconIndicator")}
+              title="Reconditon Car?"
+              isRequired={false}
+              options={[
+                {
+                  value: "yes",
+                  title: "Yes",
+                },
+                {
+                  value: "no",
+                  title: "No",
+                },
+              ]}
+            />
+          </div>
         </div>
         {/* Submit Form */}
         <div className="mt-4 flex flex-col items-center justify-center w-full">

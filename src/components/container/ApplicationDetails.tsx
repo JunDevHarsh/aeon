@@ -503,14 +503,14 @@ const ApplicationDetailsContainer = () => {
                       {detail.name}
                     </span>
                   </div>
-                  <div className="flex flex-col items-start w-auto">
+                  {/* <div className="flex flex-col items-start w-auto">
                     <span className="text-base text-left text-primary-black font-bold">
                       Relationship
                     </span>
                     <span className="text-base text-left text-primary-black font-normal">
                       {detail.relationship}
                     </span>
-                  </div>
+                  </div> */}
                   <div className="flex flex-col items-start w-auto">
                     <span className="text-base text-left text-primary-black font-bold">
                       ID Type
@@ -541,11 +541,11 @@ const ApplicationDetailsContainer = () => {
           </div>
         </div>
       )}
-      <div className="mt-4 flex items-center justify-start w-full">
+      <div className="mt-4 flex flex-col items-start justify-start w-full">
         <div className="relative flex items-center justify-center">
           <label
             htmlFor="roadTax"
-            className="relative flex items-center justify-center w-auto cursor-pointer"
+            className="relative flex items-start justify-center w-auto cursor-pointer"
           >
             <input
               type="checkbox"
@@ -555,7 +555,7 @@ const ApplicationDetailsContainer = () => {
               checked={roadTax}
             />
             {roadTax ? (
-              <span className="peer-focus-visible:outline rounded-sm">
+              <span className="mt-1.5 peer-focus-visible:outline rounded-sm">
                 <svg
                   width="19"
                   height="18"
@@ -570,16 +570,79 @@ const ApplicationDetailsContainer = () => {
                 </svg>
               </span>
             ) : (
-              <span className="inline-block w-[19px] h-[18px] bg-white border border-solid border-primary-blue rounded-sm cursor-pointer peer-focus-visible:outline" />
+              <span className="inline-block mt-1.5 w-[19px] h-[18px] bg-white border border-solid border-primary-blue rounded-sm cursor-pointer peer-focus-visible:outline" />
             )}
             <div className="ml-3 flex flex-col items-start w-auto">
-              <span className="text-base text-center text-primary-black font-normal">
+              <span className="text-base text-center text-primary-black font-medium">
                 Do you want to include road tax?
               </span>
-              <span className="text-sm text-left text-primary-pink font-normal">
+              <span className="text-sm text-left text-primary-pink font-medium">
                 Our service representative will contact for road tax renewal
               </span>
             </div>
+          </label>
+        </div>
+        <div className="relative mt-4 flex items-start">
+          <label
+            htmlFor="termsAndConditions"
+            className="relative flex items-start justify-center w-auto cursor-pointer"
+          >
+            <input
+              type="checkbox"
+              id="termsAndConditions"
+              className="peer absolute -z-10 opacity-0"
+              // checked={roadTax}
+            />
+            <span className="inline-block mt-1.5 min-w-[19px] h-[18px] bg-white border border-solid border-primary-blue rounded-sm cursor-pointer peer-focus-visible:outline" />
+            {/* checked checkbox */}
+            {/* <span className="peer-focus-visible:outline rounded-sm">
+              <svg
+                width="19"
+                height="18"
+                viewBox="0 0 19 18"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M7.975 12.975L15.2 5.725L14.125 4.65L7.975 10.825L5 7.85L3.925 8.925L7.975 12.975ZM2 18C1.6 18 1.25 17.85 0.95 17.55C0.65 17.25 0.5 16.9 0.5 16.5V1.5C0.5 1.1 0.65 0.75 0.95 0.45C1.25 0.15 1.6 0 2 0H17C17.4 0 17.75 0.15 18.05 0.45C18.35 0.75 18.5 1.1 18.5 1.5V16.5C18.5 16.9 18.35 17.25 18.05 17.55C17.75 17.85 17.4 18 17 18H2Z"
+                  fill="#4B5EAA"
+                />
+              </svg>
+            </span> */}
+            <p className="ml-3 text-base text-left text-primary-black font-medium">
+              By clicking the "Pay Now" button, I/we hereby consent to the
+              processing of the Personal Data provided subject to the following
+              <a
+                href=""
+                about="AEON Privacy Link"
+                target="_blank"
+                rel="noreferrer noopener"
+                className="text-secondary-pink"
+              >
+                {` AEON PDPA Notice `}
+              </a>
+              and
+              <a
+                href=""
+                about="AEON T&C Link"
+                target="_blank"
+                rel="noreferrer noopener"
+                className="text-secondary-pink"
+              >
+                {` Terms and Conditions`}
+              </a>
+              , read and accept the{" "}
+              <a
+                href=""
+                about="Insurance's PDPA Notice"
+                target="_blank"
+                rel="noreferrer noopener"
+                className="text-secondary-pink"
+              >
+                {` Insurance's PDPA Notice`}
+              </a>
+              .
+            </p>
           </label>
         </div>
       </div>

@@ -20,8 +20,8 @@ function AddOnDriver({
     // unselect it and remove all the items present in the array of driverDetails
     if (isSelected) {
       // unselect the additional driver addon
-        updateAddOnDriver("", true);
-        return;
+      updateAddOnDriver("", true);
+      return;
     }
     // if additional driver addon is not selected then
     // show a popup to select the type of additional driver: "named" or "unlimited"
@@ -87,10 +87,10 @@ function AddOnDriver({
           <div className="w-auto h-auto">
             {/* <ImageToDisplay pathColor={isSelected ? "#4B5EAA" : "#BCBCBC"} /> */}
             <img
-            src={AddOnImg}
-            alt="addon-driver-img"
-            className="max-w-[100px] w-full h-auto"
-          />
+              src={AddOnImg}
+              alt="addon-driver-img"
+              className="max-w-[100px] w-full h-auto"
+            />
           </div>
           <p className="text-base text-center text-primary-black font-bold">
             Additional Driver
@@ -104,7 +104,7 @@ function AddOnDriver({
                   onClick={handleOnEdit}
                 >
                   <span className="text-sm text-center text-primary-black font-normal">
-                    Edit
+                    {selectedValue === "named" ? "Named" : "Unlimited"} Drivers
                   </span>
                   <svg
                     width="13"
@@ -176,9 +176,9 @@ function AddOnDriverPopup({
       });
       return;
     }
-    if(value === initialvalue){
-        closePopup();
-        return;
+    if (value === initialvalue) {
+      closePopup();
+      return;
     }
     handleSave(value);
     closePopup();
@@ -194,7 +194,7 @@ function AddOnDriverPopup({
         onClick={closePopup}
         className="fixed top-0 left-0 right-0 bottom-0 h-full w-full bg-gradient-to-tr from-[rgba(0,0,0,0.7)] to-[rgba(0,0,0,0.7)] z-[20]F"
       />
-      <div className="relative min-w-[300px] h-auto bg-white rounded">
+      <div className="relative min-w-[300px] max-w-lg h-auto bg-white rounded">
         <div className="relative px-4 py-2 flex flex-row items-center justify-end w-full h-auto border-b-2 border-solid border-b-[#c3c3c3]">
           <button
             className="inline-block w-auto h-auto rounded"
@@ -233,8 +233,18 @@ function AddOnDriverPopup({
               <RadioField
                 title="Select Option"
                 options={[
-                  { title: "Named", value: "named" },
-                  { title: "Unlimited", value: "unlimited" },
+                  {
+                    title: "Named Drivers",
+                    value: "named",
+                    description:
+                      "This add-on coverage extends your insurance policy to cover the driver named in your insurance policy.",
+                  },
+                  {
+                    title: "Unlimited Drivers - RM 20",
+                    value: "unlimited",
+                    description:
+                      "This add-on coverage extends your insurance policy to cover anyone who drives your car. You do not have to name anyone in your insurance policy.",
+                  },
                 ]}
                 selectedValue={value}
                 updateValue={updateStateValue}
@@ -279,10 +289,11 @@ type RadioFieldProps = {
 type OptionList = {
   title: string;
   value: string;
+  description: string;
 };
 
 function RadioField({
-  title,
+  // title,
   options,
   selectedValue,
   updateValue,
@@ -294,38 +305,45 @@ function RadioField({
 
   return (
     <div className="relative pb-3 flex flex-col items-start w-full h-auto">
-      <span className="mb-1 text-base text-center text-primary-black font-semibold">
+      {/* <span className="mb-1 text-base text-center text-primary-black font-semibold">
         {title}
-      </span>
-      <div className="flex items-center justify-start w-full">
-        {options.map(({ title, value }: OptionList) => (
-          <div
-            className="mr-2 relative flex items-center justify-center w-auto"
-            key={`radioFieldWithValueOf${value}`}
-          >
-            <input
-              type="radio"
-              value={value}
-              id={`radioField${value}`}
-              className="peer absolute opacity-0 -z-10"
-              checked={selectedValue === value}
-              onChange={handleOnChange}
-            />
-            <label
-              htmlFor={`radioField${value}`}
-              className="px-1.5 flex items-center border-2 border-solid border-transparent peer-focus-visible:border-primary-black rounded cursor-pointer"
+      </span> */}
+      <div className="flex flex-col items-start justify-start w-full">
+        {options.map(({ title, value, description }: OptionList) => (
+          <div className="relative flex flex-col even:mt-4 items-start w-full">
+            <div
+              className="relative flex items-center justify-center w-auto"
+              key={`radioFieldWithValueOf${value}`}
             >
-              <span
-                className={`mr-2 inline-block w-2.5 h-2.5 rounded-full ${
-                  selectedValue === value
-                    ? "bg-primary-black shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
-                    : "bg-white shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
-                }`}
+              <input
+                type="radio"
+                value={value}
+                id={`radioField${value}`}
+                className="peer absolute opacity-0 -z-10"
+                checked={selectedValue === value}
+                onChange={handleOnChange}
               />
-              <span className="text-sm text-center text-primary-black font-normal">
-                {title}
-              </span>
-            </label>
+              <label
+                htmlFor={`radioField${value}`}
+                className="px-1.5 flex items-center border-2 border-solid border-transparent peer-focus-visible:border-primary-black rounded cursor-pointer"
+              >
+                <span
+                  className={`mr-2 inline-block w-2.5 h-2.5 rounded-full ${
+                    selectedValue === value
+                      ? "bg-primary-black shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
+                      : "bg-white shadow-[0_0_0_2px_#fff,0_0_0_4px_#272727]"
+                  }`}
+                />
+                <span className="text-base text-center text-primary-black font-semibold">
+                  {title}
+                </span>
+              </label>
+            </div>
+            <div className="relative ml-6 w-full">
+              <p className="text-sm text-left text-primary-black font-medium">
+                {description}
+              </p>
+            </div>
           </div>
         ))}
       </div>

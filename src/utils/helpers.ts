@@ -233,6 +233,7 @@ export async function getLovListApi(requestId: string, sessionName: string) {
         },
       }
     );
+    console.log(apiResponse);
     if(apiResponse.status !== 200 || apiResponse.data.success !== true) {
       throw {
         code: 108,

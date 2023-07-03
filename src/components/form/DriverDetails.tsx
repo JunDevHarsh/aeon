@@ -54,10 +54,14 @@ const DriverDetailsForm = () => {
     dispatch,
   } = useContext(MultiStepFormContext);
 
-  const { nationality: nationalityList, occupation: occupationList } =
-    useContext(OptionContext);
+  const {
+    store: { nationality: nationalityList, occupation: occupationList },
+  } = useContext(OptionContext);
 
-  console.log(nationalityList, occupationList);
+  const occupationOptions = occupationList.map((item: any) => ({
+    label: item,
+    value: item,
+  }));
 
   const nationalityOptions = nationalityList.map((item: any) => ({
     label: item.Description,
@@ -325,11 +329,8 @@ const DriverDetailsForm = () => {
                   }}
                   selected={value}
                   error={error}
-                  placeholder="Teacher"
-                  optionList={[
-                    { label: "Teacher", value: "Teacher" },
-                    { label: "Engineer", value: "Engineer" },
-                  ]}
+                  placeholder="Teacher/ Lecturer"
+                  optionList={occupationOptions}
                 />
               )}
             />
@@ -474,7 +475,17 @@ const DriverDetailsForm = () => {
             }}
           />
           {/* Postal Code Field */}
-          <InputTextField
+          <div className="relative pb-5 w-full">
+            <div className="relative">
+              <span className="inline-block mb-1 text-base text-left text-primary-black font-semibold">
+                Postal Code
+              </span>
+              <div className="py-1.5 px-2 w-full text-sm text-left text-[#9ca3af] bg-[#fafafa] border border-solid border-[#CFD0D7] rounded cursor-default">
+                {postalCode || "63000"}
+              </div>
+            </div>
+          </div>
+          {/* <InputTextField
             label="Postal Code"
             name="postalCode"
             placeholder="63000"
@@ -496,7 +507,7 @@ const DriverDetailsForm = () => {
                 updateStoreValue({ postalCode: value });
               },
             }}
-          />
+          /> */}
         </div>
       </form>
     </div>

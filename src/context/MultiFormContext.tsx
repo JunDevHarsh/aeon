@@ -99,7 +99,7 @@ export type AddDriverDetailsPayload = {
   [AddDriverTypes.UnSelectAdditionalDriver]: {
     val: string;
   };
-  [AddDriverTypes.SubmitAddDriverDetails]: {}
+  [AddDriverTypes.SubmitAddDriverDetails]: {};
 };
 
 export type DriverDetailsPayload = {
@@ -158,7 +158,7 @@ const MultiFormContextProvider = ({
   children: React.ReactNode;
 }) => {
   const {
-    user: { email, mobileNumber, postalCode, drivingExp },
+    user: { email, mobileNumber, postalCode, drivingExp, city, state },
   } = useSelector((state: RootState) => state);
 
   const [store, dispatch] = useReducer(mainReducer, {
@@ -169,6 +169,8 @@ const MultiFormContextProvider = ({
       mobileNumber: mobileNumber,
       postalCode: postalCode,
       drivingExp: drivingExp,
+      city: city,
+      state: state
     },
   });
 

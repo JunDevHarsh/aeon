@@ -376,7 +376,7 @@ function MarketAndAgreedContainer() {
               productId: productId,
               data: {
                 premium,
-                displaypremium,
+                displayPremium: displaypremium,
               },
             },
           });
@@ -578,9 +578,11 @@ function MarketAndAgreedContainer() {
                 Market Value
               </span>
               <span className="text-base text-primary-black text-left font-normal">
-                Market value refers to the current calculated worth of your car.
-                If you choose the market value, your car is covered for what it
-                is currently worth in the market.
+                Market value to the insured amount of a vehicle based on its
+                current market price at the time of purchasing insurance. The
+                determination of this value is typically influenced by factors
+                such as the brand, model, and year of manufacture of the
+                vehicle.
               </span>
             </div>
             <div className="flex flex-col items-start w-full">
@@ -589,9 +591,12 @@ function MarketAndAgreedContainer() {
               </span>
               <span className="text-base text-primary-black text-left font-normal">
                 Agreed value is the value agreed by both the insurer and
-                policyholder at the time of insurance renewal. Insurers
-                determine the agreed value based on a few underwriting factors
-                and risk assessment.
+                policyholder at the time of insurance renewal based on the car
+                model, year, and other factors at the time of purchasing
+                insurance. Agreed Value is not applicable for reconditioned
+                vehicles &#10088;imported&#10089;. <br /> If you select Agreed
+                Value with your reconditioned car, claims settlement will be at
+                risk.
               </span>
             </div>
           </div>
