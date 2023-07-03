@@ -37,6 +37,7 @@ export type MultiStepFormState = {
   addDriverDetails: AdditionalDriverState;
   driverDetails: DriverDetails;
   roadTax: boolean;
+  termsAndConditions: boolean;
 };
 
 // AddOns types

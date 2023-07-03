@@ -20,6 +20,8 @@ import {
   DriverTypes,
   RoadTaxActions,
   RoadTaxTypes,
+  TermsAndConditionActions,
+  TermsAndConditionsTypes,
 } from "./MultiFormContext";
 import { QuotesAction, QuotesTypes } from "./QuoteListing";
 /*---------------Insurance Reducer---------------*/
@@ -58,6 +60,7 @@ export const addOnsReducer = (
     | AddDriverActions
     | DriverDetailsActions
     | RoadTaxActions
+    | TermsAndConditionActions
 ) => {
   const { type, payload } = action;
   switch (type) {
@@ -92,6 +95,7 @@ export const addDriverDetailsReducer = (
     | AddOnsActions
     | DriverDetailsActions
     | RoadTaxActions
+    | TermsAndConditionActions
 ) => {
   const { type, payload } = action;
   switch (type) {
@@ -143,7 +147,7 @@ export const addDriverDetailsReducer = (
         isSelected: true,
         hasUpdated: true,
         shouldUpdate: true,
-        driverDetails: []
+        driverDetails: [],
       };
     }
     case AddDriverTypes.UnSelectAdditionalDriver: {
@@ -162,7 +166,7 @@ export const addDriverDetailsReducer = (
         ...state,
         hasUpdated: false,
         shouldUpdate: false,
-        hasSubmitted: true
+        hasSubmitted: true,
       };
     }
     default:
@@ -178,6 +182,7 @@ export const driverDetailsReducer = (
     | AddDriverActions
     | DriverDetailsActions
     | RoadTaxActions
+    | TermsAndConditionActions
 ) => {
   const { type, payload } = action;
   switch (type) {
@@ -223,12 +228,33 @@ export const roadTaxReducer = (
     | AddOnsActions
     | DriverDetailsActions
     | RoadTaxActions
+    | TermsAndConditionActions
 ) => {
   const { type, payload } = action;
   switch (type) {
     case RoadTaxTypes.UpdateRoadTax: {
       const { roadTax } = payload;
       return roadTax;
+    }
+    default:
+      return state;
+  }
+};
+
+export const termsAndConditionsReducer = (
+  state: boolean,
+  action:
+    | AddDriverActions
+    | AddOnsActions
+    | DriverDetailsActions
+    | RoadTaxActions
+    | TermsAndConditionActions
+) => {
+  const { type, payload } = action;
+  switch (type) {
+    case TermsAndConditionsTypes.UpdateTermsAndConditions: {
+      const { termsAndConditions } = payload;
+      return termsAndConditions;
     }
     default:
       return state;

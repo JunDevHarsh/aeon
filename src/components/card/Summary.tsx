@@ -85,6 +85,7 @@ const SummaryInfoCard = () => {
       },
       addDriverDetails: { shouldUpdate, selectedDriverType, driverDetails },
       roadTax,
+      termsAndConditions,
     },
     dispatch: updateMultiFormState,
   } = useContext(MultiStepFormContext);
@@ -561,7 +562,7 @@ const SummaryInfoCard = () => {
             Total Amount
           </span>
           <span className="text-xl text-right text-primary-black font-bold w-1/2">
-            RM {(premium?.premiumDue)?.toFixed(2) || "0.00"}
+            RM {premium?.premiumDue?.toFixed(2) || "0.00"}
           </span>
         </div>
         <div className="mt-4 flex flex-col mobile-xl:flex-row items-center justify-center w-full">
@@ -598,16 +599,24 @@ const SummaryInfoCard = () => {
               </div>
             )
           ) : pathname === "/insurance/review-pay" ? (
-            <button
-              onClick={() => {
-                navigate("/payment");
-              }}
-              className="relative py-2 px-6 min-w-[120px] order-1 mobile-xl:order-2 flex items-center justify-center w-full mobile-xl:w-auto bg-primary-blue rounded mobile-xl:rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
-            >
-              <span className="text-base text-center font-medium text-white">
-                Pay Now
-              </span>
-            </button>
+            !termsAndConditions ? (
+              <div className="relative py-2 px-6 min-w-[120px] order-1 mobile-xl:order-2 flex items-center justify-center w-full mobile-xl:w-auto bg-gray-500 rounded mobile-xl:rounded-full shadow-[0_1px_2px_0_#C6E4F60D]">
+                <span className="text-base text-center font-medium text-white">
+                  Pay Now
+                </span>
+              </div>
+            ) : (
+              <button
+                onClick={() => {
+                  navigate("/payment");
+                }}
+                className="relative py-2 px-6 min-w-[120px] order-1 mobile-xl:order-2 flex items-center justify-center w-full mobile-xl:w-auto bg-primary-blue rounded mobile-xl:rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
+              >
+                <span className="text-base text-center font-medium text-white">
+                  Pay Now
+                </span>
+              </button>
+            )
           ) : (
             <button
               onClick={() => {
