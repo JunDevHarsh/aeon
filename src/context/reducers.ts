@@ -2,6 +2,7 @@
 import {
   AddOns,
   AdditionalDriverDetails,
+  AdditionalDriverState,
   DriverDetails,
   QuoteListingStateType,
 } from "./types";
@@ -17,6 +18,10 @@ import {
   AddOnsTypes,
   DriverDetailsActions,
   DriverTypes,
+  RoadTaxActions,
+  RoadTaxTypes,
+  TermsAndConditionActions,
+  TermsAndConditionsTypes,
 } from "./MultiFormContext";
 import { QuotesAction, QuotesTypes } from "./QuoteListing";
 /*---------------Insurance Reducer---------------*/
@@ -50,7 +55,12 @@ export const insuranceProviderReducer = (
 /*---------------MultiStepForm Reducer---------------*/
 export const addOnsReducer = (
   state: AddOns[],
-  action: AddOnsActions | AddDriverActions | DriverDetailsActions
+  action:
+    | AddOnsActions
+    | AddDriverActions
+    | DriverDetailsActions
+    | RoadTaxActions
+    | TermsAndConditionActions
 ) => {
   const { type, payload } = action;
   switch (type) {
@@ -79,8 +89,13 @@ export const addOnsReducer = (
 
 /*---------------Additional Driver Details Reducer---------------*/
 export const addDriverDetailsReducer = (
-  state: AdditionalDriverDetails[],
-  action: AddDriverActions | AddOnsActions | DriverDetailsActions
+  state: AdditionalDriverState,
+  action:
+    | AddDriverActions
+    | AddOnsActions
+    | DriverDetailsActions
+    | RoadTaxActions
+    | TermsAndConditionActions
 ) => {
   const { type, payload } = action;
   switch (type) {
@@ -93,21 +108,66 @@ export const addDriverDetailsReducer = (
         nationality: "Malaysia",
         relationship: "Insured",
       };
-      return [...state, newDetails];
+      return {
+        ...state,
+        hasUpdated: true,
+        shouldUpdate: true,
+        driverDetails: [...state.driverDetails, newDetails],
+      };
     }
     case AddDriverTypes.UpdateDriverDetails: {
-      const updatedProp = state.map((detail) =>
+      const updatedProp = state.driverDetails.map((detail) =>
         detail.id === payload.id
           ? { ...detail, ...payload.updatedValue }
           : detail
       );
-      return updatedProp;
+      return {
+        ...state,
+        hasUpdated: true,
+        shouldUpdate: true,
+        driverDetails: [...updatedProp],
+      };
     }
     case AddDriverTypes.RemoveDriverDetailsById: {
-      const updatedDrivderDetails = state.filter(
+      const updatedDrivderDetails = state.driverDetails.filter(
         (detail) => detail.id !== payload.id
       );
-      return updatedDrivderDetails;
+      return {
+        ...state,
+        hasUpdated: true,
+        shouldUpdate: true,
+        driverDetails: updatedDrivderDetails,
+      };
+    }
+    case AddDriverTypes.SelectAdditionalDriver: {
+      const { val } = payload;
+      return {
+        ...state,
+        selectedDriverType: val,
+        isSelected: true,
+        hasUpdated: true,
+        shouldUpdate: true,
+        driverDetails: [],
+      };
+    }
+    case AddDriverTypes.UnSelectAdditionalDriver: {
+      const { val } = payload;
+      return {
+        ...state,
+        selectedDriverType: val,
+        isSelected: false,
+        hasUpdated: state.hasSubmitted,
+        shouldUpdate: state.hasSubmitted,
+        driverDetails: [],
+      };
+    }
+    case AddDriverTypes.SubmitAddDriverDetails: {
+      return {
+        ...state,
+        hasUpdated: false,
+        shouldUpdate: false,
+        hasSubmitted: true,
+      };
     }
     default:
       return state;
@@ -117,7 +177,12 @@ export const addDriverDetailsReducer = (
 /*---------------Driver Details Reducer---------------*/
 export const driverDetailsReducer = (
   state: DriverDetails,
-  action: AddOnsActions | AddDriverActions | DriverDetailsActions
+  action:
+    | AddOnsActions
+    | AddDriverActions
+    | DriverDetailsActions
+    | RoadTaxActions
+    | TermsAndConditionActions
 ) => {
   const { type, payload } = action;
   switch (type) {
@@ -150,6 +215,46 @@ export const quotesReducer = (
         quote.productId === productId ? { ...quote, ...data } : quote
       );
       return { ...state, quotes: updatedQuotes };
+    }
+    default:
+      return state;
+  }
+};
+
+export const roadTaxReducer = (
+  state: boolean,
+  action:
+    | AddDriverActions
+    | AddOnsActions
+    | DriverDetailsActions
+    | RoadTaxActions
+    | TermsAndConditionActions
+) => {
+  const { type, payload } = action;
+  switch (type) {
+    case RoadTaxTypes.UpdateRoadTax: {
+      const { roadTax } = payload;
+      return roadTax;
+    }
+    default:
+      return state;
+  }
+};
+
+export const termsAndConditionsReducer = (
+  state: boolean,
+  action:
+    | AddDriverActions
+    | AddOnsActions
+    | DriverDetailsActions
+    | RoadTaxActions
+    | TermsAndConditionActions
+) => {
+  const { type, payload } = action;
+  switch (type) {
+    case TermsAndConditionsTypes.UpdateTermsAndConditions: {
+      const { termsAndConditions } = payload;
+      return termsAndConditions;
     }
     default:
       return state;

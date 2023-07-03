@@ -21,6 +21,7 @@ type QuoteListingPlanProps = {
   imgUrl: string;
   price: number;
   popular: boolean;
+  docLink: string;
   isSelected: boolean;
   updateSelectedQuotePlans: (selectedQuoteId: string) => void;
   // coverages: Coverage[];
@@ -34,6 +35,7 @@ const QuoteListingPlanCard = ({
   insurerId,
   insurerName,
   benefits,
+  docLink,
   popular,
   imgUrl,
   isSelected,
@@ -157,7 +159,7 @@ const QuoteListingPlanCard = ({
               <div className="mt-6 flex items-center justify-center w-full">
                 <FileDownloadButton
                   text="Download Brochure"
-                  href="https://softsolverscom.sharepoint.com/sites/AEONRepo/Retail%20Portal/Requirements/APIs/Allianz/MotorOnlineProductDisclosure.pdf?CT=1684218785770&OR=ItemsView"
+                  href={docLink}
                 />
               </div>
             )}

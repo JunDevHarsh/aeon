@@ -19,6 +19,7 @@ type CredentialsStateType = {
   requestId: string;
   inquiryId: string;
   accountId: string;
+  vehicleId: string;
 };
 
 const initialState: CredentialsStateType = {
@@ -27,6 +28,7 @@ const initialState: CredentialsStateType = {
   requestId: "",
   inquiryId: "",
   accountId: "",
+  vehicleId: "",
 };
 
 export const credentialSlice = createSlice({
@@ -44,6 +46,9 @@ export const credentialSlice = createSlice({
     },
     addInquiryId: (state, action: PayloadAction<string>) => {
       state.inquiryId = action.payload;
+    },
+    addVehicleId: (state, action: PayloadAction<string>) => {
+      state.vehicleId = action.payload;
     },
     addAcountId: (state, action: PayloadAction<string>) => {
       state.accountId = action.payload;
@@ -84,6 +89,7 @@ export const {
   addInquiryId,
   updateTokenAndSession,
   addAcountId,
+  addVehicleId
 } = credentialSlice.actions;
 
 export default credentialSlice.reducer;

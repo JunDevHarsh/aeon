@@ -1,11 +1,42 @@
-import { useState, useContext } from "react";
-import { useSelector } from "react-redux";
+import { useContext, useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
-import { MultiStepFormContext } from "../../context/MultiFormContext";
+import {
+  MultiStepFormContext,
+  RoadTaxTypes,
+  TermsAndConditionsTypes,
+} from "../../context/MultiFormContext";
+import {
+  checkTokenIsExpired,
+  generateSessionName,
+  generateToken,
+} from "../../utils/helpers";
+import {
+  SessionType,
+  TokenType,
+  addSessionName,
+  addToken,
+} from "../../store/slices/credentials";
+import { NewAddOnsContext } from "../../context/AddOnsContext";
+import axios from "axios";
+import {
+  InsuranceContext,
+  InsuranceProviderTypes,
+} from "../../context/InsuranceContext";
+import { MarketAndAgreedContext } from "../../context/MarketAndAgreedContext";
+import { QuoteListingContext, QuotesTypes } from "../../context/QuoteListing";
 
 const ApplicationDetailsContainer = () => {
   const {
-    user: { id, gender, maritalStatus, dateOfBirth },
+    user: {
+      id,
+      gender,
+      maritalStatus,
+      dateOfBirth,
+      promoCode,
+      promoId,
+      percentOff,
+    },
     vehicle: {
       vehicleLicenseId: regNo,
       vehicleMake: make,
@@ -15,11 +46,31 @@ const ApplicationDetailsContainer = () => {
       vehicleChassis: chasisNo,
       variant,
     },
+    credentials: {
+      token: tokenInStore,
+      session: sessionInStore,
+      requestId,
+      inquiryId,
+      accountId,
+      vehicleId,
+    },
   } = useSelector((state: RootState) => state);
+
+  const updateStore = useDispatch();
+
   const {
-    store: { addDriverDetails, driverDetails },
+    store: {
+      addDriverDetails: { driverDetails: addDriverDetails, selectedDriverType },
+      driverDetails,
+      roadTax,
+      termsAndConditions,
+    },
+    dispatch: updateMultiStepFormDispatch,
   } = useContext(MultiStepFormContext);
-  const [includeRoadTax, updateRoadTax] = useState<boolean>(false);
+
+  const [_, setLoading] = useState<boolean>(false);
+
+  const renderRef = useRef<boolean>(false);
 
   const { name, mobileNumber, email } = driverDetails;
 
@@ -27,6 +78,233 @@ const ApplicationDetailsContainer = () => {
     (driver) =>
       driver.name || driver.relationship || driver.idType || driver.idNo
   );
+
+  const {
+    state: {
+      type: valuationType,
+      agreed: valuationAgreed,
+      market: valuationMarket,
+    },
+  } = useContext(MarketAndAgreedContext);
+
+  const {
+    state: { addOns },
+    dispatch,
+  } = useContext(NewAddOnsContext);
+
+  const {
+    state: { id: productId, quoteId },
+    dispatch: updateInsuranceDispatch,
+  } = useContext(InsuranceContext);
+
+  const selectedAddOns = addOns.filter((addOn) => addOn.isSelected);
+
+  const {
+    state: { quotes },
+    dispatch: updateQuote,
+  } = useContext(QuoteListingContext);
+
+  const selectedQuotePlan: any = quotes.find(
+    (quote) => quote.productId === productId
+  );
+
+  const selectedQuoteAddOns = selectedQuotePlan?.additionalCover;
+
+  function updateRoadTaxOnChange() {
+    renderRef.current = true;
+    updateMultiStepFormDispatch({
+      type: RoadTaxTypes.UpdateRoadTax,
+      payload: {
+        roadTax: !roadTax,
+      },
+    });
+  }
+
+  async function updateQuotePremium() {
+    try {
+      setLoading(true);
+      let tokenInfo = tokenInStore;
+      let sessionInfo = sessionInStore;
+      if (!tokenInStore || checkTokenIsExpired(tokenInStore)) {
+        // get new token
+        const getToken: TokenType = await generateToken(
+          "https://app.agiliux.com/aeon/webservice.php?operation=getchallenge&username=admin",
+          5000
+        );
+        tokenInfo = getToken;
+        // add token to store
+        updateStore(addToken({ ...getToken }));
+        const sessionApiResponse: SessionType = await generateSessionName(
+          "https://app.agiliux.com/aeon/webservice.php",
+          5000,
+          tokenInfo.token,
+          "bwJrIhxPdfsdialE"
+        );
+        sessionInfo = sessionApiResponse;
+        // add session name to store state
+        updateStore(
+          addSessionName({
+            userId: sessionApiResponse.userId,
+            sessionName: sessionApiResponse.sessionName,
+          })
+        );
+      }
+
+      const addOnsRequest = selectedAddOns.map((addOn: any) => {
+        let request: any = {};
+        request.coverCode = addOn.coverCode;
+        request.coverSumInsured = addOn.coverSumInsured;
+        if (addOn.coverCode === "PAB-ERW") {
+          if (addOn.moredetail?.options instanceof Array) {
+            request.planCode = addOn.moredetail?.options.find(
+              (option: any) => option.value === addOn.coverSumInsured.toString()
+            )?.code;
+          }
+        }
+        return request;
+      });
+
+      const quoteResponse = await axios.post(
+        "https://app.agiliux.com/aeon/webservice.php",
+        {
+          element: JSON.stringify({
+            requestId: requestId,
+            tenant_id: "67b61490-fec2-11ed-a640-e19d1712c006",
+            class: "Private Vehicle",
+            additionalCover: addOnsRequest || [],
+            unlimitedDriverInd:
+              selectedDriverType === "unlimited" ? "true" : "false",
+            driverDetails:
+              selectedDriverType === "unlimited" ||
+              addDriverDetails.length === 0
+                ? []
+                : addDriverDetails.map(({ idNo, name }) => ({
+                    fullName: name,
+                    identityNumber: idNo,
+                  })),
+            sitype:
+              valuationType === "market"
+                ? "MV - Market Value"
+                : "AV - Agreed Value",
+            avCode: valuationType === "market" ? "" : valuationAgreed?.avCode,
+            sumInsured:
+              valuationType === "market"
+                ? valuationMarket.vehicleMarketValue.toString()
+                : valuationAgreed?.sumInsured,
+            nvicCode:
+              valuationType === "market"
+                ? valuationMarket.nvic
+                : valuationAgreed?.nvic,
+            accountid: accountId,
+            inquiryId: inquiryId,
+            insurer: "7x250468",
+            productid: productId,
+            quoteId: quoteId,
+            vehicleId: vehicleId,
+            roadtax: roadTax ? "1" : "0",
+            promoid: promoId,
+            promocode: promoCode,
+            percent_off: percentOff,
+          }),
+          operation: "updateQuote",
+          sessionName: sessionInfo?.sessionName,
+        },
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        }
+      );
+      if (quoteResponse.status === 200 && quoteResponse.data) {
+        if (quoteResponse.data.error || !quoteResponse.data.success) {
+          throw {
+            status: 301,
+            message: "Error updating quote premium, please try again later",
+          };
+        }
+        // const data = quoteResponse.data.result;
+        if (quoteResponse.data) {
+          // if (quoteResponse.data.result.quoteinfo.length === 0) {
+          //   throw new Error("NO_QUOTE_FOUND");
+          // }
+          const data = quoteResponse.data;
+          updateInsuranceDispatch({
+            type: InsuranceProviderTypes.UpdateQuoteId,
+            payload: {
+              quoteId: data.result.quoteId,
+            },
+          });
+
+          const { premium, displaypremium, additionalCover } =
+            data.result.quoteinfo;
+
+          const updatedAdditionalCover = selectedQuoteAddOns.map(
+            (selectedQuoteAddOn: any) => {
+              const matched = additionalCover.find(
+                (additional: any) =>
+                  additional.coverCode === selectedQuoteAddOn.coverCode
+              );
+              return matched ? matched : selectedQuoteAddOn;
+            }
+          );
+
+          const newAddOnsList = updatedAdditionalCover.map(
+            (updatedAddOn: any) => {
+              const matched = addOns.find(
+                (addOn: any) => addOn.coverCode === updatedAddOn.coverCode
+              );
+              return matched
+                ? {
+                    ...matched,
+                    displayPremium: updatedAddOn.displayPremium,
+                    selectedIndicator: updatedAddOn.selectedIndicator,
+                  }
+                : updatedAddOn;
+            }
+          );
+
+          updateInsuranceDispatch({
+            type: InsuranceProviderTypes.UpdateInsuranceProvider,
+            payload: {
+              companyId: productId,
+              companyName: "Allianz",
+              price: displaypremium,
+            },
+          });
+
+          updateQuote({
+            type: QuotesTypes.UpdateQuoteById,
+            payload: {
+              productId: productId,
+              data: {
+                premium,
+                displaypremium,
+                // additionalCover: updatedAdditionalCover,
+              },
+            },
+          });
+          dispatch({ addOns: newAddOnsList, isEdited: false });
+          setLoading(false);
+          return;
+        }
+        throw {
+          status: 302,
+          message: "Receiving some error, please try again later",
+        };
+      }
+      setLoading(false);
+    } catch (err) {
+      setLoading(false);
+      console.log(err);
+    }
+  }
+
+  useEffect(() => {
+    if (renderRef.current) {
+      updateQuotePremium();
+      renderRef.current = false;
+    }
+  }, [roadTax]);
 
   return (
     <div className="relative max-w-xl w-full">
@@ -227,14 +505,14 @@ const ApplicationDetailsContainer = () => {
                       {detail.name}
                     </span>
                   </div>
-                  <div className="flex flex-col items-start w-auto">
+                  {/* <div className="flex flex-col items-start w-auto">
                     <span className="text-base text-left text-primary-black font-bold">
                       Relationship
                     </span>
                     <span className="text-base text-left text-primary-black font-normal">
                       {detail.relationship}
                     </span>
-                  </div>
+                  </div> */}
                   <div className="flex flex-col items-start w-auto">
                     <span className="text-base text-left text-primary-black font-bold">
                       ID Type
@@ -265,21 +543,21 @@ const ApplicationDetailsContainer = () => {
           </div>
         </div>
       )}
-      <div className="mt-4 flex items-center justify-start w-full">
+      <div className="mt-4 flex flex-col items-start justify-start w-full">
         <div className="relative flex items-center justify-center">
           <label
             htmlFor="roadTax"
-            className="relative flex items-center justify-center w-auto cursor-pointer"
+            className="relative flex items-start justify-center w-auto cursor-pointer"
           >
             <input
               type="checkbox"
               id="roadTax"
-              onChange={() => updateRoadTax((prev) => !prev)}
+              onChange={updateRoadTaxOnChange}
               className="peer absolute -z-10 opacity-0"
-              checked={includeRoadTax}
+              checked={roadTax}
             />
-            {includeRoadTax ? (
-              <span className="peer-focus-visible:outline rounded-sm">
+            {roadTax ? (
+              <span className="mt-1.5 peer-focus-visible:outline rounded-sm">
                 <svg
                   width="19"
                   height="18"
@@ -294,16 +572,91 @@ const ApplicationDetailsContainer = () => {
                 </svg>
               </span>
             ) : (
-              <span className="inline-block w-[19px] h-[18px] bg-white border border-solid border-primary-blue rounded-sm cursor-pointer peer-focus-visible:outline" />
+              <span className="inline-block mt-1.5 w-[19px] h-[18px] bg-white border border-solid border-primary-blue rounded-sm cursor-pointer peer-focus-visible:outline" />
             )}
             <div className="ml-3 flex flex-col items-start w-auto">
-              <span className="text-base text-center text-primary-black font-normal">
+              <span className="text-base text-center text-primary-black font-medium">
                 Do you want to include road tax?
               </span>
-              <span className="text-sm text-left text-primary-pink font-normal">
+              <span className="text-sm text-left text-primary-pink font-medium">
                 Our service representative will contact for road tax renewal
               </span>
             </div>
+          </label>
+        </div>
+        <div className="relative mt-4 flex items-start">
+          <label
+            htmlFor="termsAndConditions"
+            className="relative flex items-start justify-center w-auto cursor-pointer"
+          >
+            <input
+              type="checkbox"
+              id="termsAndConditions"
+              className="peer absolute -z-10 opacity-0"
+              checked={termsAndConditions}
+              onChange={() => {
+                updateMultiStepFormDispatch({
+                  type: TermsAndConditionsTypes.UpdateTermsAndConditions,
+                  payload: {
+                    termsAndConditions: !termsAndConditions,
+                  },
+                });
+              }}
+            />
+            {termsAndConditions ? (
+              <span className="mt-1.5 peer-focus-visible:outline rounded-sm">
+                <svg
+                  width="19"
+                  height="18"
+                  viewBox="0 0 19 18"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M7.975 12.975L15.2 5.725L14.125 4.65L7.975 10.825L5 7.85L3.925 8.925L7.975 12.975ZM2 18C1.6 18 1.25 17.85 0.95 17.55C0.65 17.25 0.5 16.9 0.5 16.5V1.5C0.5 1.1 0.65 0.75 0.95 0.45C1.25 0.15 1.6 0 2 0H17C17.4 0 17.75 0.15 18.05 0.45C18.35 0.75 18.5 1.1 18.5 1.5V16.5C18.5 16.9 18.35 17.25 18.05 17.55C17.75 17.85 17.4 18 17 18H2Z"
+                    fill="#4B5EAA"
+                  />
+                </svg>
+              </span>
+            ) : (
+              <span className="inline-block mt-1.5 min-w-[19px] h-[18px] bg-white border border-solid border-primary-blue rounded-sm cursor-pointer peer-focus-visible:outline" />
+            )}
+            {/* checked checkbox */}
+
+            <p className="ml-3 text-base text-left text-primary-black font-medium">
+              By clicking the "Pay Now" button, I/we hereby consent to the
+              processing of the Personal Data provided subject to the following
+              <a
+                href=""
+                about="AEON Privacy Link"
+                target="_blank"
+                rel="noreferrer noopener"
+                className="text-secondary-pink"
+              >
+                {` AEON PDPA Notice `}
+              </a>
+              and
+              <a
+                href=""
+                about="AEON T&C Link"
+                target="_blank"
+                rel="noreferrer noopener"
+                className="text-secondary-pink"
+              >
+                {` Terms and Conditions`}
+              </a>
+              , read and accept the{" "}
+              <a
+                href=""
+                about="Insurance's PDPA Notice"
+                target="_blank"
+                rel="noreferrer noopener"
+                className="text-secondary-pink"
+              >
+                {` Insurance's PDPA Notice`}
+              </a>
+              .
+            </p>
           </label>
         </div>
       </div>
