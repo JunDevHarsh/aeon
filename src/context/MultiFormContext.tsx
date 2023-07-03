@@ -14,7 +14,6 @@ import {
 } from "./reducers";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
-
 /*---------------Initial State---------------*/
 const initialMultiStepFormState: MultiStepFormState = {
   addOns: [],
@@ -58,6 +57,7 @@ export enum AddDriverTypes {
   RemoveDriverDetailsById = "REMOVE_DRIVER_DETAILS",
   SelectAdditionalDriver = "SELECT_ADDITIONAL_DRIVER",
   UnSelectAdditionalDriver = "UNSELECT_ADDITIONAL_DRIVER",
+  SubmitAddDriverDetails = "SUBMIT_ADD_DRIVER_DETAILS",
 }
 
 export enum DriverTypes {
@@ -97,8 +97,9 @@ export type AddDriverDetailsPayload = {
     val: string;
   };
   [AddDriverTypes.UnSelectAdditionalDriver]: {
-    val: string
+    val: string;
   };
+  [AddDriverTypes.SubmitAddDriverDetails]: {}
 };
 
 export type DriverDetailsPayload = {
@@ -144,7 +145,7 @@ const mainReducer = (
     | AddDriverActions
     | DriverDetailsActions
     | RoadTaxActions
-): MultiStepFormState => ({
+) => ({
   addOns: addOnsReducer(addOns, action),
   addDriverDetails: addDriverDetailsReducer(addDriverDetails, action),
   driverDetails: driverDetailsReducer(driverDetails, action),
@@ -159,6 +160,7 @@ const MultiFormContextProvider = ({
   const {
     user: { email, mobileNumber, postalCode, drivingExp },
   } = useSelector((state: RootState) => state);
+
   const [store, dispatch] = useReducer(mainReducer, {
     ...initialMultiStepFormState,
     driverDetails: {

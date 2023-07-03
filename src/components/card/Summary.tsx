@@ -27,7 +27,10 @@ import {
   addToken,
 } from "../../store/slices/credentials";
 import axios from "axios";
-import { MultiStepFormContext } from "../../context/MultiFormContext";
+import {
+  AddDriverTypes,
+  MultiStepFormContext,
+} from "../../context/MultiFormContext";
 
 export interface AddBenefitsType {
   id: string;
@@ -83,6 +86,7 @@ const SummaryInfoCard = () => {
       addDriverDetails: { shouldUpdate, selectedDriverType, driverDetails },
       roadTax,
     },
+    dispatch: updateMultiFormState,
   } = useContext(MultiStepFormContext);
 
   const updateStore = useDispatch();
@@ -274,6 +278,14 @@ const SummaryInfoCard = () => {
             },
           });
           dispatch({ addOns: newAddOnsList, isEdited: false });
+
+          if (shouldUpdate) {
+            updateMultiFormState({
+              type: AddDriverTypes.SubmitAddDriverDetails,
+              payload: {},
+            });
+          }
+
           setLoading(false);
           return;
         }
@@ -500,22 +512,27 @@ const SummaryInfoCard = () => {
               RM {premium?.grossPremium || "0.00"}
             </span>
           </div>
-          {/* {promoCode !== 0 && (
+          {promoCode !== "" && (
             <div className="flex items-start justify-between w-full">
               <span className="text-base text-left text-primary-black font-medium w-1/2">
-                Discount {`${promoCode}%`}
+                Discount {`${percentOff}%`}
               </span>
               <span className="text-base text-right text-red-500 font-medium w-1/2">
-                <span className="font-semibold">-</span> RM 10.00
+                <span className="font-semibold">-</span> RM{" "}
+                {premium?.promoamount || "0.00"}
               </span>
             </div>
-          )} */}
+          )}
           <div className="flex items-start justify-between w-full">
             <span className="text-lg text-left text-primary-black font-bold w-1/2">
               Sub Total
             </span>
             <span className="text-lg text-right text-primary-black font-bold w-1/2">
-              RM {premium?.grossPremium || 0.0}
+              RM{" "}
+              {!premium?.promoamount
+                ? premium?.grossPremium
+                : (premium?.grossPremium - premium?.promoamount).toFixed(2) ||
+                  0.0}
             </span>
           </div>
           <div className="flex items-start justify-between w-full">

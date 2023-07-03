@@ -14,6 +14,7 @@ import { NewAddOnsContext } from "../../context/AddOnsContext";
 import { QuoteListingContext } from "../../context/QuoteListing";
 import { InsuranceContext } from "../../context/InsuranceContext";
 import AddOnDriver from "../card/AddOnDriver";
+import { OptionContext } from "../../context/OptionContext";
 
 const defaultAddOnsState: AddOnType[] = [
   {
@@ -116,6 +117,18 @@ const AddOnsContainer = () => {
     state: { addOns: addOnState },
     dispatch: updateAddOnsState,
   } = useContext(AddOnsContext);
+
+  const { nationality, relationShip } = useContext(OptionContext);
+
+  const nationalityOption = nationality.map((item: any) => ({
+    label: item.Description,
+    value: item.Code,
+  }));
+  const relationshipOption = relationShip.map((item: any) => ({
+    label: item.Description,
+    value: item.Code,
+  }));
+  // const nationalityOption = nationality.map((item: any) => ({label: item.Description, value: item.Code}));
 
   // const [addOnPopup, handleAddOnPopup] = useState<{
   //   id: string;
@@ -415,15 +428,7 @@ const AddOnsContainer = () => {
                       })
                     }
                     selected={driverDetails.relationship}
-                    optionList={[
-                      { label: "Insured", value: "Insured" },
-                      { label: "Parent", value: "Parent" },
-                      { label: "Parent-in-law", value: "Parent-in-Law" },
-                      { label: "Spouse", value: "Spouse" },
-                      { label: "Child", value: "Child" },
-                      { label: "Siblings", value: "Siblings" },
-                      { label: "Co-worker", value: "Co-worker" },
-                    ]}
+                    optionList={relationshipOption}
                   />
                 </div>
                 {/* Relationship Field */}
@@ -441,11 +446,7 @@ const AddOnsContainer = () => {
                     }
                     disabled={driverDetails.idType === "nric"}
                     selected={driverDetails.nationality}
-                    optionList={[
-                      { label: "Malaysia", value: "Malaysia" },
-                      { label: "India", value: "India" },
-                      { label: "Other", value: "Other" },
-                    ]}
+                    optionList={nationalityOption}
                   />
                 </div>
               </div>
@@ -455,6 +456,7 @@ const AddOnsContainer = () => {
               <button
                 className="flex items-center justify-start w-auto"
                 onClick={() => {
+                  if(driverDetails.length >= 2) return;
                   dispatch({
                     type: AddDriverTypes.AddNewDriverDetails,
                     payload: {

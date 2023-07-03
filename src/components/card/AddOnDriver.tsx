@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import AddOnImg from "../../assets/images/addOns/CarAccident";
+import AddOnImg from "../../assets/images/add_on_driver.png";
 import Popup from "reactjs-popup";
 
 type AddOnDriverProps = {
@@ -86,12 +86,11 @@ function AddOnDriver({
           </div>
           <div className="w-auto h-auto">
             {/* <ImageToDisplay pathColor={isSelected ? "#4B5EAA" : "#BCBCBC"} /> */}
-            {/* <img
-            src={customImgName}
-            alt="addon-img"
+            <img
+            src={AddOnImg}
+            alt="addon-driver-img"
             className="max-w-[100px] w-full h-auto"
-          /> */}
-            <AddOnImg />
+          />
           </div>
           <p className="text-base text-center text-primary-black font-bold">
             Additional Driver

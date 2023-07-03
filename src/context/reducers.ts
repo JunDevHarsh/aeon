@@ -157,6 +157,14 @@ export const addDriverDetailsReducer = (
         driverDetails: [],
       };
     }
+    case AddDriverTypes.SubmitAddDriverDetails: {
+      return {
+        ...state,
+        hasUpdated: false,
+        shouldUpdate: false,
+        hasSubmitted: true
+      };
+    }
     default:
       return state;
   }

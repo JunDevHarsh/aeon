@@ -10,6 +10,7 @@ import {
   MultiStepFormContext,
 } from "../../context/MultiFormContext";
 import { DriverDetails } from "../../context/types";
+import { OptionContext } from "../../context/OptionContext";
 
 type Inputs = {
   name: string;
@@ -52,6 +53,16 @@ const DriverDetailsForm = () => {
     },
     dispatch,
   } = useContext(MultiStepFormContext);
+
+  const { nationality: nationalityList, occupation: occupationList } =
+    useContext(OptionContext);
+
+  console.log(nationalityList, occupationList);
+
+  const nationalityOptions = nationalityList.map((item: any) => ({
+    label: item.Description,
+    value: item.Code,
+  }));
 
   const {
     control,
@@ -251,11 +262,7 @@ const DriverDetailsForm = () => {
                   selected={value}
                   error={error}
                   placeholder="Malaysia"
-                  optionList={[
-                    { label: "Malaysia", value: "Malaysia" },
-                    { label: "India", value: "India" },
-                    { label: "Others", value: "Others" },
-                  ]}
+                  optionList={nationalityOptions}
                 />
               )}
             />
@@ -427,10 +434,7 @@ const DriverDetailsForm = () => {
                   selected={value}
                   error={error}
                   placeholder="Malaysia"
-                  optionList={[
-                    { label: "Malaysia", value: "Malaysia" },
-                    { label: "India", value: "India" },
-                  ]}
+                  optionList={nationalityOptions}
                 />
               )}
             />

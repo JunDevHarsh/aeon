@@ -182,8 +182,8 @@ export async function checkPostalCode(
   sessionName: string,
   postalCode: string,
   tenantId: string
-){
-  try{
+) {
+  try {
     const response = await axios.post(
       url,
       {
@@ -209,8 +209,43 @@ export async function checkPostalCode(
       };
     }
     return response.data.result;
+  } catch (err) {
+    throw err;
   }
-  catch(err){
+}
+
+export async function getLovListApi(requestId: string, sessionName: string) {
+  try {
+    const apiResponse = await axios.post(
+      "https://app.agiliux.com/aeon/webservice.php",
+      {
+        sessionName: sessionName,
+        element: JSON.stringify({
+          tenant_id: "67b61490-fec2-11ed-a640-e19d1712c006",
+          typeList: ["RELATIONSHIP", "NATIONALITY"],
+          requestId: requestId,
+        }),
+        operation: "lovList",
+      },
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+    );
+    if(apiResponse.status !== 200 || apiResponse.data.success !== true) {
+      throw {
+        code: 108,
+        message: "Can't get lov list at the moment. Please try again later.",
+      };
+    }
+    const result: any = apiResponse.data.result;
+    let obj = result.reduce((acc: any, cur: any) => {
+      acc[cur.LovType] = cur.LovList;
+      return acc;
+    }, {});
+    return obj;
+  } catch (err) {
     throw err;
   }
 }
