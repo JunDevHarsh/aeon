@@ -16,7 +16,7 @@ function AddOnInputPopup({
   setOpen,
   moredetail,
   initialvalue,
-  submitValue
+  submitValue,
 }: AddOnInputProps) {
   const [state, setState] = useState<{
     value: string;
@@ -55,6 +55,13 @@ function AddOnInputPopup({
 
   function handleOnSave() {
     if (error) return;
+    if(fieldtype === "Text Box" && value === "0") {
+      setState({
+        error: "Enter a valid suminsured value",
+        value: value,
+      });
+      return;
+    }
     if (!value || value === "0") {
       setState({
         error: "Select an option from the dropdown",
@@ -121,13 +128,25 @@ function AddOnInputPopup({
             </h3>
             <div className="relative mt-2 w-full">
               {fieldtype === "Text Box" ? (
-                <input
-                  type="text"
-                  name="inputText"
-                  className="inline-block px-2 py-0.5 w-full text-left text-base text-primary-black font-medium border border-solid border-[#c3c3c3] rounded"
-                  value={value}
-                  onChange={handleTextOnChange}
-                />
+                <>
+                  <div className="relative w-full">
+                    <span className="absolute top-[2px] left-[2px] px-2 h-[calc(100%-4px)] flex items-center justify-center w-auto bg-[#f6f6f6] rounded-tl-[3px] rounded-bl-[3px]">
+                      <span className="text-sm text-center text-primary-black font-medium">
+                        RM
+                      </span>
+                    </span>
+                    <input
+                      type="text"
+                      name="inputText"
+                      className="inline-bloc pl-12 pr-2 py-0.5 w-full text-left text-base text-primary-black font-medium border border-solid border-[#c3c3c3] rounded"
+                      value={value}
+                      onChange={handleTextOnChange}
+                    />
+                  </div>
+                  <span className="relative text-sm text-left font-medium text-primary-black">
+                    Minimum sum insured is RM 500
+                  </span>
+                </>
               ) : (
                 <SelectDropdown
                   id=""
