@@ -16,6 +16,7 @@ import {
   addInquiryId,
   addVehicleId,
 } from "../../store/slices/credentials";
+import { addUserBasicInfo } from "../../store/slices/user";
 
 const VehicleInfoForm = ({
   setShowLoading,
@@ -122,6 +123,11 @@ const VehicleInfoForm = ({
         dispatch(addInquiryId(vehicleResponse.data.result.inquiryId));
         dispatch(addAcountId(vehicleResponse.data.result.accountid));
         dispatch(addVehicleId(vehicleResponse.data.result.vehicleId));
+        dispatch(
+          addUserBasicInfo({
+            dateOfBirth: vehicleResponse.data.result.dob,
+          })
+        );
         setShowLoading((prev) => !prev);
         return;
       } else {
