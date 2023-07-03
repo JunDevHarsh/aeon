@@ -481,26 +481,42 @@ const SummaryInfoCard = () => {
               </p>
             </div>
           )} */}
-          {selectedAddOns.length === 0 ? (
+          {selectedAddOns.length === 0 && selectedDriverType === "" ? (
             <div className="flex items-center justify-start w-full">
               <p className="text-sm text-left text-primary-black font-medium">
                 You may select upto max add ons for better benefits
               </p>
             </div>
           ) : (
-            selectedAddOns.map((addOn) => (
-              <div
-                key={`add-benefit-${addOn.coverCode}`}
-                className="flex items-start justify-between w-full"
-              >
-                <span className="text-base text-left text-primary-black font-base w-1/2">
-                  {addOn.title}
-                </span>
-                <span className="text-base text-right text-primary-black font-medium w-1/2">
-                  RM {addOn.displayPremium.toFixed(2)}
-                </span>
-              </div>
-            ))
+            <>
+              {selectedAddOns.map((addOn) => (
+                <div
+                  key={`add-benefit-${addOn.coverCode}`}
+                  className="flex items-start justify-between w-full"
+                >
+                  <span className="text-base text-left text-primary-black font-base w-1/2">
+                    {addOn.title}
+                  </span>
+                  <span className="text-base text-right text-primary-black font-medium w-1/2">
+                    RM {addOn.displayPremium.toFixed(2)}
+                  </span>
+                </div>
+              ))}
+              {selectedDriverType !== "" && (
+                <div className="flex items-start justify-between w-full">
+                  <span className="text-base text-left text-primary-black font-base w-1/2">
+                    Additional Driver
+                    {`(${
+                      selectedDriverType[0].toUpperCase() +
+                      selectedDriverType.slice(1)
+                    } Drivers)`}
+                  </span>
+                  <span className="text-base text-right text-primary-black font-medium w-1/2">
+                    RM 0.00
+                  </span>
+                </div>
+              )}
+            </>
           )}
         </div>
         <div className="inline-block my-3 w-full h-[1px] bg-[#bcbcbc]" />
