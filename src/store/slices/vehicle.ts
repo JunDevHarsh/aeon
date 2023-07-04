@@ -20,7 +20,7 @@ const initialState: VehicleStateType = {
   variant: null,
   polExpiryDate: "",
   drivers: 0,
-  region: "West Malaysia",
+  region: "",
   periodOfCoverage: "",
   reconIndicator: "no",
   nvicList: [],

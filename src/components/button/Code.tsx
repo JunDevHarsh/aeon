@@ -30,15 +30,20 @@ type CodeProps = {
 };
 
 const Code: React.FC<CodeProps> = ({ title, placeholder = "Placeholder" }) => {
+  const {
+    user: {promoCode},
+    credentials: { token, session, requestId, accountId, inquiryId, vehicleId },
+  } = useSelector((state: RootState) => state);
+
   const [state, setState] = useState<{
     code: string;
     error: string | null;
     isValid: boolean;
     isLoading: boolean;
   }>({
-    code: "",
+    code: promoCode,
     error: null,
-    isValid: false,
+    isValid: promoCode ? true : false,
     isLoading: false,
   });
 
@@ -50,14 +55,9 @@ const Code: React.FC<CodeProps> = ({ title, placeholder = "Placeholder" }) => {
     state: { addOns },
   } = useContext(NewAddOnsContext);
 
-  const { token, session, requestId, accountId, inquiryId, vehicleId } =
-    useSelector((state: RootState) => state.credentials);
-
-    const {
-      store: {
-        roadTax
-      }
-    } = useContext(MultiStepFormContext);
+  const {
+    store: { roadTax },
+  } = useContext(MultiStepFormContext);
 
   const {
     state: { id: productId, quoteId },

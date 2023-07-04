@@ -469,7 +469,7 @@ const ApplicationDetailsContainer = () => {
               City
             </span>
             <span className="text-base text-left text-primary-black font-normal w-full break-words">
-              {driverDetails.city || "Seremban"}Seremban
+              {driverDetails.city || "Seremban"}
             </span>
           </div>
           <div className="flex flex-col items-start w-auto">
@@ -627,7 +627,7 @@ const ApplicationDetailsContainer = () => {
               By clicking the "Pay Now" button, I/we hereby consent to the
               processing of the Personal Data provided subject to the following
               <a
-                href=""
+                href="https://aeoninsurance.com.my/privacy-policy/"
                 about="AEON Privacy Link"
                 target="_blank"
                 rel="noreferrer noopener"
@@ -637,7 +637,7 @@ const ApplicationDetailsContainer = () => {
               </a>
               and
               <a
-                href=""
+                href="https://aeoninsurance.com.my/terms-and-conditions/"
                 about="AEON T&C Link"
                 target="_blank"
                 rel="noreferrer noopener"

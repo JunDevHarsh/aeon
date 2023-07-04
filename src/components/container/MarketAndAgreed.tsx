@@ -113,7 +113,7 @@ function MarketAndAgreedContainer() {
   const {
     store: {
       roadTax,
-      addDriverDetails: { driverDetails, shouldUpdate, selectedDriverType },
+      addDriverDetails: { driverDetails, selectedDriverType },
     },
   } = useContext(MultiStepFormContext);
 
@@ -309,18 +309,11 @@ function MarketAndAgreedContainer() {
             class: "Private Vehicle",
             additionalCover: addOnsRequest,
             unlimitedDriverInd:
-              selectedDriverType === "unlimited" && !shouldUpdate
-                ? "true"
-                : "false",
-            driverDetails:
-              selectedDriverType === "unlimited" ||
-              driverDetails.length === 0 ||
-              !shouldUpdate
-                ? []
-                : driverDetails.map(({ idNo, name }) => ({
-                    fullName: name,
-                    identityNumber: idNo,
-                  })),
+              selectedDriverType === "unlimited" ? "true" : "false",
+            driverDetails: driverDetails.map(({ idNo, name }) => ({
+              fullName: name,
+              identityNumber: idNo,
+            })),
             sitype:
               type === "market" ? "MV - Market Value" : "AV - Agreed Value",
             avCode: type === "market" ? "" : agreed?.avCode,

@@ -115,7 +115,7 @@ const DriverDetailsForm = () => {
         <div className="grid grid-cols-1 mobile-xl:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 gap-x-4 w-full">
           {/* Name field */}
           <InputTextField
-            label="Name(as per NRIC)"
+            label="Name (as per NRIC)"
             name="name"
             register={register}
             errors={errors.name}
@@ -140,7 +140,7 @@ const DriverDetailsForm = () => {
                 DOB
               </span>
               <div className="py-1.5 px-2 w-full text-sm text-left text-[#9ca3af] bg-[#fafafa] border border-solid border-[#CFD0D7] rounded cursor-default">
-                {dateOfBirth?.toString()?.slice(0, 10) || "DOB"}
+                {dateOfBirth?.toString().split("-").reverse().join("-") || "DOB"}
               </div>
             </div>
           </div>
