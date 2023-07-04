@@ -56,7 +56,10 @@ const VehicleInfoForm = ({
     clearErrors,
     // formState: { errors },
   } = useForm<VehicleStateType>({
-    defaultValues: vehicleState,
+    defaultValues: {
+      ...vehicleState,
+      region: vehicleState.region === "" ? "West Malaysia" : vehicleState.region,
+    },
   });
 
   const dispatch = useDispatch();
@@ -279,42 +282,43 @@ const VehicleInfoForm = ({
             value={vehicleState.ncdPercentage.toString()}
           />
           {/* Vehicle Model Field  */}
-          <div className="relative pb-5 flex flex-col items-start gap-y-1 w-auto h-auto">
-            <label
-              htmlFor="vehicleModel"
-              className="text-base text-center text-primary-black font-semibold"
-            >
-              Region*
-            </label>
-            <Controller
-              control={control}
-              name="region"
-              rules={{
-                validate: (val) => val !== null || "Select an option",
-              }}
-              render={({ field: { value }, fieldState: { error } }) => (
-                <SelectDropdown
-                  id="region"
-                  placeholder="West Malaysia"
-                  onChange={(val: string) => (
-                    setValue("region", val), clearErrors("region")
-                  )}
-                  selected={value}
-                  error={error}
-                  optionList={[
-                    {
-                      label: "West Malaysia",
-                      value: "West Malaysia",
-                    },
-                    {
-                      label: "East Malaysia",
-                      value: "East Malaysia",
-                    },
-                  ]}
-                />
-              )}
-            />
-          </div>
+          {vehicleState.region !== "" ? (
+            <FixedInputTextField title="Region" value={vehicleState.region} />
+          ) : (
+            <div className="relative pb-5 flex flex-col items-start gap-y-1 w-auto h-auto">
+              <span className="text-base text-center text-primary-black font-semibold">
+                Region*
+              </span>
+              <Controller
+                control={control}
+                name="region"
+                rules={{
+                  validate: (val) => val !== null || "Select an option",
+                }}
+                render={({ field: { value }, fieldState: { error } }) => (
+                  <SelectDropdown
+                    id="region"
+                    placeholder="West Malaysia"
+                    onChange={(val: string) => (
+                      setValue("region", val), clearErrors("region")
+                    )}
+                    selected={value}
+                    error={error}
+                    optionList={[
+                      {
+                        label: "West Malaysia",
+                        value: "West Malaysia",
+                      },
+                      {
+                        label: "East Malaysia",
+                        value: "East Malaysia",
+                      },
+                    ]}
+                  />
+                )}
+              />
+            </div>
+          )}
           {/* Period Of Coverage */}
           <FixedInputTextField
             title="Period of Coverage"

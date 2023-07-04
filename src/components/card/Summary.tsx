@@ -103,6 +103,7 @@ const SummaryInfoCard = () => {
 
   const premium = selectedQuotePlan?.premium;
   const selectedQuoteAddOns = selectedQuotePlan?.additionalCover;
+  const unlimitedDriverInfo = selectedQuotePlan?.unlimitedDriverInfo
 
   const {
     state: {
@@ -230,7 +231,7 @@ const SummaryInfoCard = () => {
             },
           });
 
-          const { premium, displaypremium, additionalCover } =
+          const { premium, displaypremium, additionalCover, unlimitedDriverInfo } =
             data.result.quoteinfo;
 
           const updatedAdditionalCover = selectedQuoteAddOns.map(
@@ -274,6 +275,7 @@ const SummaryInfoCard = () => {
               data: {
                 premium,
                 displayPremium: displaypremium,
+                unlimitedDriverInfo: unlimitedDriverInfo,
                 // additionalCover: updatedAdditionalCover,
               },
             },
@@ -494,10 +496,10 @@ const SummaryInfoCard = () => {
                   key={`add-benefit-${addOn.coverCode}`}
                   className="flex items-start justify-between w-full"
                 >
-                  <span className="text-base text-left text-primary-black font-base w-1/2">
+                  <span className="text-base text-left text-primary-black font-base w-3/4">
                     {addOn.title}
                   </span>
-                  <span className="text-base text-right text-primary-black font-medium w-1/2">
+                  <span className="text-base text-right text-primary-black font-medium w-1/4">
                     RM {addOn.displayPremium.toFixed(2)}
                   </span>
                 </div>
@@ -506,13 +508,13 @@ const SummaryInfoCard = () => {
                 <div className="flex items-start justify-between w-full">
                   <span className="text-base text-left text-primary-black font-base w-1/2">
                     Additional Driver
-                    {`(${
+                    {` (${
                       selectedDriverType[0].toUpperCase() +
                       selectedDriverType.slice(1)
                     } Drivers)`}
                   </span>
                   <span className="text-base text-right text-primary-black font-medium w-1/2">
-                    RM 0.00
+                    RM {unlimitedDriverInfo?.amount || "0"}.00
                   </span>
                 </div>
               )}

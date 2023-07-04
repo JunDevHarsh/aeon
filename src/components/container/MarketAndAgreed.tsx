@@ -113,7 +113,7 @@ function MarketAndAgreedContainer() {
   const {
     store: {
       roadTax,
-      addDriverDetails: { driverDetails, shouldUpdate, selectedDriverType },
+      addDriverDetails: { driverDetails, selectedDriverType },
     },
   } = useContext(MultiStepFormContext);
 
@@ -309,18 +309,11 @@ function MarketAndAgreedContainer() {
             class: "Private Vehicle",
             additionalCover: addOnsRequest,
             unlimitedDriverInd:
-              selectedDriverType === "unlimited" && !shouldUpdate
-                ? "true"
-                : "false",
-            driverDetails:
-              selectedDriverType === "unlimited" ||
-              driverDetails.length === 0 ||
-              !shouldUpdate
-                ? []
-                : driverDetails.map(({ idNo, name }) => ({
-                    fullName: name,
-                    identityNumber: idNo,
-                  })),
+              selectedDriverType === "unlimited" ? "true" : "false",
+            driverDetails: driverDetails.map(({ idNo, name }) => ({
+              fullName: name,
+              identityNumber: idNo,
+            })),
             sitype:
               type === "market" ? "MV - Market Value" : "AV - Agreed Value",
             avCode: type === "market" ? "" : agreed?.avCode,
@@ -577,7 +570,7 @@ function MarketAndAgreedContainer() {
               <span className="text-base text-primary-black text-center font-bold">
                 Market Value
               </span>
-              <span className="text-base text-primary-black text-left font-normal">
+              <span className="text-sm text-primary-black text-left font-normal">
                 Market value to the insured amount of a vehicle based on its
                 current market price at the time of purchasing insurance. The
                 determination of this value is typically influenced by factors
@@ -589,7 +582,7 @@ function MarketAndAgreedContainer() {
               <span className="text-base text-primary-black text-center font-bold">
                 Agreed Value
               </span>
-              <span className="text-base text-primary-black text-left font-normal">
+              <span className="text-sm text-primary-black text-left font-normal">
                 Agreed value is the value agreed by both the insurer and
                 policyholder at the time of insurance renewal based on the car
                 model, year, and other factors at the time of purchasing

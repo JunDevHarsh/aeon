@@ -127,7 +127,7 @@ const AddOnsContainer = () => {
 
   const nationalityOption = nationality.map((item: any) => ({
     label: item.Description,
-    value: item.Code,
+    value: item.Description
   }));
   // const relationshipOption = relationShip.map((item: any) => ({
   //   label: item.Description,
@@ -277,25 +277,29 @@ const AddOnsContainer = () => {
               ))
             ) : (
               <>
-                {newAddOns.map((addOn) => (
-                  <AddOnsCard
-                    key={addOn.coverCode}
-                    id={addOn.coverCode}
-                    customImgName={addOn.addonimage}
-                    description={addOn.coverDescription}
-                    isSelected={addOn.isSelected}
-                    sumInsured={addOn.coverSumInsured}
-                    title={addOn.title}
-                    requiredinfo={addOn.requiredinfo}
-                    moredetail={addOn.moredetail}
-                    updateAddOn={updateAddOn}
-                  />
-                ))}
-                <AddOnDriver
-                  isSelected={isSelected}
-                  selectedValue={selectedDriverType}
-                  updateAddOnDriver={updateAddOnDriver}
-                />
+                {newAddOns.map((addOn) =>
+                  addOn.coverCode === "07" ? (
+                    <AddOnDriver
+                      isSelected={isSelected}
+                      description={addOn.coverDescription}
+                      selectedValue={selectedDriverType}
+                      updateAddOnDriver={updateAddOnDriver}
+                    />
+                  ) : (
+                    <AddOnsCard
+                      key={addOn.coverCode}
+                      id={addOn.coverCode}
+                      customImgName={addOn.addonimage}
+                      description={addOn.coverDescription}
+                      isSelected={addOn.isSelected}
+                      sumInsured={addOn.coverSumInsured}
+                      title={addOn.title}
+                      requiredinfo={addOn.requiredinfo}
+                      moredetail={addOn.moredetail}
+                      updateAddOn={updateAddOn}
+                    />
+                  )
+                )}
               </>
             )}
           </div>
@@ -338,7 +342,7 @@ const AddOnsContainer = () => {
                     htmlFor={`addDriverDetailsName-${driverDetails.id}`}
                     className="text-base text-center text-primary-black font-semibold"
                   >
-                    Name(as per NRIC)*
+                    Name (as per NRIC)*
                   </label>
                   <input
                     id={`addDriverDetailsName-${driverDetails.id}`}
@@ -353,79 +357,82 @@ const AddOnsContainer = () => {
                     className="py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium border border-solid rounded outline outline-1 outline-transparent focus-visible:outline-primary-pink border-[#CFD0D7] focus-visible:border-primary-pink"
                   />
                 </div>
-                {/* ID Type Field */}
-                <div className="relative pb-5 flex flex-col items-start gap-y-1 flex-[1_1_40%] w-auto h-auto">
-                  <span className="text-base text-center text-primary-black font-semibold">
-                    ID Type
-                  </span>
-                  <SelectDropdown
-                    id={`idType-${driverDetails.id}`}
-                    placeholder="NRIC"
-                    onChange={(val: string) =>
-                      updateDriverDetails(driverDetails.id, {
-                        idType: val,
-                        idNo: "",
-                      })
-                    }
-                    selected={driverDetails.idType}
-                    optionList={[
-                      { label: "NRIC", value: "NRIC" },
-                      { label: "Passport", value: "Passport" },
-                      { label: "Company", value: "Company" },
-                    ]}
-                  />
-                </div>
-                {/* ID No. Field */}
-                <div className="relative pb-5 flex flex-col items-start gap-y-1 w-full h-auto">
-                  <label
-                    htmlFor={`idNo-${driverDetails.id}`}
-                    className="text-base text-center text-primary-black font-semibold"
-                  >
-                    ID No.*
-                  </label>
-                  <input
-                    id={`idNo-${driverDetails.id}`}
-                    type="text"
-                    value={driverDetails.idNo}
-                    placeholder={
-                      driverDetails.idType === "Passport"
-                        ? "A12365498"
-                        : driverDetails.idType === "Company"
-                        ? "134473-J"
-                        : "123456-12-1234"
-                    }
-                    onChange={(event) => {
-                      // event.preventDefault();
-                      let { value } = event.target;
-                      // remove all spaces from the text
-                      value = value.replace(/\s+/g, "").toUpperCase();
-                      if (driverDetails.idType === "NRIC") {
-                        value = value.replace(/\D/g, "");
-                        if (value.length > 12) {
-                          value = value.substring(0, 12);
-                        }
-                        let first = value.substring(0, 6);
-                        let second = value.substring(6, 8);
-                        let third = value.substring(8, 12);
-
-                        value = first;
-
-                        if (second !== "" || second) {
-                          value += "-" + second;
-                        }
-
-                        if (third !== "" || third) {
-                          value += "-" + third;
-                        }
+                <div className="relative flex flex-row items-center justify-center w-full">
+                  {/* ID Type Field */}
+                  <div className="relative pb-5 flex flex-col items-start gap-y-1 flex-[1_1_25%] w-auto h-auto">
+                    <span className="text-base text-center text-primary-black font-semibold">
+                      ID Type
+                    </span>
+                    <SelectDropdown
+                      id={`idType-${driverDetails.id}`}
+                      placeholder="NRIC"
+                      onChange={(val: string) =>
+                        updateDriverDetails(driverDetails.id, {
+                          idType: val,
+                          idNo: "",
+                        })
                       }
-                      event.target.value = value;
-                      updateDriverDetails(driverDetails.id, {
-                        idNo: value,
-                      });
-                    }}
-                    className="py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium border border-solid rounded outline outline-1 outline-transparent focus-visible:outline-primary-pink border-[#CFD0D7] focus-visible:border-primary-pink"
-                  />
+                      selected={driverDetails.idType}
+                      optionList={[
+                        { label: "NRIC", value: "NRIC" },
+                        { label: "Passport", value: "Passport" },
+                        { label: "Company", value: "Company" },
+                      ]}
+                    />
+                  </div>
+                  {/* ID No. Field */}
+                  <div className="relative pb-5 ml-1 flex flex-col items-start gap-y-1 flex-[1_1_75%] w-auto h-auto">
+                    <label
+                      htmlFor={`idNo-${driverDetails.id}`}
+                      className="text-base text-center text-primary-black font-semibold"
+                    >
+                      ID No.*
+                    </label>
+                    <input
+                      id={`idNo-${driverDetails.id}`}
+                      type="text"
+                      value={driverDetails.idNo}
+                      placeholder={
+                        driverDetails.idType === "Passport"
+                          ? "A12365498"
+                          : driverDetails.idType === "Company"
+                          ? "134473-J"
+                          : "123456-12-1234"
+                      }
+                      onChange={(event) => {
+                        // event.preventDefault();
+                        let { value } = event.target;
+                        // remove all spaces from the text
+                        value = value.replace(/\s+/g, "").toUpperCase();
+                        if (driverDetails.idType === "NRIC") {
+                          value = value.replace(/\D/g, "");
+                          if (value.length > 12) {
+                            value = value.substring(0, 12);
+                          }
+                          let first = value.substring(0, 6);
+                          let second = value.substring(6, 8);
+                          let third = value.substring(8, 12);
+
+                          value = first;
+
+                          if (second !== "" || second) {
+                            value += "-" + second;
+                          }
+
+                          if (third !== "" || third) {
+                            value += "-" + third;
+                          }
+                        }
+                        event.target.value = value;
+                        updateDriverDetails(driverDetails.id, {
+                          idNo: value,
+                        });
+                      }}
+                      className="py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium border border-solid rounded outline outline-1 outline-transparent focus-visible:outline-primary-pink border-[#CFD0D7] focus-visible:border-primary-pink"
+                    />
+                  </div>
                 </div>
+
                 {/* Relationship Field */}
                 {/* <div className="relative pb-5 flex flex-col items-start gap-y-1 flex-[1_1_40%] w-auto h-auto">
                   <span className="text-base text-center text-primary-black font-semibold">

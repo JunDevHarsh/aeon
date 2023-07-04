@@ -150,7 +150,7 @@ const UserRegistrationForm = () => {
           })
         );
       }
-      let region: string = "West Malaysia";
+      let region: string = "";
       const postalApiResponse = await checkPostalCode(
         "https://app.agiliux.com/aeon/webservice.php",
         5000,

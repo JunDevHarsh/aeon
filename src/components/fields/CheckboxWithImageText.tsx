@@ -90,7 +90,7 @@ function SingleCheckboxField({
       />
       <label
         htmlFor={name + value}
-        className={`relative px-2.5 flex items-center justify-start w-auto border border-solid rounded cursor-pointer outline-2 outline outline-transparent peer-focus-visible:outline-primary-black ${
+        className={`relative px-2.5 py-1 flex items-center justify-start w-auto border border-solid rounded cursor-pointer outline-2 outline outline-transparent peer-focus-visible:outline-primary-black ${
           selectedValue === value
             ? "bg-[#F8F9FF] border-[#4B5EAA]"
             : "bg-white border-[#8A8A8A]"
@@ -108,7 +108,7 @@ function SingleCheckboxField({
             src={imgRef.current}
             alt={`Image of ${title}`}
             onLoad={() => setIsLoaded(true)}
-            className={`ml-3 mr-1 w-9 mobile-m:w-auto h-auto`}
+            className={`ml-3 mr-1 w-9 mobile-m:w-10 h-auto`}
           />
         )}
         <span

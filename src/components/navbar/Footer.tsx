@@ -8,11 +8,11 @@ interface MenuListType {
 const menuList: Array<MenuListType> = [
   {
     name: "Terms & Conditions",
-    path: "/terms-and-conditions",
+    path: "https://aeoninsurance.com.my/terms-and-conditions/",
   },
   {
     name: "Privacy Policy",
-    path: "/privacy-policy",
+    path: "https://aeoninsurance.com.my/privacy-policy",
   },
 ];
 
@@ -110,6 +110,10 @@ const Footer = () => {
                 className="text-base text-center text-white font-medium"
                 title={item.name}
                 aria-label={`GoTo: ${item.name}`}
+                target={
+                  item.path.includes("https") ? "_blank" : "_self"
+                }
+                rel="noreferrer noopener"
               >
                 {item.name}
               </Link>
