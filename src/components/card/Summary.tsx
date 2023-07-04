@@ -496,10 +496,10 @@ const SummaryInfoCard = () => {
                   key={`add-benefit-${addOn.coverCode}`}
                   className="flex items-start justify-between w-full"
                 >
-                  <span className="text-base text-left text-primary-black font-base w-1/2">
+                  <span className="text-base text-left text-primary-black font-base w-3/4">
                     {addOn.title}
                   </span>
-                  <span className="text-base text-right text-primary-black font-medium w-1/2">
+                  <span className="text-base text-right text-primary-black font-medium w-1/4">
                     RM {addOn.displayPremium.toFixed(2)}
                   </span>
                 </div>

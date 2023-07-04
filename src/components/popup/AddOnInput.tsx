@@ -143,7 +143,7 @@ function AddOnInputPopup({
                       onChange={handleTextOnChange}
                     />
                   </div>
-                  <span className="relative text-sm text-left font-medium text-primary-black">
+                  <span className="relative text-sm text-left font-medium text-red-600">
                     Minimum sum insured is RM 500
                   </span>
                 </>
@@ -163,7 +163,7 @@ function AddOnInputPopup({
                 />
               )}
             </div>
-            {error && (
+            {error && fieldtype === "Dropdown" && (
               <span
                 className="relative text-sm text-left font-medium text-red-600"
                 role="alert"

@@ -5,12 +5,14 @@ import Popup from "reactjs-popup";
 type AddOnDriverProps = {
   isSelected: boolean;
   selectedValue: string;
+  description: string;
   updateAddOnDriver: (val: string, isSelected: boolean) => void;
 };
 
 function AddOnDriver({
   isSelected,
   selectedValue,
+  description,
   updateAddOnDriver,
 }: AddOnDriverProps) {
   const [open, setOpen] = useState<boolean>(false);
@@ -80,7 +82,7 @@ function AddOnDriver({
             <div className="group-hover/info:inline-block hidden absolute top-[calc(100%+14px)] left-2 -translate-x-1/2 p-2 min-w-[250px] max-w-[250px] w-auto bg-[#959698] rounded-xl z-[2]">
               <div className="absolute -top-2 left-1/2 -translate-x-1/2 inline-block w-4 h-4 bg-[#959698] rotate-45" />
               <p className="text-xs text-center text-white font-normal">
-                Hello
+                {description}
               </p>
             </div>
           </div>

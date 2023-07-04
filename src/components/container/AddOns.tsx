@@ -281,6 +281,7 @@ const AddOnsContainer = () => {
                   addOn.coverCode === "07" ? (
                     <AddOnDriver
                       isSelected={isSelected}
+                      description={addOn.coverDescription}
                       selectedValue={selectedDriverType}
                       updateAddOnDriver={updateAddOnDriver}
                     />
