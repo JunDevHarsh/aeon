@@ -44,7 +44,6 @@ const ApplicationDetailsContainer = () => {
       yearOfManufacture,
       vehicleEngine: engineNo,
       vehicleChassis: chasisNo,
-      variant,
     },
     credentials: {
       token: tokenInStore,
@@ -366,7 +365,9 @@ const ApplicationDetailsContainer = () => {
               Variant
             </span>
             <span className="text-base text-left text-primary-black font-normal">
-              {variant?.vehicleVariant ?? "Honda HRV X3"}
+              {valuationType === "market"
+                ? valuationMarket?.vehicleVariant
+                : valuationAgreed?.variant}
             </span>
           </div>
         </div>
@@ -397,7 +398,8 @@ const ApplicationDetailsContainer = () => {
               DOB
             </span>
             <span className="text-base text-left text-primary-black font-normal">
-              {dateOfBirth?.toString()?.slice(0, 10) || "09/09/1994"}
+              {dateOfBirth?.toString().split("-").reverse().join("-") ||
+                "20-12-2023"}
             </span>
           </div>
           <div className="flex flex-col items-start w-full">
@@ -450,12 +452,32 @@ const ApplicationDetailsContainer = () => {
           </div>
           <div className="flex flex-col items-start w-full">
             <span className="text-base text-left text-primary-black font-bold">
-              Address
+              Address 1
             </span>
             <span className="text-base text-left text-primary-black font-normal w-full break-words">
               {driverDetails.address1 || "376, Jalan Merak 16"}
             </span>
           </div>
+          {driverDetails.address2 !== "" && (
+            <div className="flex flex-col items-start w-full">
+              <span className="text-base text-left text-primary-black font-bold">
+                Address 2
+              </span>
+              <span className="text-base text-left text-primary-black font-normal w-full break-words">
+                {driverDetails.address2 || "376, Jalan Merak 16"}
+              </span>
+            </div>
+          )}
+          {driverDetails.address3 !== "" && (
+            <div className="flex flex-col items-start w-full">
+              <span className="text-base text-left text-primary-black font-bold">
+                Address 3
+              </span>
+              <span className="text-base text-left text-primary-black font-normal w-full break-words">
+                {driverDetails.address3 || "376, Jalan Merak 16"}
+              </span>
+            </div>
+          )}
           <div className="flex flex-col items-start w-full">
             <span className="text-base text-left text-primary-black font-bold">
               State
