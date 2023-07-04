@@ -65,7 +65,7 @@ const DriverDetailsForm = () => {
 
   const nationalityOptions = nationalityList.map((item: any) => ({
     label: item.Description,
-    value: item.Code,
+    value: item.Description,
   }));
 
   const {
