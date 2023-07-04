@@ -150,7 +150,7 @@ const UserRegistrationForm = () => {
           })
         );
       }
-      let region: string = "West Malaysia";
+      let region: string = "";
       const postalApiResponse = await checkPostalCode(
         "https://app.agiliux.com/aeon/webservice.php",
         5000,
@@ -163,6 +163,13 @@ const UserRegistrationForm = () => {
           postalApiResponse[0].Region === "W"
             ? "West Malaysia"
             : "East Malaysia";
+        const postCodeInfo: any = postalApiResponse[0];
+        dispatch(
+          addUserBasicInfo({
+            state: postCodeInfo.StateDescp,
+            city: postCodeInfo.CityDescp,
+          })
+        );
       }
       const vehicleApiResponse = await getVehicleInfo(
         "https://app.agiliux.com/aeon/webservice.php",
@@ -209,14 +216,14 @@ const UserRegistrationForm = () => {
           vehicleMake,
           modelCode,
           vehicleModel,
-          variant: nvicList[0] || null,
+          variant: nvicList[0],
           vehicleEngineCC,
           vehicleEngine,
           vehicleChassis,
-          region: region,
+          region,
           yearOfManufacture,
           seatingCapacity,
-          periodOfCoverage: polEffectiveDate + " to " + polExpiryDate,
+          periodOfCoverage: polEffectiveDate + " - " + polExpiryDate,
           polEffectiveDate,
           polExpiryDate,
           ncdPercentage,

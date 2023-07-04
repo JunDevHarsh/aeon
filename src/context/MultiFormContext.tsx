@@ -10,14 +10,22 @@ import {
   addDriverDetailsReducer,
   addOnsReducer,
   driverDetailsReducer,
+  roadTaxReducer,
+  termsAndConditionsReducer,
 } from "./reducers";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
-
 /*---------------Initial State---------------*/
 const initialMultiStepFormState: MultiStepFormState = {
   addOns: [],
-  addDriverDetails: [],
+  addDriverDetails: {
+    selectedDriverType: "",
+    driverDetails: [],
+    hasSubmitted: false,
+    shouldUpdate: false,
+    hasUpdated: false,
+    isSelected: false,
+  },
   driverDetails: {
     name: "",
     email: "",
@@ -34,6 +42,8 @@ const initialMultiStepFormState: MultiStepFormState = {
     state: "",
     postalCode: "",
   },
+  roadTax: false,
+  termsAndConditions: false,
 };
 
 /*---------------ENum types---------------*/
@@ -47,10 +57,21 @@ export enum AddDriverTypes {
   AddNewDriverDetails = "ADD_NEW_DRIVER_DETAILS",
   UpdateDriverDetails = "UPDATE_DRIVER_DETAILS",
   RemoveDriverDetailsById = "REMOVE_DRIVER_DETAILS",
+  SelectAdditionalDriver = "SELECT_ADDITIONAL_DRIVER",
+  UnSelectAdditionalDriver = "UNSELECT_ADDITIONAL_DRIVER",
+  SubmitAddDriverDetails = "SUBMIT_ADD_DRIVER_DETAILS",
 }
 
 export enum DriverTypes {
   UpdateDriverInfo = "UPDATE_DRIVER_INFO",
+}
+
+export enum RoadTaxTypes {
+  UpdateRoadTax = "UPDATE_ROAD_TAX",
+}
+
+export enum TermsAndConditionsTypes {
+  UpdateTermsAndConditions = "UPDATE_TERMS_AND_CONDITIONS",
 }
 
 /*---------------Payload---------------*/
@@ -78,11 +99,30 @@ export type AddDriverDetailsPayload = {
   [AddDriverTypes.RemoveDriverDetailsById]: {
     id: string;
   };
+  [AddDriverTypes.SelectAdditionalDriver]: {
+    val: string;
+  };
+  [AddDriverTypes.UnSelectAdditionalDriver]: {
+    val: string;
+  };
+  [AddDriverTypes.SubmitAddDriverDetails]: {};
 };
 
 export type DriverDetailsPayload = {
   [DriverTypes.UpdateDriverInfo]: {
     updatedValues: Partial<DriverDetails>;
+  };
+};
+
+export type RoadTaxPayload = {
+  [RoadTaxTypes.UpdateRoadTax]: {
+    roadTax: boolean;
+  };
+};
+
+export type TermsAndConditionsPayload = {
+  [TermsAndConditionsTypes.UpdateTermsAndConditions]: {
+    termsAndConditions: boolean;
   };
 };
 
@@ -95,11 +135,21 @@ export type AddDriverActions =
 export type DriverDetailsActions =
   ActionMap<DriverDetailsPayload>[keyof ActionMap<DriverDetailsPayload>];
 
+export type RoadTaxActions =
+  ActionMap<RoadTaxPayload>[keyof ActionMap<RoadTaxPayload>];
+
+export type TermsAndConditionActions =
+  ActionMap<TermsAndConditionsPayload>[keyof ActionMap<TermsAndConditionsPayload>];
+
 /*---------------MultiForm Context---------------*/
 export const MultiStepFormContext = createContext<{
   store: MultiStepFormState;
   dispatch: React.Dispatch<
-    AddOnsActions | AddDriverActions | DriverDetailsActions
+    | AddOnsActions
+    | AddDriverActions
+    | DriverDetailsActions
+    | RoadTaxActions
+    | TermsAndConditionActions
   >;
 }>({
   store: initialMultiStepFormState,
@@ -108,12 +158,19 @@ export const MultiStepFormContext = createContext<{
 
 /*---------------Multiple Reducers---------------*/
 const mainReducer = (
-  { addOns, addDriverDetails, driverDetails }: MultiStepFormState,
-  action: AddOnsActions | AddDriverActions | DriverDetailsActions
-): MultiStepFormState => ({
+  { addOns, addDriverDetails, driverDetails, roadTax, termsAndConditions}: MultiStepFormState,
+  action:
+    | AddOnsActions
+    | AddDriverActions
+    | DriverDetailsActions
+    | RoadTaxActions
+    | TermsAndConditionActions
+) => ({
   addOns: addOnsReducer(addOns, action),
   addDriverDetails: addDriverDetailsReducer(addDriverDetails, action),
   driverDetails: driverDetailsReducer(driverDetails, action),
+  roadTax: roadTaxReducer(roadTax, action),
+  termsAndConditions: termsAndConditionsReducer(termsAndConditions, action),
 });
 
 const MultiFormContextProvider = ({
@@ -122,8 +179,9 @@ const MultiFormContextProvider = ({
   children: React.ReactNode;
 }) => {
   const {
-    user: { email, mobileNumber, postalCode, drivingExp },
+    user: { email, mobileNumber, postalCode, drivingExp, city, state },
   } = useSelector((state: RootState) => state);
+
   const [store, dispatch] = useReducer(mainReducer, {
     ...initialMultiStepFormState,
     driverDetails: {
@@ -132,6 +190,8 @@ const MultiFormContextProvider = ({
       mobileNumber: mobileNumber,
       postalCode: postalCode,
       drivingExp: drivingExp,
+      city: city,
+      state: state,
     },
   });
 

@@ -32,6 +32,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { QuoteListingContext, QuotesTypes } from "../../context/QuoteListing";
 import { NewAddOnsContext } from "../../context/AddOnsContext";
+import { MultiStepFormContext } from "../../context/MultiFormContext";
 
 function createUniqueValues(types: AgreedVariantType[]) {
   const regEx = /(-HIGH|-LOW|-HI|-LO)\s*-?\s*/;
@@ -78,13 +79,6 @@ function MarketAndAgreedContainer() {
   } = useContext(MarketAndAgreedContext);
   // get token from store
   const {
-    token: tokenInStore,
-    session: sessionInStore,
-    requestId,
-    inquiryId,
-    accountId,
-  } = useSelector((state: RootState) => state.credentials);
-  const {
     state: { id: productId, quoteId },
     dispatch: updateInsuranceDispatch,
   } = useContext(InsuranceContext);
@@ -98,12 +92,30 @@ function MarketAndAgreedContainer() {
 
   const updateStore = useDispatch();
   const {
-    reconIndicator,
-    vehicleMake,
-    vehicleModel,
-    region,
-    yearOfManufacture,
-  } = useSelector((state: RootState) => state.vehicle);
+    vehicle: {
+      reconIndicator,
+      vehicleMake,
+      vehicleModel,
+      region,
+      yearOfManufacture,
+    },
+    user: { promoCode, promoId, percentOff },
+    credentials: {
+      token: tokenInStore,
+      session: sessionInStore,
+      requestId,
+      inquiryId,
+      accountId,
+      vehicleId,
+    },
+  } = useSelector((state: RootState) => state);
+
+  const {
+    store: {
+      roadTax,
+      addDriverDetails: { driverDetails, selectedDriverType },
+    },
+  } = useContext(MultiStepFormContext);
 
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -270,6 +282,24 @@ function MarketAndAgreedContainer() {
           })
         );
       }
+
+      const addOnsRequest = addOns
+        .filter((addOn) => addOn.selectedIndicator)
+        .map((addOn) => {
+          let request: any = {};
+          request.coverCode = addOn.coverCode;
+          request.coverSumInsured = addOn.coverSumInsured;
+          if (addOn.coverCode === "PAB-ERW") {
+            if (addOn.moredetail?.options instanceof Array) {
+              request.planCode = addOn.moredetail?.options.find(
+                (option: any) =>
+                  option.value === addOn.coverSumInsured.toString()
+              )?.code;
+            }
+          }
+          return request;
+        });
+
       const quoteResponse = await axios.post(
         "https://app.agiliux.com/aeon/webservice.php",
         {
@@ -277,14 +307,13 @@ function MarketAndAgreedContainer() {
             requestId: requestId,
             tenant_id: "67b61490-fec2-11ed-a640-e19d1712c006",
             class: "Private Vehicle",
-            additionalCover: addOns
-              .filter((addOn) => addOn.selectedIndicator)
-              .map((addOn) => ({
-                coverCode: addOn.coverCode,
-                coverSumInsured: addOn.coverSumInsured,
-              })),
-            unlimitedDriverInd: "false",
-            driverDetails: [],
+            additionalCover: addOnsRequest,
+            unlimitedDriverInd:
+              selectedDriverType === "unlimited" ? "true" : "false",
+            driverDetails: driverDetails.map(({ idNo, name }) => ({
+              fullName: name,
+              identityNumber: idNo,
+            })),
             sitype:
               type === "market" ? "MV - Market Value" : "AV - Agreed Value",
             avCode: type === "market" ? "" : agreed?.avCode,
@@ -298,6 +327,11 @@ function MarketAndAgreedContainer() {
             insurer: "7x250468",
             productid: productId,
             quoteId: quoteId,
+            vehicleId: vehicleId,
+            roadtax: roadTax ? "1" : "0",
+            promoid: promoId,
+            promocode: promoCode,
+            percent_off: percentOff,
           }),
           operation: "updateQuote",
           sessionName: sessionInfo?.sessionName,
@@ -335,7 +369,7 @@ function MarketAndAgreedContainer() {
               productId: productId,
               data: {
                 premium,
-                displaypremium,
+                displayPremium: displaypremium,
               },
             },
           });
@@ -397,7 +431,7 @@ function MarketAndAgreedContainer() {
             </svg>
             {/* will be fixed for first time */}
             <p className="ml-1 text-base text-center text-primary-pink font-medium">
-              The Current market value for your vehicle is RM{" "}
+              The current Market Value for your vehicle is RM{" "}
               {numberWithCommas(Number(previousValue))}
             </p>
           </div>
@@ -536,21 +570,26 @@ function MarketAndAgreedContainer() {
               <span className="text-base text-primary-black text-center font-bold">
                 Market Value
               </span>
-              <span className="text-base text-primary-black text-left font-normal">
-                Market value refers to the current calculated worth of your car.
-                If you choose the market value, your car is covered for what it
-                is currently worth in the market.
+              <span className="text-sm text-primary-black text-left font-normal">
+                Market value to the insured amount of a vehicle based on its
+                current market price at the time of purchasing insurance. The
+                determination of this value is typically influenced by factors
+                such as the brand, model, and year of manufacture of the
+                vehicle.
               </span>
             </div>
             <div className="flex flex-col items-start w-full">
               <span className="text-base text-primary-black text-center font-bold">
                 Agreed Value
               </span>
-              <span className="text-base text-primary-black text-left font-normal">
+              <span className="text-sm text-primary-black text-left font-normal">
                 Agreed value is the value agreed by both the insurer and
-                policyholder at the time of insurance renewal. Insurers
-                determine the agreed value based on a few underwriting factors
-                and risk assessment.
+                policyholder at the time of insurance renewal based on the car
+                model, year, and other factors at the time of purchasing
+                insurance. Agreed Value is not applicable for reconditioned
+                vehicles &#10088;imported&#10089;. If you select Agreed
+                Value with your reconditioned car, claims settlement will be at
+                risk.
               </span>
             </div>
           </div>

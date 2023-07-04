@@ -29,6 +29,9 @@ type UserInfoType = {
   polExpiryDate: string;
   drivingExp: string;
   referralCode: string;
+  promoCode: string;
+  promoId: string;
+  percentOff: string;
 };
 
 const initialState: UserInfoType = {
@@ -57,6 +60,9 @@ const initialState: UserInfoType = {
   polExpiryDate: "",
   drivingExp: "",
   referralCode: "",
+  promoCode: "",
+  promoId: "",
+  percentOff: "",
 };
 
 export const userInfoSlice = createSlice({
@@ -85,6 +91,19 @@ export const userInfoSlice = createSlice({
     ) => {
       return { ...state, ...action.payload };
     },
+    addPromoCode: (
+      state,
+      action: PayloadAction<{
+        promoCode: string;
+        promoId: string;
+        percentOff: string;
+      }>
+    ) => {
+      const { percentOff, promoCode, promoId } = action.payload;
+      state.promoId = promoId;
+      state.promoCode = promoCode;
+      state.percentOff = percentOff;
+    },
     updateAPIcredentials: (
       state,
       action: PayloadAction<{ requestId: string; sessionName: string }>
@@ -103,7 +122,8 @@ export const {
   addUserID,
   updateUserStateInfo,
   updateAPIcredentials,
-  addReferralCode
+  addReferralCode,
+  addPromoCode
 } = userInfoSlice.actions;
 
 export default userInfoSlice.reducer;

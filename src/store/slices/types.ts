@@ -52,7 +52,7 @@ export type VehicleStateType = {
   vehicleEngine: string;
   vehicleChassis: string;
   drivers: number;
-  region: string | null;
+  region: string;
   periodOfCoverage: string;
   yearOfManufacture: string;
   seatingCapacity: number;
