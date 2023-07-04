@@ -431,7 +431,7 @@ function MarketAndAgreedContainer() {
             </svg>
             {/* will be fixed for first time */}
             <p className="ml-1 text-base text-center text-primary-pink font-medium">
-              The Current market value for your vehicle is RM{" "}
+              The current Market Value for your vehicle is RM{" "}
               {numberWithCommas(Number(previousValue))}
             </p>
           </div>
@@ -587,7 +587,7 @@ function MarketAndAgreedContainer() {
                 policyholder at the time of insurance renewal based on the car
                 model, year, and other factors at the time of purchasing
                 insurance. Agreed Value is not applicable for reconditioned
-                vehicles &#10088;imported&#10089;. <br /> If you select Agreed
+                vehicles &#10088;imported&#10089;. If you select Agreed
                 Value with your reconditioned car, claims settlement will be at
                 risk.
               </span>

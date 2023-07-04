@@ -23,7 +23,7 @@ function AddOnDriverWarning({ open, setOpen, updateAddOnDriver}: AddOnDriverWarn
         onClick={closePopup}
         className="fixed top-0 left-0 right-0 bottom-0 h-full w-full bg-gradient-to-tr from-[rgba(0,0,0,0.7)] to-[rgba(0,0,0,0.7)] z-[20]F"
       />
-      <div className="relative min-w-[300px] max-w-sm h-auto bg-white rounded">
+      <div className="relative min-w-[300px] max-w-lg h-auto bg-white rounded">
         <div className="relative px-4 py-2 flex flex-row items-center justify-end w-full h-auto border-b-2 border-solid border-b-[#c3c3c3]">
           <button
             className="inline-block w-auto h-auto rounded"

@@ -55,7 +55,7 @@ function AddOnInputPopup({
 
   function handleOnSave() {
     if (error) return;
-    if(fieldtype === "Text Box" && value === "0") {
+    if (fieldtype === "Text Box" && value === "0") {
       setState({
         error: "Enter a valid suminsured value",
         value: value,
@@ -91,101 +91,103 @@ function AddOnInputPopup({
         onClick={closePopup}
         className="fixed top-0 left-0 right-0 bottom-0 h-full w-full bg-gradient-to-tr from-[rgba(0,0,0,0.7)] to-[rgba(0,0,0,0.7)] z-[20]F"
       />
-      <div className="relative min-w-[300px] h-auto bg-white rounded">
-        <div className="relative px-4 py-2 flex flex-row items-center justify-end w-full h-auto border-b-2 border-solid border-b-[#c3c3c3]">
-          <button
-            className="inline-block w-auto h-auto rounded"
-            onClick={closePopup}
-          >
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
+      <div className="relative min-w-[310px] min-[520px]:min-w-[512px] max-w-lg w-full">
+        <div className="relative w-full h-auto bg-white rounded">
+          <div className="relative px-4 py-2 flex flex-row items-center justify-end w-full h-auto border-b-2 border-solid border-b-[#c3c3c3]">
+            <button
+              className="inline-block w-auto h-auto rounded"
+              onClick={closePopup}
             >
-              <path
-                d="M18 6L6 18"
-                stroke="#6C6F75"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M6 6L18 18"
-                stroke="#6C6F75"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-        </div>
-        <div className="relative px-4 pt-4 pb-6 w-full">
-          <div className="relative inline-block w-full">
-            <h3 className="text-lg text-left text-primary-black font-medium">
-              {question}
-            </h3>
-            <div className="relative mt-2 w-full">
-              {fieldtype === "Text Box" ? (
-                <>
-                  <div className="relative w-full">
-                    <span className="absolute top-[2px] left-[2px] px-2 h-[calc(100%-4px)] flex items-center justify-center w-auto bg-[#f6f6f6] rounded-tl-[3px] rounded-bl-[3px]">
-                      <span className="text-sm text-center text-primary-black font-medium">
-                        RM
-                      </span>
-                    </span>
-                    <input
-                      type="text"
-                      name="inputText"
-                      className="inline-bloc pl-12 pr-2 py-0.5 w-full text-left text-base text-primary-black font-medium border border-solid border-[#c3c3c3] rounded"
-                      value={value}
-                      onChange={handleTextOnChange}
-                    />
-                  </div>
-                  <span className="relative text-sm text-left font-medium text-red-600">
-                    Minimum sum insured is RM 500
-                  </span>
-                </>
-              ) : (
-                <SelectDropdown
-                  id=""
-                  onChange={handleSelectOnChange}
-                  optionList={
-                    options instanceof Array
-                      ? options.map(({ value, label }) => ({
-                          label,
-                          value,
-                        }))
-                      : []
-                  }
-                  selected={value}
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M18 6L6 18"
+                  stroke="#6C6F75"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
+                <path
+                  d="M6 6L18 18"
+                  stroke="#6C6F75"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+          </div>
+          <div className="relative px-4 pt-4 pb-6 w-full">
+            <div className="relative inline-block w-full">
+              <h3 className="text-lg text-left text-primary-black font-medium">
+                {question}
+              </h3>
+              <div className="relative mt-2 w-full">
+                {fieldtype === "Text Box" ? (
+                  <>
+                    <div className="relative w-full">
+                      <span className="absolute top-[2px] left-[2px] px-2 h-[calc(100%-4px)] flex items-center justify-center w-auto bg-[#f6f6f6] rounded-tl-[3px] rounded-bl-[3px]">
+                        <span className="text-sm text-center text-primary-black font-medium">
+                          RM
+                        </span>
+                      </span>
+                      <input
+                        type="text"
+                        name="inputText"
+                        className="inline-bloc pl-12 pr-2 py-0.5 w-full text-left text-base text-primary-black font-medium border border-solid border-[#c3c3c3] rounded"
+                        value={value}
+                        onChange={handleTextOnChange}
+                      />
+                    </div>
+                    <span className="relative text-sm text-left font-medium text-red-600">
+                      Minimum sum insured is RM 500
+                    </span>
+                  </>
+                ) : (
+                  <SelectDropdown
+                    id=""
+                    onChange={handleSelectOnChange}
+                    optionList={
+                      options instanceof Array
+                        ? options.map(({ value, label }) => ({
+                            label,
+                            value,
+                          }))
+                        : []
+                    }
+                    selected={value}
+                  />
+                )}
+              </div>
+              {error && fieldtype === "Dropdown" && (
+                <span
+                  className="relative text-sm text-left font-medium text-red-600"
+                  role="alert"
+                >
+                  {error}
+                </span>
               )}
             </div>
-            {error && fieldtype === "Dropdown" && (
-              <span
-                className="relative text-sm text-left font-medium text-red-600"
-                role="alert"
-              >
-                {error}
-              </span>
-            )}
           </div>
-        </div>
-        <div className="px-4 py-2 flex items-center justify-end w-full">
-          <button
-            onClick={handleOnSave}
-            className="inline-block px-4 py-2 text-sm text-center text-white bg-primary-blue font-medium rounded"
-          >
-            Save
-          </button>
-          <button
-            onClick={handleOnCancel}
-            className="inline-block ml-2 px-4 py-2 text-sm text-center text-white bg-primary-blue font-medium rounded"
-          >
-            Cancel
-          </button>
+          <div className="px-4 py-2 flex items-center justify-end w-full">
+            <button
+              onClick={handleOnSave}
+              className="inline-block px-4 py-2 text-sm text-center text-white bg-primary-blue font-medium rounded"
+            >
+              Save
+            </button>
+            <button
+              onClick={handleOnCancel}
+              className="inline-block ml-2 px-4 py-2 text-sm text-center text-white bg-primary-blue font-medium rounded"
+            >
+              Cancel
+            </button>
+          </div>
         </div>
       </div>
     </Popup>
