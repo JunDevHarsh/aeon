@@ -127,7 +127,7 @@ const AddOnsContainer = () => {
 
   const nationalityOption = nationality.map((item: any) => ({
     label: item.Description,
-    value: item.Code,
+    value: item.Description
   }));
   // const relationshipOption = relationShip.map((item: any) => ({
   //   label: item.Description,
