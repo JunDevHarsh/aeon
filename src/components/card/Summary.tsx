@@ -103,7 +103,7 @@ const SummaryInfoCard = () => {
 
   const premium = selectedQuotePlan?.premium;
   const selectedQuoteAddOns = selectedQuotePlan?.additionalCover;
-  const unlimitedDriverInfo = selectedQuotePlan?.unlimitedDriverInfo
+  const unlimitedDriverInfo = selectedQuotePlan?.unlimitedDriverInfo;
 
   const {
     state: {
@@ -231,8 +231,12 @@ const SummaryInfoCard = () => {
             },
           });
 
-          const { premium, displaypremium, additionalCover, unlimitedDriverInfo } =
-            data.result.quoteinfo;
+          const {
+            premium,
+            displaypremium,
+            additionalCover,
+            unlimitedDriverInfo,
+          } = data.result.quoteinfo;
 
           const updatedAdditionalCover = selectedQuoteAddOns.map(
             (selectedQuoteAddOn: any) => {
@@ -624,16 +628,59 @@ const SummaryInfoCard = () => {
                 </span>
               </div>
             ) : (
-              <button
-                onClick={() => {
-                  navigate("/payment");
-                }}
-                className="relative py-2 px-6 min-w-[120px] order-1 mobile-xl:order-2 flex items-center justify-center w-full mobile-xl:w-auto bg-primary-blue rounded mobile-xl:rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
+              <form
+                method="POST"
+                name="ePayment"
+                action="https://payment.ipay88.com.my/ePayment/entry.asp"
+                className="order-1 mobile-xl:order-2 w-full mobile-xl:w-auto"
               >
-                <span className="text-base text-center font-medium text-white">
-                  Pay Now
-                </span>
-              </button>
+                <input type="hidden" name="MerchantCode" value="M16391" />
+                <input type="hidden" name="PaymentId" value="" />
+                <input type="hidden" name="RefNo" value="A00000001" />
+                <input type="hidden" name="Amount" value="1.00" />
+                <input type="hidden" name="Currency" value="MYR" />
+                <input type="hidden" name="ProdDesc" value="Photo Print" />
+                <input type="hidden" name="UserName" value="John Tan" />
+                <input
+                  type="hidden"
+                  name="UserEmail"
+                  value="john@hotmail.com"
+                />
+                <input type="hidden" name="UserContact" value="0126500100" />
+                <input type="hidden" name="Remark" value="" />
+                <input type="hidden" name="Lang" value="UTF-8" />
+                <input type="hidden" name="SignatureType" value="SHA256" />
+                <input
+                  type="hidden"
+                  name="Signature"
+                  value="b81af9c4048b0f6c447129f0f5c0eec8d67cbe19eec26f2cdaba5df4f4dc5a28"
+                />
+                <input
+                  type="hidden"
+                  name="ResponseURL"
+                  value="http://www.YourResponseURL.com/payment/response.asp"
+                />
+                <input
+                  type="hidden"
+                  name="BackendURL"
+                  value="http://www.YourBackendURL.com/payment/backend_response.asp"
+                />
+                <button
+                  // onClick={() => {
+                  //   navigate("/payment");
+                  // }}
+                  className="relative py-2 px-6 min-w-[120px] flex items-center justify-center w-full mobile-xl:w-auto bg-primary-blue rounded mobile-xl:rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
+                >
+                  <span className="text-base text-center font-medium text-white">
+                    Pay Now
+                  </span>
+                </button>
+                {/* <input
+                type="submit"
+                value="Proceed with Payment"
+                name="Submit"
+              /> */}
+              </form>
             )
           ) : (
             <button
