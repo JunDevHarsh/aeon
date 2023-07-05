@@ -227,7 +227,7 @@ function AddOnDriverPopup({
               </svg>
             </button>
           </div>
-          <div className="relative px-4 pt-4 pb-6 w-full">
+          <div className="relative px-4 pt-4 pb-2 w-full">
             <div className="relative inline-block w-full">
               <h3 className="text-lg text-left text-primary-black font-medium">
                 Select the preferred option for additional driver
@@ -308,7 +308,7 @@ function RadioField({
   }
 
   return (
-    <div className="relative pb-3 flex flex-col items-start w-full h-auto">
+    <div className="relative flex flex-col items-start w-full h-auto">
       {/* <span className="mb-1 text-base text-center text-primary-black font-semibold">
         {title}
       </span> */}

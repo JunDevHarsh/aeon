@@ -7,7 +7,11 @@ type AddOnDriverWarningProps = {
   updateAddOnDriver: (val: string, isSelected: boolean) => void;
 };
 
-function AddOnDriverWarning({ open, setOpen, updateAddOnDriver}: AddOnDriverWarningProps) {
+function AddOnDriverWarning({
+  open,
+  setOpen,
+  updateAddOnDriver,
+}: AddOnDriverWarningProps) {
   function closePopup() {
     setOpen(false);
   }
@@ -53,30 +57,29 @@ function AddOnDriverWarning({ open, setOpen, updateAddOnDriver}: AddOnDriverWarn
             </svg>
           </button>
         </div>
-        <div className="relative px-4 pt-4 pb-6 w-full">
+        <div className="relative p-4 w-full">
           <h2 className="text-lg text-left text-primary-black font-medium">
             At maximum number of named drivers
           </h2>
-          <p className="mt-4 text-left text-base text-primary-black font-medium">
+          <p className="text-left text-base text-primary-black font-medium">
             Would you like to get coverage for unlimited drivers instead?
           </p>
-          <div className="flex items-center justify-end w-full">
-            <button
-              onClick={handleOnSave}
-              className="inline-block px-4 py-2 text-sm text-center text-white bg-primary-blue font-medium rounded"
-            >
-              Save
-            </button>
-            <button
-              onClick={closePopup}
-              className="inline-block ml-2 px-4 py-2 text-sm text-center text-white bg-primary-blue font-medium rounded"
-            >
-              Cancel
-            </button>
-          </div>
+        </div>
+        <div className="px-4 py-2 flex items-center justify-end w-full">
+          <button
+            onClick={handleOnSave}
+            className="inline-block px-4 py-2 text-sm text-center text-white bg-primary-blue font-medium rounded"
+          >
+            Save
+          </button>
+          <button
+            onClick={closePopup}
+            className="inline-block ml-2 px-4 py-2 text-sm text-center text-white bg-primary-blue font-medium rounded"
+          >
+            Cancel
+          </button>
         </div>
       </div>
-      AddOnDriverWarning
     </Popup>
   );
 }
