@@ -1,0 +1,80 @@
+{
+    "101": {
+        "code": "101",
+        "error": "TOKEN_NOT_GENERATED",
+        "displayMessage": "Sorry, we're having  too many request at the moment. Please try again later.",
+        "logError": "Token not generated for the user"
+    },
+    "102": {
+        "code": "102",
+        "error": "INTERNAL_SERVER_ERROR",
+        "displayMessage": "Sorry, we're having  too many request at the moment. Please try again later.",
+        "logError": "Failed to generate token from the server"
+    },
+    "103": {
+        "code": "103",
+        "error": "SESSIONNAME_NOT_GENERATED",
+        "displayMessage": "Sorry, we're having  too many request at the moment. Please try again later.",
+        "logError": "Session name not generated for the user"
+    },
+    "104": {
+        "code": "104",
+        "error": "INTERNAL_SERVER_ERROR",
+        "displayMessage": "Sorry, we're having  too many request at the moment. Please try again later.",
+        "logError": "Failed to generate session name from the server"
+    },
+    "105": {
+        "code": "105",
+        "error": "INTERNAL_SERVER_ERROR",
+        "displayMessage": "Sorry, we're having  too many request at the moment. Please try again later.",
+        "logError": "Failed to get post Code from the server"
+    },
+    "106": {
+        "code": "106",
+        "error": "INTERNAL_SERVER_ERROR",
+        "displayMessage": "Sorry, we're having  too many request at the moment. Please try again later.",
+        "logError": "Server is not responding"
+    },
+    "107": {
+        "code": "107",
+        "error": "INTERNAL_SERVER_ERROR",
+        "displayMessage": "Sorry, we're having  too many request at the moment. Please try again later.",
+        "logError": "Server or integra is not responding"
+    },
+    "108": {
+        "code": "108",
+        "error": "INTERNAL_SERVER_ERROR",
+        "displayMessage": "Sorry, we're having  too many request at the moment. Please try again later.",
+        "logError": "Failed to get vehicle details from the server"
+    },
+    "109": {
+        "code": "109",
+        "error": "VEHICLE_NOT_FOUND",
+        "displayMessage": "No vehicle is found with the given request. Make sure vehicle registration no is entered correctly.",
+        "logError": "Vehicle not found"
+    },
+    "110": {
+        "code": "110",
+        "error": "INVALID_VEHICLE_DETAILS",
+        "displayMessage": "Make sure vehicle registration no. or Identity no. are entered correctly.",
+        "logError": "Vehicle not found"
+    },
+    "111": {
+        "code": "111",
+        "error": "INSURER_CODE_ERROR",
+        "displayMessage": "Error list will come from the API",
+        "logError": "Vehicle not found"
+    },
+    "112": {
+        "code": "112",
+        "error": "INTERNAL_SERVER_ERROR",
+        "displayMessage": "Sorry, we're having  too many request at the moment. Please try again later.",
+        "logError": "Create Inquiry failed"
+    },
+    "201": {
+        "code": "201",
+        "error": "TOKEN_EXPIRED",
+        "displayMessage": "You session has expired due to inactivity. You will be redirect to homepage",
+        "logError": "Token expired"
+    }
+}

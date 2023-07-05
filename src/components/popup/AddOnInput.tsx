@@ -89,7 +89,7 @@ function AddOnInputPopup({
     <Popup open={open} closeOnEscape onClose={closePopup}>
       <div
         onClick={closePopup}
-        className="fixed top-0 left-0 right-0 bottom-0 h-full w-full bg-gradient-to-tr from-[rgba(0,0,0,0.7)] to-[rgba(0,0,0,0.7)] z-[20]F"
+        className="fixed top-0 left-0 right-0 bottom-0 h-full w-full bg-gradient-to-tr from-[rgba(0,0,0,0.7)] to-[rgba(0,0,0,0.7)] z-[20]"
       />
       <div className="relative min-w-[310px] min-[520px]:min-w-[512px] max-w-lg w-full">
         <div className="relative w-full h-auto bg-white rounded">

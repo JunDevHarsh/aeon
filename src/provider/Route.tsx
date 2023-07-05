@@ -27,6 +27,9 @@ import MarketAndAgreedProvider from "../context/MarketAndAgreedContext";
 import MarketAndAgreedContainer from "../components/container/MarketAndAgreed";
 import NewAddOnsProvider from "../context/AddOnsContext";
 import OptionProvider from "../context/OptionContext";
+// Context
+import CredentialProvider from "../context/Credential";
+import LoaderProvider from "../context/Loader";
 
 const MemoizedQuoteListingsPage = lazy(
   () => import("../components/container/QuoteListings")
@@ -57,7 +60,11 @@ const router = createBrowserRouter(
               </main>
             }
           >
-            <RootLayout />
+            <LoaderProvider>
+              <CredentialProvider>
+                <RootLayout />
+              </CredentialProvider>
+            </LoaderProvider>
           </Suspense>
         </>
       }

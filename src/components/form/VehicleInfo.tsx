@@ -7,8 +7,7 @@ import SelectDropdown from "../fields/SelectDropdown";
 // import CheckboxWithTextField from "../fields/CheckboxWithText";
 import FixedInputTextField from "../fields/FixedInputText";
 import { VehicleStateType } from "../../store/slices/types";
-import axios from "axios";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import DefaultPopup from "../popup/Default";
 import RadioFieldWithRFH from "../rhfFields/RadioField";
 import {
@@ -17,24 +16,34 @@ import {
   addVehicleId,
 } from "../../store/slices/credentials";
 import { addUserBasicInfo } from "../../store/slices/user";
+import { CredentialContext, CredentialTypes } from "../../context/Credential";
+import { LoaderActionTypes, LoaderContext } from "../../context/Loader";
+import { checkTokenIsExpired, createInquiry } from "../../services/apiServices";
 
 const VehicleInfoForm = ({
   setShowLoading,
 }: {
   setShowLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
-  // extract state from redux store using useSelector hook
   const {
-    user: userState,
-    vehicle: vehicleState,
-    credentials: { session: sessionState, requestId },
-  } = useSelector((state: RootState) => state);
+    state: { isLoading },
+    dispatch: loaderDispatch,
+  } = useContext(LoaderContext);
+
+  const {
+    state: { token, session, requestId },
+    dispatch: credentialDispatch,
+  } = useContext(CredentialContext);
+
+  const { user: userState, vehicle: vehicleState } = useSelector(
+    (state: RootState) => state
+  );
   // extract variant options from vehicle state and map it to the format required by SelectDropdown component
   const variantOptionList = vehicleState.nvicList.map(({ vehicleVariant }) => ({
     label: vehicleVariant,
     value: vehicleVariant,
   }));
-  // state for handlgin error
+  // state for handling error
   const [error, setError] = useState<{
     isVisible: boolean;
     title: string | null;
@@ -44,8 +53,6 @@ const VehicleInfoForm = ({
     title: null,
     description: null,
   });
-  // state for handling loading
-  const [loading, setLoading] = useState<boolean>(false);
   // react hook form
   const {
     watch,
@@ -58,7 +65,8 @@ const VehicleInfoForm = ({
   } = useForm<VehicleStateType>({
     defaultValues: {
       ...vehicleState,
-      region: vehicleState.region === "" ? "West Malaysia" : vehicleState.region,
+      region:
+        vehicleState.region === "" ? "West Malaysia" : vehicleState.region,
     },
   });
 
@@ -69,81 +77,100 @@ const VehicleInfoForm = ({
   ) => {
     // make api call to agiliux backend
     try {
-      setLoading(true);
-      const vehicleResponse = await axios.post(
-        "https://app.agiliux.com/aeon/webservice.php",
-        {
-          operation: "createInquiry",
-          sessionName: sessionState?.sessionName,
-          element: JSON.stringify({
-            tenant_id: "67b61490-fec2-11ed-a640-e19d1712c006",
-            contractNumber: vehicleState.contractNumber,
-            requestId: requestId,
-            phone: userState.mobileNumber,
-            email: userState.email,
-            idvalue: userState.id.number,
-            dob: userState.dateOfBirth,
-            idtype: userState.id.type,
-            gender: userState.gender,
-            maritalstatus: userState.maritalStatus,
-            postalcode: userState.postalCode,
-            class: "Private Vehicle",
-            periodfrom: vehicleState.polEffectiveDate,
-            periodto: vehicleState.polExpiryDate,
-            regno: vehicleState.vehicleLicenseId,
-            vehiclemake: vehicleState.vehicleMake,
-            vehiclemodel: vehicleState.vehicleModel,
-            engineno: vehicleState.vehicleEngine,
-            enginecc: vehicleState.vehicleEngineCC,
-            seatno: vehicleState.seatingCapacity,
-            ncd: vehicleState.ncdPercentage,
-            yearmanufacture: vehicleState.yearOfManufacture,
-            chasisno: vehicleState.vehicleChassis,
-            region: val.region,
-            variant: val.variant?.vehicleVariant,
-            suminsured: val.variant?.vehicleMarketValue,
-            referalcode: userState.referralCode,
-          }),
-        },
-        {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-        }
-      );
-      setLoading(false);
-      if (vehicleResponse.data.error) {
-        setError({
-          isVisible: true,
-          title: "Something went wrong!",
-          description:
-            "We are unable to process your request at the moment. Please try again later.",
+      if (token) {
+        loaderDispatch({
+          type: LoaderActionTypes.ToggleLoading,
+          payload: true,
         });
-        throw new Error(vehicleResponse.data.error.message);
-      }
-      if (vehicleResponse.status === 200) {
+
+        const isTokenExpired = checkTokenIsExpired(token);
+
+        if (isTokenExpired) {
+          credentialDispatch({
+            type: CredentialTypes.ToggleTokenHasExpired,
+            payload: true,
+          });
+          return;
+        }
+
+        const createInquiryResponse = await createInquiry(
+          session?.sessionName || "",
+          vehicleState.contractNumber,
+          requestId,
+          userState.mobileNumber,
+          userState.email,
+          userState.id.number,
+          userState.dateOfBirth,
+          userState.id.type,
+          userState.gender,
+          userState.maritalStatus,
+          userState.postalCode,
+          vehicleState.polEffectiveDate,
+          vehicleState.polExpiryDate,
+          vehicleState.vehicleLicenseId,
+          vehicleState.vehicleMake,
+          vehicleState.vehicleModel,
+          vehicleState.vehicleEngine,
+          vehicleState.vehicleEngineCC,
+          vehicleState.seatingCapacity,
+          vehicleState.ncdPercentage,
+          vehicleState.yearOfManufacture,
+          vehicleState.vehicleChassis,
+          val.region,
+          val.variant?.vehicleVariant || "",
+          val.variant?.vehicleMarketValue?.toString() || "",
+          userState.referralCode
+        );
+
+        if (createInquiryResponse.inquiryId === "") {
+          setError({
+            isVisible: true,
+            title: "Error",
+            description: "Something went wrong, please try again later",
+          });
+          loaderDispatch({
+            type: LoaderActionTypes.ToggleLoading,
+            payload: false,
+          });
+          return;
+        }
+
         dispatch(updateVehicleState(val));
-        dispatch(addInquiryId(vehicleResponse.data.result.inquiryId));
-        dispatch(addAcountId(vehicleResponse.data.result.accountid));
-        dispatch(addVehicleId(vehicleResponse.data.result.vehicleId));
+        dispatch(addInquiryId(createInquiryResponse.inquiryId));
+        dispatch(addAcountId(createInquiryResponse.accountid));
+        dispatch(addVehicleId(createInquiryResponse.vehicleId));
         dispatch(
           addUserBasicInfo({
-            dateOfBirth: vehicleResponse.data.result.dob,
+            dateOfBirth: createInquiryResponse.dob,
           })
         );
-        setShowLoading((prev) => !prev);
-        return;
+
+        loaderDispatch({
+          type: LoaderActionTypes.ToggleLoading,
+          payload: false,
+        });
+
+        setShowLoading(true);
       } else {
         setError({
           isVisible: true,
-          title: "Something went wrong!",
-          description:
-            "We are unable to process your request at the moment. Please try again later.",
+          title: "Error",
+          description: "Something went wrong, please try again later",
         });
-        throw new Error("Something went wrong!");
       }
-    } catch (err) {
-      setLoading(false);
+    } catch (err: any) {
+      loaderDispatch({
+        type: LoaderActionTypes.ToggleLoading,
+        payload: false,
+      });
+
+      setError({
+        isVisible: true,
+        title: "Error",
+        description:
+          err.message || "Something went wrong, please try again later",
+      });
+
       console.error(err);
     }
   };
@@ -175,22 +202,6 @@ const VehicleInfoForm = ({
             title="Vehicle Model"
             value={vehicleState.vehicleModel}
           />
-          {/* <div className="relative pb-5 flex flex-col items-start gap-y-1 w-full h-auto">
-            <span className="text-base text-center text-primary-black font-semibold">
-              Vehicle Make*
-            </span>
-            <span className="py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium cursor-default border border-solid border-[#CFD0D7] rounded">
-              {watch("vehicleMake")}
-            </span>
-          </div>
-          <div className="relative pb-5 flex flex-col items-start gap-y-1 w-full h-auto">
-            <span className="text-base text-center text-primary-black font-semibold">
-              Vehicle Model*
-            </span>
-            <span className="py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium cursor-default border border-solid border-[#CFD0D7] rounded">
-              {watch("vehicleModel")}
-            </span>
-          </div> */}
           {/* Vehicle Variant Field  */}
           <div className="relative pb-5 flex flex-col items-start gap-y-1 w-auto h-auto">
             <label
@@ -385,16 +396,12 @@ const VehicleInfoForm = ({
               Your data will be processed securely
             </span>
           </div>
-          {loading ? (
-            <button
-              disabled
-              className="relative py-3 px-4 flex items-center justify-center gap-x-2 max-w-[250px] w-full h-auto bg-primary-blue rounded-full"
-            >
-              <span className="animate-spin duration-300 inline-block w-5 h-5 border-[3px] border-solid border-white border-y-transparent rounded-full"></span>
+          {isLoading ? (
+            <div className="relative py-3 px-4 flex items-center justify-center gap-x-2 max-w-[250px] w-full h-auto bg-primary-blue rounded-full">
               <span className="text-base text-center text-white font-medium">
                 Loading...
               </span>
-            </button>
+            </div>
           ) : (
             <button
               type="submit"
