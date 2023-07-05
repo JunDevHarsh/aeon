@@ -658,12 +658,12 @@ const SummaryInfoCard = () => {
                 <input
                   type="hidden"
                   name="ResponseURL"
-                  value="https://app.agiliux.com/aeon/index.php?module=PaymentGateway&view=Edit&app=MORE"
+                  value="https://portal.agiliux.com/review-pay"
                 />
                 <input
                   type="hidden"
                   name="BackendURL"
-                  value="https://app.agiliux.com/aeon"
+                  value="https://portal.agiliux.com/payment"
                 />
                 <button
                   // onClick={() => {
