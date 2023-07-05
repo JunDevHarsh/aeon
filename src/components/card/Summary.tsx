@@ -658,7 +658,7 @@ const SummaryInfoCard = () => {
                 <input
                   type="hidden"
                   name="ResponseURL"
-                  value="https://portal.agiliux.com/review-pay"
+                  value="https://portal.agiliux.com/payment"
                 />
                 <input
                   type="hidden"
