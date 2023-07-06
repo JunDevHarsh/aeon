@@ -49,6 +49,7 @@ const DriverDetailsForm = () => {
         postalCode,
         race,
         state,
+        errors,
       },
     },
     dispatch,
@@ -73,7 +74,7 @@ const DriverDetailsForm = () => {
     register,
     handleSubmit,
     setValue,
-    formState: { errors },
+    // formState: { errors },
   } = useForm<Inputs>({
     defaultValues: {
       email: email,
@@ -114,25 +115,41 @@ const DriverDetailsForm = () => {
       <form onSubmit={handleSubmit(onSubmit)} className="relative mt-4 w-full">
         <div className="grid grid-cols-1 mobile-xl:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 gap-x-4 w-full">
           {/* Name field */}
-          <InputTextField
-            label="Name (as per NRIC)"
-            name="name"
-            register={register}
-            errors={errors.name}
-            placeholder="Name"
-            options={{
-              required: {
-                value: true,
-                message: "Provide a name",
-              },
-              onChange(event: React.ChangeEvent<HTMLInputElement>) {
-                let { value } = event.currentTarget;
-                value = value.toUpperCase();
-                event.currentTarget.value = value;
-                updateStoreValue({ name: value });
-              },
-            }}
-          />
+          <div className="relative">
+            <InputTextField
+              label="Name (as per NRIC)"
+              name="name"
+              register={register}
+              errors={errors.name}
+              placeholder="Name"
+              options={{
+                required: {
+                  value: true,
+                  message: "Provide a name",
+                },
+                onChange(event: React.ChangeEvent<HTMLInputElement>) {
+                  let { value } = event.currentTarget;
+                  value = value.toUpperCase();
+                  event.currentTarget.value = value;
+                  updateStoreValue({
+                    name: value,
+                    errors: {
+                      ...errors,
+                      name: value === "" ? "Field can'bt empty" : "",
+                    },
+                  });
+                },
+              }}
+            />
+            {errors.name && (
+              <span
+                role="alert"
+                className="absolute bottom-0 left-0 text-sm text-left font-medium text-red-600"
+              >
+                {errors.name}
+              </span>
+            )}
+          </div>
           {/* DOB Field */}
           <div className="relative pb-5 w-full">
             <div className="relative">
@@ -140,7 +157,8 @@ const DriverDetailsForm = () => {
                 DOB
               </span>
               <div className="py-1.5 px-2 w-full text-sm text-left text-[#9ca3af] bg-[#fafafa] border border-solid border-[#CFD0D7] rounded cursor-default">
-                {dateOfBirth?.toString().split("-").reverse().join("-") || "DOB"}
+                {dateOfBirth?.toString().split("-").reverse().join("-") ||
+                  "DOB"}
               </div>
             </div>
           </div>
@@ -325,7 +343,13 @@ const DriverDetailsForm = () => {
                   id="occupationType"
                   onChange={(val: string) => {
                     setValue("occupation", val);
-                    updateStoreValue({ occupation: val });
+                    updateStoreValue({
+                      occupation: val,
+                      errors: {
+                        ...errors,
+                        occupation: "",
+                      },
+                    });
                   }}
                   selected={value}
                   error={error}
@@ -336,47 +360,80 @@ const DriverDetailsForm = () => {
             />
           </div>
           {/* Driving Experience Field */}
-          <InputTextField
-            label="Driving Experience"
-            name="drivingExp"
-            placeholder="5"
-            register={register}
-            errors={errors.drivingExp}
-            options={{
-              maxLength: {
-                value: 10,
-                message: "Maximum 10 characters allowed.",
-              },
-              onChange(event: React.ChangeEvent<HTMLInputElement>) {
-                let { value } = event.currentTarget;
-                const updatedValue = value.replace(/\D/g, "");
-                event.currentTarget.value = updatedValue;
-                updateStoreValue({ drivingExp: updatedValue });
-              },
-            }}
-          />
+          <div className="relative">
+            <InputTextField
+              label="Driving Experience"
+              name="drivingExp"
+              placeholder="5"
+              register={register}
+              errors={errors.drivingExp}
+              options={{
+                maxLength: {
+                  value: 10,
+                  message: "Maximum 10 characters allowed.",
+                },
+                onChange(event: React.ChangeEvent<HTMLInputElement>) {
+                  let { value } = event.currentTarget;
+                  const updatedValue = value.replace(/\D/g, "");
+                  event.currentTarget.value = updatedValue;
+                  updateStoreValue({
+                    drivingExp: updatedValue,
+                    errors: {
+                      ...errors,
+                      drivingExp:
+                        updatedValue === "" ? "Field can't be empty" : "",
+                    },
+                  });
+                },
+              }}
+            />
+            {errors.drivingExp && (
+              <span
+                role="alert"
+                className="absolute bottom-0 left-0 text-sm text-left font-medium text-red-600"
+              >
+                {errors.drivingExp}
+              </span>
+            )}
+          </div>
           {/* Address 1 Field */}
-          <InputTextField
-            label="Address 1"
-            name="address1"
-            placeholder="Address"
-            register={register}
-            errors={errors.address1}
-            options={{
-              maxLength: {
-                value: 250,
-                message: "Maximum 250 characters allowed.",
-              },
-              required: {
-                value: true,
-                message: "Field can't be empty",
-              },
-              onChange(event: React.ChangeEvent<HTMLInputElement>) {
-                let { value } = event.currentTarget;
-                updateStoreValue({ address1: value });
-              },
-            }}
-          />
+          <div className="relative">
+            <InputTextField
+              label="Address 1"
+              name="address1"
+              placeholder="Address"
+              register={register}
+              errors={errors.address1}
+              options={{
+                maxLength: {
+                  value: 250,
+                  message: "Maximum 250 characters allowed.",
+                },
+                required: {
+                  value: true,
+                  message: "Field can't be empty",
+                },
+                onChange(event: React.ChangeEvent<HTMLInputElement>) {
+                  let { value } = event.currentTarget;
+                  updateStoreValue({
+                    address1: value,
+                    errors: {
+                      ...errors,
+                      address1: value === "" ? "Field can't be empty" : "",
+                    },
+                  });
+                },
+              }}
+            />
+            {errors.address1 && (
+              <span
+                role="alert"
+                className="absolute bottom-0 left-0 text-sm text-left font-medium text-red-600"
+              >
+                {errors.address1}
+              </span>
+            )}
+          </div>
           {/* Address 2 Field */}
           <InputTextField
             label="Address 2"
@@ -430,7 +487,13 @@ const DriverDetailsForm = () => {
                   id="country"
                   onChange={(val: string) => {
                     setValue("country", val);
-                    updateStoreValue({ country: val });
+                    updateStoreValue({
+                      country: val,
+                      errors: {
+                        ...errors,
+                        country: "",
+                      },
+                    });
                   }}
                   selected={value}
                   error={error}
@@ -441,39 +504,73 @@ const DriverDetailsForm = () => {
             />
           </div>
           {/* State Field */}
-          <InputTextField
-            label="State"
-            name="state"
-            placeholder="State"
-            register={register}
-            options={{
-              maxLength: {
-                value: 100,
-                message: "Maximum 100 characters allowed.",
-              },
-              onChange(event: React.ChangeEvent<HTMLInputElement>) {
-                let { value } = event.currentTarget;
-                updateStoreValue({ state: value });
-              },
-            }}
-          />
+          <div className="relative">
+            <InputTextField
+              label="State"
+              name="state"
+              placeholder="State"
+              register={register}
+              errors={errors.state}
+              options={{
+                maxLength: {
+                  value: 100,
+                  message: "Maximum 100 characters allowed.",
+                },
+                onChange(event: React.ChangeEvent<HTMLInputElement>) {
+                  let { value } = event.currentTarget;
+                  updateStoreValue({
+                    state: value,
+                    errors: {
+                      ...errors,
+                      state: value === "" ? "Field can't be empty" : "",
+                    },
+                  });
+                },
+              }}
+            />
+            {errors.state && (
+              <span
+                role="alert"
+                className="absolute bottom-0 left-0 text-sm text-left font-medium text-red-600"
+              >
+                {errors.state}
+              </span>
+            )}
+          </div>
           {/* City Field */}
-          <InputTextField
-            label="City"
-            name="city"
-            placeholder="City"
-            register={register}
-            options={{
-              maxLength: {
-                value: 100,
-                message: "Maximum 100 characters allowed.",
-              },
-              onChange(event: React.ChangeEvent<HTMLInputElement>) {
-                let { value } = event.currentTarget;
-                updateStoreValue({ city: value });
-              },
-            }}
-          />
+          <div className="relative">
+            <InputTextField
+              label="City"
+              name="city"
+              placeholder="City"
+              register={register}
+              errors={errors.city}
+              options={{
+                maxLength: {
+                  value: 100,
+                  message: "Maximum 100 characters allowed.",
+                },
+                onChange(event: React.ChangeEvent<HTMLInputElement>) {
+                  let { value } = event.currentTarget;
+                  updateStoreValue({
+                    city: value,
+                    errors: {
+                      ...errors,
+                      city: value === "" ? "Field can't be empty" : "",
+                    },
+                  });
+                },
+              }}
+            />
+            {errors.city && (
+              <span
+                role="alert"
+                className="absolute bottom-0 left-0 text-sm text-left font-medium text-red-600"
+              >
+                {errors.city}
+              </span>
+            )}
+          </div>
           {/* Postal Code Field */}
           <div className="relative pb-5 w-full">
             <div className="relative">

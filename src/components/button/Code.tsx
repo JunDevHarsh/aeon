@@ -229,7 +229,7 @@ const Code: React.FC<CodeProps> = ({ title, placeholder = "Placeholder" }) => {
                 productId: productId,
                 data: {
                   premium,
-                  displaypremium,
+                  displayPremium: displaypremium,
                 },
               },
             });

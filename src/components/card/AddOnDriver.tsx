@@ -313,8 +313,11 @@ function RadioField({
         {title}
       </span> */}
       <div className="flex flex-col items-start justify-start w-full">
-        {options.map(({ title, value, description }: OptionList) => (
-          <div className="relative flex flex-col even:mt-4 items-start w-full">
+        {options.map(({ title, value, description }: OptionList, index) => (
+          <div
+            className="relative flex flex-col even:mt-4 items-start w-full"
+            key={`driverOptionOf${index}`}
+          >
             <div
               className="relative flex items-center justify-center w-auto"
               key={`radioFieldWithValueOf${value}`}

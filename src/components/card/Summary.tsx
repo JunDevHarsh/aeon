@@ -16,6 +16,7 @@ import AllianzImg from "../../assets/images/logo-allianz.png";
 import { QuoteListingContext, QuotesTypes } from "../../context/QuoteListing";
 import { NewAddOnsContext } from "../../context/AddOnsContext";
 import {
+  SHA256,
   checkTokenIsExpired,
   generateSessionName,
   generateToken,
@@ -29,6 +30,7 @@ import {
 import axios from "axios";
 import {
   AddDriverTypes,
+  DriverTypes,
   MultiStepFormContext,
 } from "../../context/MultiFormContext";
 import { CredentialContext } from "../../context/Credential";
@@ -82,6 +84,8 @@ const SummaryInfoCard = () => {
     store: {
       driverDetails: {
         name,
+        email,
+        mobileNumber,
         nationality,
         address1,
         postalCode,
@@ -125,6 +129,8 @@ const SummaryInfoCard = () => {
 
   const selectedAddOns = addOns.filter((addOn) => addOn.isSelected);
 
+  const signatureHash = SHA256(`3jeL1HvYCEM16391${accountId}100MYR`);
+
   async function updateQuotePremium() {
     try {
       loaderDispatch({
@@ -157,6 +163,46 @@ const SummaryInfoCard = () => {
             sessionName: sessionApiResponse.sessionName,
           })
         );
+      }
+
+      let foundErrors = false;
+
+      const updated = driverDetails.map((driver) => {
+        const errors: any = {};
+        if (!driver.idNo || driver.idNo === "") {
+          foundErrors = true;
+          errors.idNo = "Enter a valid Id number";
+        }
+        if (!driver.idType || driver.idType === null) {
+          foundErrors = true;
+          errors.idType = "Select ID type";
+        }
+        if (driver.name === "") {
+          foundErrors = true;
+          errors.name = "Please enter your name";
+        }
+        if (!driver.nationality || driver.nationality === null) {
+          foundErrors = true;
+          errors.nationality = "Please select nationality";
+        }
+        return {
+          ...driver,
+          errors: errors,
+        };
+      });
+
+      if (foundErrors) {
+        updateMultiFormState({
+          type: AddDriverTypes.AddErrors,
+          payload: {
+            updatedDrivers: updated,
+          },
+        });
+        loaderDispatch({
+          type: LoaderActionTypes.ToggleLoading,
+          payload: false,
+        });
+        return;
       }
 
       const addOnsRequest = selectedAddOns.map((addOn: any) => {
@@ -223,6 +269,7 @@ const SummaryInfoCard = () => {
           },
         }
       );
+
       if (quoteResponse.status === 200 && quoteResponse.data) {
         if (quoteResponse.data.error || !quoteResponse.data.success) {
           throw {
@@ -362,6 +409,63 @@ const SummaryInfoCard = () => {
           })
         );
       }
+
+      let hasErrors = false;
+      let errors: any = {};
+
+      if (!name || name === "") {
+        hasErrors = true;
+        errors.name = "Field can't be empty";
+      }
+      if (!nationality || nationality === "") {
+        hasErrors = true;
+        errors.nationality = "Select your nationality";
+      }
+      if (!race || race === "") {
+        hasErrors = true;
+        errors.race = "Select your race";
+      }
+
+      if (!occupation || occupation === "") {
+        hasErrors = true;
+        errors.occupation = "Select your occupation";
+      }
+
+      if (!drivingExp || drivingExp === "") {
+        hasErrors = true;
+        errors.drivingExp = "Field can't be empty";
+      }
+
+      if (address1 === "") {
+        hasErrors = true;
+        errors.address1 = "Field can't be empty";
+      }
+
+      if (state === "") {
+        hasErrors = true;
+        errors.state = "Field can't be empty";
+      }
+
+      if (city === "") {
+        hasErrors = true;
+        errors.city = "Field can't be empty";
+      }
+
+      if (hasErrors) {
+        updateMultiFormState({
+          type: DriverTypes.AddDriverInfoErrors,
+          payload: {
+            updatedValues: errors,
+          },
+        });
+
+        loaderDispatch({
+          type: LoaderActionTypes.ToggleLoading,
+          payload: false,
+        });
+        return;
+      }
+
       const updateClientResponse = await axios.post(
         "https://app.agiliux.com/aeon/webservice.php",
         {
@@ -388,7 +492,10 @@ const SummaryInfoCard = () => {
           },
         }
       );
-      console.log(updateClientResponse);
+
+      console.log(updateClientResponse.data);
+
+      navigate("/insurance/review-pay");
       loaderDispatch({
         type: LoaderActionTypes.ToggleLoading,
         payload: false,
@@ -667,24 +774,24 @@ const SummaryInfoCard = () => {
               >
                 <input type="hidden" name="MerchantCode" value="M16391" />
                 <input type="hidden" name="PaymentId" value="" />
-                <input type="hidden" name="RefNo" value="AEON0001" />
+                <input type="hidden" name="RefNo" value={accountId} />
                 <input type="hidden" name="Amount" value="1.00" />
                 <input type="hidden" name="Currency" value="MYR" />
-                <input type="hidden" name="ProdDesc" value="MotorCar Policy Purchase" />
-                <input type="hidden" name="UserName" value="Aisyah" />
                 <input
                   type="hidden"
-                  name="UserEmail"
-                  value="aisyah@softsolvers.com"
+                  name="ProdDesc"
+                  value="MotorCar Policy Purchase"
                 />
-                <input type="hidden" name="UserContact" value="0135246440" />
+                <input type="hidden" name="UserName" value={name} />
+                <input type="hidden" name="UserEmail" value={email} />
+                <input type="hidden" name="UserContact" value={mobileNumber} />
                 <input type="hidden" name="Remark" value="" />
                 <input type="hidden" name="Lang" value="UTF-8" />
                 <input type="hidden" name="SignatureType" value="SHA256" />
                 <input
                   type="hidden"
                   name="Signature"
-                  value="00e6e467f1456388fed165158db4f2db25ba847a97b9f02b5a5d15124df58051"
+                  value={signatureHash}
                 />
                 <input
                   type="hidden"
@@ -702,7 +809,7 @@ const SummaryInfoCard = () => {
                   value="Pay Now"
                   className="relative py-2 px-6 min-w-[120px] text-base text-center font-medium text-white w-full mobile-xl:w-auto bg-primary-blue rounded mobile-xl:rounded-full cursor-pointer shadow-[0_1px_2px_0_#C6E4F60D]"
                 />
-                  {/* <span className="text-base text-center font-medium text-white">
+                {/* <span className="text-base text-center font-medium text-white">
                     Pay Now
                   </span> */}
                 {/* </input> */}
@@ -720,7 +827,7 @@ const SummaryInfoCard = () => {
                   navigate("/insurance/application-details");
                 } else if (pathname === "/insurance/application-details") {
                   updateClient();
-                  navigate("/insurance/review-pay");
+                  // navigate("/insurance/review-pay");
                 } else {
                   navigate("/insurance/payment");
                 }
