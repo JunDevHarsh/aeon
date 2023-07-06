@@ -112,8 +112,10 @@ const UserRegistrationForm = () => {
       credentialDispatch({
         type: CredentialTypes.UpdateCredential,
         payload: {
-          token: credentialResponse.token,
-          session: credentialResponse.session,
+          values: {
+            token: credentialResponse.token,
+            session: credentialResponse.session,
+          },
         },
       });
 

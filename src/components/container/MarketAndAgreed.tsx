@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { numberWithCommas } from "./VehicleCoverage";
 import {
   AgreedVariantType,
@@ -33,6 +33,8 @@ import { useNavigate } from "react-router-dom";
 import { QuoteListingContext, QuotesTypes } from "../../context/QuoteListing";
 import { NewAddOnsContext } from "../../context/AddOnsContext";
 import { MultiStepFormContext } from "../../context/MultiFormContext";
+import { CredentialContext } from "../../context/Credential";
+import { LoaderActionTypes, LoaderContext } from "../../context/Loader";
 
 function createUniqueValues(types: AgreedVariantType[]) {
   const regEx = /(-HIGH|-LOW|-HI|-LO)\s*-?\s*/;
@@ -90,6 +92,22 @@ function MarketAndAgreedContainer() {
     state: { addOns },
   } = useContext(NewAddOnsContext);
 
+  const {
+    state: {
+      token: tokenInStore,
+      session: sessionInStore,
+      requestId,
+      inquiryId,
+      accountId,
+      vehicleId,
+    },
+  } = useContext(CredentialContext);
+
+  const {
+    state: { isLoading },
+    dispatch: loaderDispatch,
+  } = useContext(LoaderContext);
+
   const updateStore = useDispatch();
   const {
     vehicle: {
@@ -100,14 +118,6 @@ function MarketAndAgreedContainer() {
       yearOfManufacture,
     },
     user: { promoCode, promoId, percentOff },
-    credentials: {
-      token: tokenInStore,
-      session: sessionInStore,
-      requestId,
-      inquiryId,
-      accountId,
-      vehicleId,
-    },
   } = useSelector((state: RootState) => state);
 
   const {
@@ -116,8 +126,6 @@ function MarketAndAgreedContainer() {
       addDriverDetails: { driverDetails, selectedDriverType },
     },
   } = useContext(MultiStepFormContext);
-
-  const [loading, setLoading] = useState<boolean>(false);
 
   const marketVariantOptionList = variants.map(({ nvic, vehicleVariant }) => ({
     label: vehicleVariant,
@@ -181,6 +189,11 @@ function MarketAndAgreedContainer() {
 
   async function getAgreedVariantsList() {
     try {
+      loaderDispatch({
+        type: LoaderActionTypes.ToggleLoading,
+        payload: true,
+      });
+
       let tokenInfo = tokenInStore;
       let sessionInfo = sessionInStore;
       if (!tokenInStore || checkTokenIsExpired(tokenInStore)) {
@@ -242,7 +255,16 @@ function MarketAndAgreedContainer() {
           },
         });
       }
+
+      loaderDispatch({
+        type: LoaderActionTypes.ToggleLoading,
+        payload: false,
+      });
     } catch (err) {
+      loaderDispatch({
+        type: LoaderActionTypes.ToggleLoading,
+        payload: false,
+      });
       console.log(err);
     }
   }
@@ -255,7 +277,11 @@ function MarketAndAgreedContainer() {
 
   async function updateQuotePremium() {
     try {
-      setLoading(true);
+      loaderDispatch({
+        type: LoaderActionTypes.ToggleLoading,
+        payload: true,
+      });
+
       let tokenInfo = tokenInStore;
       let sessionInfo = sessionInStore;
       if (!tokenInStore || checkTokenIsExpired(tokenInStore)) {
@@ -381,10 +407,19 @@ function MarketAndAgreedContainer() {
               price: displaypremium,
             },
           });
-          setLoading(false);
+
+          loaderDispatch({
+            type: LoaderActionTypes.ToggleLoading,
+            payload: false,
+          });
+
           navigate("/insurance/plan-add-ons");
           return;
         }
+        loaderDispatch({
+          type: LoaderActionTypes.ToggleLoading,
+          payload: false,
+        });
         throw {
           status: 302,
           message: "Receiving some error, please try again later",
@@ -392,7 +427,10 @@ function MarketAndAgreedContainer() {
       }
       console.log(quoteResponse);
     } catch (err) {
-      setLoading(false);
+      loaderDispatch({
+        type: LoaderActionTypes.ToggleLoading,
+        payload: false,
+      });
       console.log(err);
     }
   }
@@ -538,7 +576,7 @@ function MarketAndAgreedContainer() {
               </>
             )}
             <div className="mt-12 flex items-center justify-start gap-x-2 w-full">
-              {loading ? (
+              {isLoading ? (
                 <div className="relative mt-4 py-2.5 px-8 flex items-center justify-center w-auto h-auto bg-primary-blue rounded-full">
                   <span className="animate-spin duration-300 inline-block w-5 h-5 border-[3px] border-solid border-white border-y-transparent rounded-full"></span>
                   <span className="ml-2 text-base text-center text-white font-medium">
@@ -587,9 +625,8 @@ function MarketAndAgreedContainer() {
                 policyholder at the time of insurance renewal based on the car
                 model, year, and other factors at the time of purchasing
                 insurance. Agreed Value is not applicable for reconditioned
-                vehicles &#10088;imported&#10089;. If you select Agreed
-                Value with your reconditioned car, claims settlement will be at
-                risk.
+                vehicles &#10088;imported&#10089;. If you select Agreed Value
+                with your reconditioned car, claims settlement will be at risk.
               </span>
             </div>
           </div>

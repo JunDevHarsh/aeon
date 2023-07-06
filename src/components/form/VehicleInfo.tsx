@@ -10,11 +10,6 @@ import { VehicleStateType } from "../../store/slices/types";
 import { useContext, useState } from "react";
 import DefaultPopup from "../popup/Default";
 import RadioFieldWithRFH from "../rhfFields/RadioField";
-import {
-  addAcountId,
-  addInquiryId,
-  addVehicleId,
-} from "../../store/slices/credentials";
 import { addUserBasicInfo } from "../../store/slices/user";
 import { CredentialContext, CredentialTypes } from "../../context/Credential";
 import { LoaderActionTypes, LoaderContext } from "../../context/Loader";
@@ -135,10 +130,19 @@ const VehicleInfoForm = ({
           return;
         }
 
+        credentialDispatch({
+          type: CredentialTypes.UpdateCredential,
+          payload: {
+            values: {
+              accountId: createInquiryResponse.accountid,
+              inquiryId: createInquiryResponse.inquiryId,
+              vehicleId: createInquiryResponse.vehicleId,
+            }
+          }
+        })
+
         dispatch(updateVehicleState(val));
-        dispatch(addInquiryId(createInquiryResponse.inquiryId));
-        dispatch(addAcountId(createInquiryResponse.accountid));
-        dispatch(addVehicleId(createInquiryResponse.vehicleId));
+
         dispatch(
           addUserBasicInfo({
             dateOfBirth: createInquiryResponse.dob,

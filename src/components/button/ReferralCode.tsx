@@ -1,7 +1,6 @@
-import { ChangeEvent, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { ChangeEvent, useContext, useState } from "react";
+import { useDispatch } from "react-redux";
 import { addReferralCode } from "../../store/slices/user";
-import { RootState } from "../../store/store";
 import {
   checkReferralCode,
   checkTokenIsExpired,
@@ -14,27 +13,31 @@ import {
   addSessionName,
   addToken,
 } from "../../store/slices/credentials";
+import { CredentialContext } from "../../context/Credential";
+import { LoaderActionTypes, LoaderContext } from "../../context/Loader";
 
 type ReferralCodeStateType = {
   code: string;
   error: string | null;
   isValid: boolean;
-  isLoading: boolean;
 };
 
 const ReferralCodeButton = () => {
-  const { token, session } = useSelector(
-    (state: RootState) => state.credentials
-  );
+  const {
+    state: { token, session },
+  } = useContext(CredentialContext);
+  const {
+    state: { isLoading },
+    dispatch: loaderDispatch,
+  } = useContext(LoaderContext);
   const [state, setState] = useState<ReferralCodeStateType>({
     code: "",
     error: null,
     isValid: false,
-    isLoading: false,
   });
   const dispatch = useDispatch();
 
-  const { code, error, isValid, isLoading } = state;
+  const { code, error, isValid } = state;
 
   function handleOnChange(e: ChangeEvent<HTMLInputElement>) {
     const value = e.target.value.toUpperCase();
@@ -51,7 +54,10 @@ const ReferralCodeButton = () => {
         setState((prev) => ({ ...prev, error: "Enter a code" }));
         return;
       }
-      setState((prev) => ({ ...prev, isLoading: true }));
+      loaderDispatch({
+        type: LoaderActionTypes.ToggleLoading,
+        payload: true,
+      });
       let tokenInfo = token;
       let sessionInfo = session;
 
@@ -90,9 +96,12 @@ const ReferralCodeButton = () => {
             ...prev,
             error: null,
             isValid: true,
-            isLoading: false,
           }));
           dispatch(addReferralCode(code));
+          loaderDispatch({
+            type: LoaderActionTypes.ToggleLoading,
+            payload: false,
+          });
           // dispatch((prev) => ({ ...prev, referralCode: code }));
           return;
         }
@@ -100,11 +109,17 @@ const ReferralCodeButton = () => {
           ...prev,
           error: apiResponse.message,
           isValid: false,
-          isLoading: false,
         }));
+        loaderDispatch({
+          type: LoaderActionTypes.ToggleLoading,
+          payload: false,
+        });
       }
     } catch (error) {
-      setState((prev) => ({ ...prev, isLoading: false }));
+      loaderDispatch({
+        type: LoaderActionTypes.ToggleLoading,
+        payload: false,
+      });
       console.log(error);
       setState((prev) => ({ ...prev, error: "Something went wrong" }));
     }

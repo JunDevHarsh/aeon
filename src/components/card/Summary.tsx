@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
@@ -31,6 +31,8 @@ import {
   AddDriverTypes,
   MultiStepFormContext,
 } from "../../context/MultiFormContext";
+import { CredentialContext } from "../../context/Credential";
+import { LoaderActionTypes, LoaderContext } from "../../context/Loader";
 
 export interface AddBenefitsType {
   id: string;
@@ -44,24 +46,30 @@ export interface AddBenefitsType {
 const SummaryInfoCard = () => {
   //   const [promoCode, setPromoCode] = useState<string>("");
   // const { provider } = useSelector((state: RootState) => state.insurance);
-  const [loading, setLoading] = useState<boolean>(false);
-
   const {
     state: { addOns, isEdited },
     dispatch,
   } = useContext(NewAddOnsContext);
 
   const {
-    vehicle: { polExpiryDate, polEffectiveDate },
-    user: { promoCode, promoId, percentOff },
-    credentials: {
-      token: tokenInStore,
+    state: {
       session: sessionInStore,
+      token: tokenInStore,
       requestId,
       inquiryId,
       accountId,
       vehicleId,
     },
+  } = useContext(CredentialContext);
+
+  const {
+    state: { isLoading },
+    dispatch: loaderDispatch,
+  } = useContext(LoaderContext);
+
+  const {
+    vehicle: { polExpiryDate, polEffectiveDate },
+    user: { promoCode, promoId, percentOff },
   } = useSelector((state: RootState) => state);
 
   const navigate = useNavigate();
@@ -119,7 +127,11 @@ const SummaryInfoCard = () => {
 
   async function updateQuotePremium() {
     try {
-      setLoading(true);
+      loaderDispatch({
+        type: LoaderActionTypes.ToggleLoading,
+        payload: true,
+      });
+
       let tokenInfo = tokenInStore;
       let sessionInfo = sessionInStore;
       if (!tokenInStore || checkTokenIsExpired(tokenInStore)) {
@@ -293,7 +305,11 @@ const SummaryInfoCard = () => {
             });
           }
 
-          setLoading(false);
+          loaderDispatch({
+            type: LoaderActionTypes.ToggleLoading,
+            payload: false,
+          });
+
           return;
         }
         throw {
@@ -301,16 +317,25 @@ const SummaryInfoCard = () => {
           message: "Receiving some error, please try again later",
         };
       }
-      setLoading(false);
+      loaderDispatch({
+        type: LoaderActionTypes.ToggleLoading,
+        payload: false,
+      });
     } catch (err) {
-      setLoading(false);
+      loaderDispatch({
+        type: LoaderActionTypes.ToggleLoading,
+        payload: false,
+      });
       console.log(err);
     }
   }
 
   async function updateClient() {
     try {
-      setLoading(true);
+      loaderDispatch({
+        type: LoaderActionTypes.ToggleLoading,
+        payload: true,
+      });
       let tokenInfo = tokenInStore;
       let sessionInfo = sessionInStore;
       if (!tokenInStore || checkTokenIsExpired(tokenInStore)) {
@@ -364,9 +389,15 @@ const SummaryInfoCard = () => {
         }
       );
       console.log(updateClientResponse);
-      setLoading(false);
+      loaderDispatch({
+        type: LoaderActionTypes.ToggleLoading,
+        payload: false,
+      });
     } catch (err) {
-      setLoading(false);
+      loaderDispatch({
+        type: LoaderActionTypes.ToggleLoading,
+        payload: false,
+      });
       console.log(err);
     }
   }
@@ -604,7 +635,7 @@ const SummaryInfoCard = () => {
           </Link>
 
           {isEdited || shouldUpdate ? (
-            !loading ? (
+            !isLoading ? (
               <button
                 onClick={() => updateQuotePremium()}
                 className="relative py-2 px-6 min-w-[120px] order-1 mobile-xl:order-2 w-full mobile-xl:w-auto bg-primary-blue rounded mobile-xl:rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
@@ -636,7 +667,7 @@ const SummaryInfoCard = () => {
               >
                 <input type="hidden" name="MerchantCode" value="M16391" />
                 <input type="hidden" name="PaymentId" value="" />
-                <input type="hidden" name="RefNo" value="A00000002" />
+                <input type="hidden" name="RefNo" value="aeon" />
                 <input type="hidden" name="Amount" value="1.00" />
                 <input type="hidden" name="Currency" value="MYR" />
                 <input type="hidden" name="ProdDesc" value="Photo Print" />
@@ -653,7 +684,7 @@ const SummaryInfoCard = () => {
                 <input
                   type="hidden"
                   name="Signature"
-                  value="e5dade258a9d01db209c41d9c852cdbffbf8eb2101b2598551656eaaedb3c3ae"
+                  value="b9c7983a4b3c92435f83f915d0e07fe2d9b1a34ef4f753fdbe0aae3e9ba3a191"
                 />
                 <input
                   type="hidden"

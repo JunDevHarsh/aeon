@@ -24,6 +24,9 @@ type CredentialContextState = {
   token: Token | null;
   session: Session | null;
   requestId: string;
+  accountId: string;
+  inquiryId: string;
+  vehicleId: string;
   hasTokenExpired: boolean;
 };
 
@@ -51,8 +54,7 @@ export type CredentialPayload = {
   [CredentialTypes.UpdateSession]: Session;
   [CredentialTypes.UpdateRequestId]: string;
   [CredentialTypes.UpdateCredential]: {
-    token: Token;
-    session: Session;
+    values: Partial<CredentialContextState>;
   };
   [CredentialTypes.ToggleTokenHasExpired]: boolean;
 };
@@ -64,6 +66,9 @@ const initialState: CredentialContextState = {
   token: null,
   session: null,
   requestId: "",
+  accountId: "",
+  inquiryId: "",
+  vehicleId: "",
   hasTokenExpired: false,
 };
 
@@ -105,8 +110,7 @@ function credentialReducer(
     case CredentialTypes.UpdateCredential: {
       return {
         ...state,
-        token: payload.token,
-        session: payload.session,
+        ...payload.values,
       };
     }
     // toggle token has expired
@@ -139,8 +143,10 @@ function CredentialProvider({ children }: CredentialProviderProps) {
       dispatch({
         type: CredentialTypes.UpdateCredential,
         payload: {
-          token: response.token,
-          session: response.session,
+          values: {
+            token: response.token,
+            session: response.session,
+          },
         },
       });
       loaderDispatch({

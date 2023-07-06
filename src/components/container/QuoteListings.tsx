@@ -8,9 +8,8 @@ import { QuoteListingContext, QuotesTypes } from "../../context/QuoteListing";
 import { InsurerQuoteStateType, QuotesFilterType } from "../../context/types";
 // import QuoteComparisonPopup from "../popup/QuoteComparison";
 import axios from "axios";
-import { useSelector } from "react-redux";
-import { RootState } from "../../store/store";
 import { MarketAndAgreedContext } from "../../context/MarketAndAgreedContext";
+import { CredentialContext } from "../../context/Credential";
 
 export interface PlanType {
   value: string;
@@ -72,9 +71,10 @@ const QuoteListingsContainer = () => {
   // state for managing the list of quote plans
   // fetched from the agiliux backend system
   // const [quotePlans, updateQuotePlans] = useState<QuotePlansType[]>(quotes);
-  const { session, requestId } = useSelector(
-    (state: RootState) => state.credentials
-  );
+  const {
+    state: { session, requestId },
+  } = useContext(CredentialContext);
+
   const {
     state: { type, market, agreed },
   } = useContext(MarketAndAgreedContext);
