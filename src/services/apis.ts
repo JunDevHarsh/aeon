@@ -93,4 +93,19 @@ export const Apis = {
       },
     },
   },
+  checkReferralCode: {
+    method: "POST",
+    url: "",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: {
+      operation: "checkReferal",
+      sessionName: "",
+      element: {
+        tenant_id: "",
+        referalcode: "",
+      },
+    },
+  },
 };

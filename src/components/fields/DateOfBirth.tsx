@@ -1,38 +1,30 @@
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { FieldError } from "react-hook-form";
 
-// const minAge = 16;
-// const maxAge = 80;
+const maxAge = 80;
 
 function DateOfBirthField({
   selected,
   onChange,
   disabled,
+  error,
 }: {
   selected: Date | null;
   onChange: (date: Date | null) => void;
   disabled?: boolean;
+  error?: FieldError;
 }) {
   function handleDateChange(dateObj: Date | null) {
-    // if (dateObj) {
-    //   const year = dateObj.getFullYear().toString().substring(2);
-    //   const month = (dateObj.getMonth() + 1).toString().padStart(2, "0");
-    //   const day = dateObj.getDate().toString().padStart(2, "0");
-    //   const result = year + month + day;
-    //   console.log(result);
-    // }
     onChange(dateObj);
   }
 
-  // const maxDate = new Date();
-  // maxDate.setFullYear(maxDate.getFullYear() - maxAge);
-
-  // const minDate = new Date();
-  // minDate.setFullYear(minDate.getFullYear() - minAge);
+  const maxDate = new Date();
+  maxDate.setFullYear(maxDate.getFullYear() - maxAge);
 
   return (
-    <div className="relative pb-5 w-full">
-      <div className="relative">
+    <div className="relative pb-1 w-full">
+      <div className="relative pb-5">
         <label
           htmlFor="dateOfBirth"
           className="inline-block mb-1 text-base text-left text-primary-black font-semibold"
@@ -47,10 +39,22 @@ function DateOfBirthField({
           disabled={disabled}
           placeholderText={new Date().toISOString().substring(0, 10)}
           dateFormat="yyyy-MM-dd"
-          // maxDate={minDate}
-          // minDate={maxDate}
-          className="py-1.5 px-2 w-full text-sm text-left text-primary-black border border-solid border-[#CFD0D7] rounded outline outline-2 outline-transparent focus-visible:outline-primary-pink"
+          maxDate={new Date()}
+          minDate={maxDate}
+          className={`py-1.5 px-2 w-full text-sm text-left text-primary-black border border-solid rounded outline outline-2 outline-transparent focus-visible:outline-primary-pink ${
+            error
+              ? "border-red-600 placeholder:text-red-600"
+              : "border-[#CFD0D7] focus-visible:border-primary-pink"
+          }`}
         />
+        {error && (
+          <span
+            role="alert"
+            className="absolute bottom-0 left-0 text-sm text-left font-medium text-red-600"
+          >
+            {error?.message}
+          </span>
+        )}
       </div>
     </div>
   );

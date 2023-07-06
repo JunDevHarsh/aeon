@@ -240,7 +240,7 @@ export async function createInquiry(
   phone: string,
   email: string,
   idValue: string,
-  dob: Date | null,
+  dob: string,
   idType: string | null,
   gender: string | null,
   maritalStatus: string | null,
@@ -314,6 +314,43 @@ export async function createInquiry(
       return responseData.result;
     }
     error.code = "112";
+    error.message =
+      "Sorry, we're having  too many request at the moment. Please try again later.";
+    throw error;
+  } catch (err: any) {
+    throw err;
+  }
+}
+
+export async function checkReferralCode(
+  sessionName: string,
+  referralCode: string
+) {
+  try {
+    let error: any = {};
+    const response = await apiInstance({
+      method: Apis.checkReferralCode.method,
+      url: Apis.checkReferralCode.url,
+      headers: Apis.checkReferralCode.headers,
+      data: {
+        ...Apis.checkReferralCode.body,
+        sessionName: sessionName,
+        element: JSON.stringify({
+          ...Apis.checkReferralCode.body.element,
+          tenant_id: TENANT_ID,
+          referalcode: referralCode,
+        }),
+      },
+    });
+    if (response.status === 200) {
+      if (response.data.success) {
+        return response.data.result;
+      }
+      error.code = "114";
+      error.message =
+        "Sorry, we're unable to process your request at the moment. Please try again later.";
+    }
+    error.code = "113";
     error.message =
       "Sorry, we're having  too many request at the moment. Please try again later.";
     throw error;

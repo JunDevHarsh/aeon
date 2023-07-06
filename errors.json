@@ -76,5 +76,17 @@
         "error": "TOKEN_EXPIRED",
         "displayMessage": "You session has expired due to inactivity. You will be redirect to homepage",
         "logError": "Token expired"
+    },
+    "113": {
+        "code": "113",
+        "error": "INTERNAL_SERVER_ERROR",
+        "displayMessage": "Sorry, we're having  too many request at the moment. Please try again later.",
+        "logError": "Server is down"
+    },
+    "114": {
+        "code": "114",
+        "error": "REFERRAL_CODE_NOT_GENERATED",
+        "displayMessage": "Sorry, we're having  too many request at the moment. Please try again later.",
+        "logError": "Server is down"
     }
 }

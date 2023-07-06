@@ -1,20 +1,10 @@
 import { ChangeEvent, useContext, useState } from "react";
 import { useDispatch } from "react-redux";
 import { addReferralCode } from "../../store/slices/user";
-import {
-  checkReferralCode,
-  checkTokenIsExpired,
-  generateSessionName,
-  generateToken,
-} from "../../utils/helpers";
-import {
-  SessionType,
-  TokenType,
-  addSessionName,
-  addToken,
-} from "../../store/slices/credentials";
-import { CredentialContext } from "../../context/Credential";
+import { checkReferralCode } from "../../services/apiServices";
+import { CredentialContext, CredentialTypes } from "../../context/Credential";
 import { LoaderActionTypes, LoaderContext } from "../../context/Loader";
+import { checkSession } from "../../services/apiServices";
 
 type ReferralCodeStateType = {
   code: string;
@@ -25,16 +15,20 @@ type ReferralCodeStateType = {
 const ReferralCodeButton = () => {
   const {
     state: { token, session },
+    dispatch: credentialDispatch
   } = useContext(CredentialContext);
+
   const {
     state: { isLoading },
     dispatch: loaderDispatch,
   } = useContext(LoaderContext);
+
   const [state, setState] = useState<ReferralCodeStateType>({
     code: "",
     error: null,
     isValid: false,
   });
+
   const dispatch = useDispatch();
 
   const { code, error, isValid } = state;
@@ -54,62 +48,62 @@ const ReferralCodeButton = () => {
         setState((prev) => ({ ...prev, error: "Enter a code" }));
         return;
       }
+
       loaderDispatch({
         type: LoaderActionTypes.ToggleLoading,
         payload: true,
       });
+
       let tokenInfo = token;
       let sessionInfo = session;
+      
+      if(!tokenInfo || !sessionInfo) {
+        const reponse: any = await checkSession(tokenInfo, sessionInfo);
 
-      if (tokenInfo === null || checkTokenIsExpired(tokenInfo)) {
-        const getToken: TokenType = await generateToken(
-          "https://app.agiliux.com/aeon/webservice.php?operation=getchallenge&username=admin",
-          10000
-        );
-        tokenInfo = getToken;
-        dispatch(addToken({ ...getToken }));
-        const sessionApiResponse: SessionType = await generateSessionName(
-          "https://app.agiliux.com/aeon/webservice.php",
-          10000,
-          tokenInfo.token,
-          "bwJrIhxPdfsdialE"
-        );
-        sessionInfo = sessionApiResponse;
-        // update credentials context with new token and session
-        dispatch(
-          addSessionName({
-            userId: sessionApiResponse.userId,
-            sessionName: sessionApiResponse.sessionName,
-          })
-        );
+        credentialDispatch({
+          type: CredentialTypes.UpdateCredential,
+          payload: {
+            values: {
+              token: reponse.token,
+              session: reponse.session,
+            },
+          },
+        });
+
+        tokenInfo = reponse.token;
+        sessionInfo = reponse.session;
       }
 
       if (sessionInfo) {
         const apiResponse = await checkReferralCode(
-          "https://app.agiliux.com/aeon/webservice.php",
-          10000,
           sessionInfo.sessionName,
           code
         );
+
         if (apiResponse.isValid === 1) {
+
           setState((prev) => ({
             ...prev,
             error: null,
             isValid: true,
           }));
+
           dispatch(addReferralCode(code));
+
           loaderDispatch({
             type: LoaderActionTypes.ToggleLoading,
             payload: false,
           });
-          // dispatch((prev) => ({ ...prev, referralCode: code }));
+
           return;
         }
+
         setState((prev) => ({
           ...prev,
-          error: apiResponse.message,
+          error: "Invalid Referral Code",
           isValid: false,
         }));
+
         loaderDispatch({
           type: LoaderActionTypes.ToggleLoading,
           payload: false,
@@ -120,7 +114,9 @@ const ReferralCodeButton = () => {
         type: LoaderActionTypes.ToggleLoading,
         payload: false,
       });
+      
       console.log(error);
+
       setState((prev) => ({ ...prev, error: "Something went wrong" }));
     }
   }
@@ -152,11 +148,9 @@ const ReferralCodeButton = () => {
           />
           {isLoading || isValid ? (
             <div
-              className={`${
-                isLoading ? "animate-pulse" : ""
-              } px-4 py-1.5 text-sm text-center text-white bg-gray-400 font-medium`}
+              className="px-4 py-1.5 text-sm text-center text-white bg-gray-400 font-medium"
             >
-              {isLoading ? "Loading" : "Applied"}
+              {isLoading ? "Apply" : "Applied"}
             </div>
           ) : (
             <button

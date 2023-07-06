@@ -8,7 +8,7 @@ type UserInfoType = {
   };
   name: string;
   gender: string | null;
-  dateOfBirth: Date | null;
+  dateOfBirth: string;
   maritalStatus: string | null;
   occupation: string | null;
   mobileNumber: string;
@@ -41,7 +41,7 @@ const initialState: UserInfoType = {
   },
   name: "",
   gender: "Male",
-  dateOfBirth: null,
+  dateOfBirth: "",
   address: {
     address1: "",
   },
