@@ -667,7 +667,7 @@ const SummaryInfoCard = () => {
               >
                 <input type="hidden" name="MerchantCode" value="M16391" />
                 <input type="hidden" name="PaymentId" value="" />
-                <input type="hidden" name="RefNo" value="aeon" />
+                <input type="hidden" name="RefNo" value="AEON001" />
                 <input type="hidden" name="Amount" value="1.00" />
                 <input type="hidden" name="Currency" value="MYR" />
                 <input type="hidden" name="ProdDesc" value="Photo Print" />
@@ -684,7 +684,7 @@ const SummaryInfoCard = () => {
                 <input
                   type="hidden"
                   name="Signature"
-                  value="b9c7983a4b3c92435f83f915d0e07fe2d9b1a34ef4f753fdbe0aae3e9ba3a191"
+                  value="bf82d3f43c049acc88b17ae05cfbf5808ad2a7c6a0f9f41a56a5e35b15b98df9"
                 />
                 <input
                   type="hidden"
