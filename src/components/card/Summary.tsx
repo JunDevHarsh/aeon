@@ -667,24 +667,24 @@ const SummaryInfoCard = () => {
               >
                 <input type="hidden" name="MerchantCode" value="M16391" />
                 <input type="hidden" name="PaymentId" value="" />
-                <input type="hidden" name="RefNo" value="AEON001" />
+                <input type="hidden" name="RefNo" value="AEON0001" />
                 <input type="hidden" name="Amount" value="1.00" />
                 <input type="hidden" name="Currency" value="MYR" />
-                <input type="hidden" name="ProdDesc" value="Photo Print" />
-                <input type="hidden" name="UserName" value="John Tan" />
+                <input type="hidden" name="ProdDesc" value="MotorCar Policy Purchase" />
+                <input type="hidden" name="UserName" value="Aisyah" />
                 <input
                   type="hidden"
                   name="UserEmail"
-                  value="john@hotmail.com"
+                  value="aisyah@softsolvers.com"
                 />
-                <input type="hidden" name="UserContact" value="0126500100" />
+                <input type="hidden" name="UserContact" value="0135246440" />
                 <input type="hidden" name="Remark" value="" />
                 <input type="hidden" name="Lang" value="UTF-8" />
                 <input type="hidden" name="SignatureType" value="SHA256" />
                 <input
                   type="hidden"
                   name="Signature"
-                  value="bf82d3f43c049acc88b17ae05cfbf5808ad2a7c6a0f9f41a56a5e35b15b98df9"
+                  value="00e6e467f1456388fed165158db4f2db25ba847a97b9f02b5a5d15124df58051"
                 />
                 <input
                   type="hidden"
