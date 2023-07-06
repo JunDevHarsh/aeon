@@ -23,6 +23,8 @@ import {
 import { QuoteListingContext, QuotesTypes } from "../../context/QuoteListing";
 import { NewAddOnsContext } from "../../context/AddOnsContext";
 import { MultiStepFormContext } from "../../context/MultiFormContext";
+import { CredentialContext } from "../../context/Credential";
+import { LoaderActionTypes, LoaderContext } from "../../context/Loader";
 
 type CodeProps = {
   title: string;
@@ -31,20 +33,26 @@ type CodeProps = {
 
 const Code: React.FC<CodeProps> = ({ title, placeholder = "Placeholder" }) => {
   const {
-    user: {promoCode},
-    credentials: { token, session, requestId, accountId, inquiryId, vehicleId },
+    user: { promoCode },
   } = useSelector((state: RootState) => state);
+
+  const {
+    state: { isLoading },
+    dispatch: loaderDispatch,
+  } = useContext(LoaderContext);
+
+  const {
+    state: { accountId, inquiryId, vehicleId, requestId, token, session },
+  } = useContext(CredentialContext);
 
   const [state, setState] = useState<{
     code: string;
     error: string | null;
     isValid: boolean;
-    isLoading: boolean;
   }>({
     code: promoCode,
     error: null,
     isValid: promoCode ? true : false,
-    isLoading: false,
   });
 
   const {
@@ -68,7 +76,7 @@ const Code: React.FC<CodeProps> = ({ title, placeholder = "Placeholder" }) => {
 
   const updateStore = useDispatch();
 
-  const { code, error, isLoading, isValid } = state;
+  const { code, error, isValid } = state;
 
   function handleOnChange(e: ChangeEvent<HTMLInputElement>) {
     const value = e.target.value.toUpperCase();
@@ -85,7 +93,11 @@ const Code: React.FC<CodeProps> = ({ title, placeholder = "Placeholder" }) => {
         setState((prev) => ({ ...prev, error: "Enter a code" }));
         return;
       }
-      setState((prev) => ({ ...prev, isLoading: true }));
+      loaderDispatch({
+        type: LoaderActionTypes.ToggleLoading,
+        payload: true,
+      });
+
       let tokenInfo = token;
       let sessionInfo = session;
 
@@ -189,6 +201,7 @@ const Code: React.FC<CodeProps> = ({ title, placeholder = "Placeholder" }) => {
             },
           }
         );
+
         if (quoteResponse.status === 200 && quoteResponse.data) {
           if (quoteResponse.data.error || !quoteResponse.data.success) {
             throw {
@@ -233,8 +246,12 @@ const Code: React.FC<CodeProps> = ({ title, placeholder = "Placeholder" }) => {
               ...prev,
               error: null,
               isValid: true,
-              isLoading: false,
             }));
+
+            loaderDispatch({
+              type: LoaderActionTypes.ToggleLoading,
+              payload: false,
+            });
 
             return;
           }
@@ -250,14 +267,23 @@ const Code: React.FC<CodeProps> = ({ title, placeholder = "Placeholder" }) => {
         ...prev,
         error: "Promo Code is invalid!",
         isValid: false,
-        isLoading: false,
       }));
+
+      loaderDispatch({
+        type: LoaderActionTypes.ToggleLoading,
+        payload: false,
+      });
     } catch (error) {
       setState((prev) => ({
         ...prev,
-        isLoading: false,
         error: "Something went wrong",
       }));
+
+      loaderDispatch({
+        type: LoaderActionTypes.ToggleLoading,
+        payload: false,
+      });
+
       console.log(error);
     }
   }

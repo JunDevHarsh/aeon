@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import {
@@ -25,6 +25,7 @@ import {
 } from "../../context/InsuranceContext";
 import { MarketAndAgreedContext } from "../../context/MarketAndAgreedContext";
 import { QuoteListingContext, QuotesTypes } from "../../context/QuoteListing";
+import { LoaderActionTypes, LoaderContext } from "../../context/Loader";
 
 const ApplicationDetailsContainer = () => {
   const {
@@ -55,6 +56,8 @@ const ApplicationDetailsContainer = () => {
     },
   } = useSelector((state: RootState) => state);
 
+  const { dispatch: loaderDispatch } = useContext(LoaderContext);
+
   const updateStore = useDispatch();
 
   const {
@@ -66,8 +69,6 @@ const ApplicationDetailsContainer = () => {
     },
     dispatch: updateMultiStepFormDispatch,
   } = useContext(MultiStepFormContext);
-
-  const [_, setLoading] = useState<boolean>(false);
 
   const renderRef = useRef<boolean>(false);
 
@@ -121,7 +122,10 @@ const ApplicationDetailsContainer = () => {
 
   async function updateQuotePremium() {
     try {
-      setLoading(true);
+      loaderDispatch({
+        type: LoaderActionTypes.ToggleLoading,
+        payload: true,
+      });
       let tokenInfo = tokenInStore;
       let sessionInfo = sessionInStore;
       if (!tokenInStore || checkTokenIsExpired(tokenInStore)) {
@@ -283,7 +287,11 @@ const ApplicationDetailsContainer = () => {
             },
           });
           dispatch({ addOns: newAddOnsList, isEdited: false });
-          setLoading(false);
+
+          loaderDispatch({
+            type: LoaderActionTypes.ToggleLoading,
+            payload: false,
+          });
           return;
         }
         throw {
@@ -291,9 +299,15 @@ const ApplicationDetailsContainer = () => {
           message: "Receiving some error, please try again later",
         };
       }
-      setLoading(false);
+      loaderDispatch({
+        type: LoaderActionTypes.ToggleLoading,
+        payload: false,
+      });
     } catch (err) {
-      setLoading(false);
+      loaderDispatch({
+        type: LoaderActionTypes.ToggleLoading,
+        payload: false,
+      });
       console.log(err);
     }
   }

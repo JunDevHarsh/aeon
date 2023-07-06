@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 // fields
@@ -7,7 +7,7 @@ import SelectDropdown from "../fields/SelectDropdown";
 import MobileNumberField from "../fields/MobileNumber";
 import DateOfBirthField from "../fields/DateOfBirth";
 // store
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { updateInsuranceState } from "../../store/slices/insurance";
 import { addUserID, addUserBasicInfo } from "../../store/slices/user";
 import {
@@ -17,28 +17,15 @@ import {
 // types
 import ReferralCodeButton from "../button/ReferralCode";
 import DefaultPopup from "../popup/Default";
-import { RootState } from "../../store/store";
-import {
-  checkPostalCode,
-  checkTokenIsExpired,
-  generateSessionName,
-  generateToken,
-  getVehicleInfo,
-} from "../../utils/helpers";
-import {
-  SessionType,
-  TokenType,
-  addRequestId,
-  addSessionName,
-  addToken,
-} from "../../store/slices/credentials";
 import RadioFieldWithRFH from "../rhfFields/RadioField";
 import CheckboxWithImageText from "../fields/CheckboxWithImageText";
-
-const tenantId = import.meta.env.VITE_TENANT_ID;
-const md5Secret = import.meta.env.VITE_MD5_SECRET;
-
-// let prevValue: string = ""
+import {
+  checkPostCode,
+  checkSession,
+  getVehicleDetails,
+} from "../../services/apiServices";
+import { CredentialContext, CredentialTypes } from "../../context/Credential";
+import { LoaderActionTypes, LoaderContext } from "../../context/Loader";
 
 export type UserInsuranceInputs = {
   insuranceType: "new" | "renewal";
@@ -92,21 +79,46 @@ const UserRegistrationForm = () => {
     description: null,
   });
   // console.log(hookError, hookSetError);
-  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // get token from store
-  const { token: tokenInStore, session: sessionInStore } = useSelector(
-    (state: RootState) => state.credentials
-  );
+  // get token and session from Credential context
+  const {
+    state: { token, session },
+    dispatch: credentialDispatch,
+  } = useContext(CredentialContext);
+  // get loading dispatcher from context
+  const {
+    state: { isLoading },
+    dispatch: loaderDispatch,
+  } = useContext(LoaderContext);
 
   // function to handle form on submit
   const handleOnFormSubmit: SubmitHandler<UserInsuranceInputs> = async (
     inputUserData: UserInsuranceInputs
   ) => {
     try {
-      setLoading(true);
+      // set loading state to true
+      loaderDispatch({
+        type: LoaderActionTypes.ToggleLoading,
+        payload: true,
+      });
+
+      // generate session and token if not exist
+      const credentialResponse: any = await checkSession(token, session);
+      // update token and session in context
+      // later add function to update token and session in the context
+      // only if the currentToken is expired in below
+      credentialDispatch({
+        type: CredentialTypes.UpdateCredential,
+        payload: {
+          values: {
+            token: credentialResponse.token,
+            session: credentialResponse.session,
+          },
+        },
+      });
+
       const {
         insuranceType,
         email,
@@ -119,45 +131,13 @@ const UserRegistrationForm = () => {
         vehicleRegNo,
       } = inputUserData;
 
-      let tokenInfo = tokenInStore;
-      let sessionInfo = sessionInStore;
-      // check if there is not token in store or token is expired
-      if (
-        tokenInfo === null ||
-        checkTokenIsExpired(tokenInfo) ||
-        sessionInfo === null
-      ) {
-        // get new token
-        const getToken: TokenType = await generateToken(
-          "https://app.agiliux.com/aeon/webservice.php?operation=getchallenge&username=admin",
-          5000
-        );
-        tokenInfo = getToken;
-        // add token to store
-        dispatch(addToken({ ...getToken }));
-        const sessionApiResponse: SessionType = await generateSessionName(
-          "https://app.agiliux.com/aeon/webservice.php",
-          5000,
-          tokenInfo.token,
-          md5Secret
-        );
-        sessionInfo = sessionApiResponse;
-        // add session name to store state
-        dispatch(
-          addSessionName({
-            userId: sessionApiResponse.userId,
-            sessionName: sessionApiResponse.sessionName,
-          })
-        );
-      }
       let region: string = "";
-      const postalApiResponse = await checkPostalCode(
-        "https://app.agiliux.com/aeon/webservice.php",
-        5000,
-        sessionInfo.sessionName,
+
+      const postalApiResponse = await checkPostCode(
         postalCode,
-        tenantId
+        credentialResponse.session.sessionName
       );
+
       if (postalApiResponse.length !== 0) {
         region =
           postalApiResponse[0].Region === "W"
@@ -171,17 +151,15 @@ const UserRegistrationForm = () => {
           })
         );
       }
-      const vehicleApiResponse = await getVehicleInfo(
-        "https://app.agiliux.com/aeon/webservice.php",
-        5000,
-        sessionInfo.sessionName,
+
+      const vehicleDetailApiResponse = await getVehicleDetails(
+        credentialResponse.session.sessionName,
         vehicleRegNo,
         idType || "NRIC",
-        idNumber.replace(/-/gi, ""),
-        tenantId,
+        idNumber,
         postalCode
       );
-      setLoading(false);
+
       // // if user Id Type is valid then update the state -> user -> id
       if (idType !== null) {
         dispatch(addUserID({ number: idNumber, type: idType }));
@@ -206,7 +184,7 @@ const UserRegistrationForm = () => {
         nvicList,
         requestId,
         contractNumber,
-      } = vehicleApiResponse;
+      } = vehicleDetailApiResponse;
       dispatch(
         updateVehicleState({
           contractNumber,
@@ -231,7 +209,10 @@ const UserRegistrationForm = () => {
         })
       );
 
-      dispatch(addRequestId(requestId));
+      credentialDispatch({
+        type: CredentialTypes.UpdateRequestId,
+        payload: requestId,
+      });
 
       dispatch(
         updateInsuranceState({ type: insuranceType, vehicle: vehicleType })
@@ -251,9 +232,18 @@ const UserRegistrationForm = () => {
           postalCode,
         })
       );
+
+      loaderDispatch({
+        type: LoaderActionTypes.ToggleLoading,
+        payload: false,
+      });
       navigate("/vehicle-info");
     } catch (err: any) {
-      setLoading(false);
+      loaderDispatch({
+        type: LoaderActionTypes.ToggleLoading,
+        payload: false,
+      });
+
       if (err instanceof Error) {
         setError({
           isVisible: true,
@@ -594,16 +584,12 @@ const UserRegistrationForm = () => {
               Your data will be processed securely
             </span>
           </div>
-          {loading ? (
-            <button
-              disabled
-              className="relative py-3 px-4 flex items-center justify-center gap-x-2 max-w-[250px] w-full h-auto bg-primary-blue rounded-full"
-            >
-              <span className="animate-spin duration-300 inline-block w-5 h-5 border-[3px] border-solid border-white border-y-transparent rounded-full"></span>
+          {isLoading ? (
+            <div className="relative py-3 px-4 flex items-center justify-center gap-x-2 max-w-[250px] w-full h-auto bg-primary-blue rounded-full">
               <span className="text-base text-center text-white font-medium">
                 Loading...
               </span>
-            </button>
+            </div>
           ) : (
             <button
               type="submit"
