@@ -694,18 +694,18 @@ const SummaryInfoCard = () => {
                 <input
                   type="hidden"
                   name="BackendURL"
-                  value="https://portal.agiliux.com/payment"
+                  value="https://app.agiliux.com/aeon"
                 />
-                <button
-                  // onClick={() => {
-                  //   navigate("/payment");
-                  // }}
-                  className="relative py-2 px-6 min-w-[120px] flex items-center justify-center w-full mobile-xl:w-auto bg-primary-blue rounded mobile-xl:rounded-full shadow-[0_1px_2px_0_#C6E4F60D]"
-                >
-                  <span className="text-base text-center font-medium text-white">
+                <input
+                  type="submit"
+                  name="Submit"
+                  value="Pay Now"
+                  className="relative py-2 px-6 min-w-[120px] text-base text-center font-medium text-white w-full mobile-xl:w-auto bg-primary-blue rounded mobile-xl:rounded-full cursor-pointer shadow-[0_1px_2px_0_#C6E4F60D]"
+                />
+                  {/* <span className="text-base text-center font-medium text-white">
                     Pay Now
-                  </span>
-                </button>
+                  </span> */}
+                {/* </input> */}
                 {/* <input
                 type="submit"
                 value="Proceed with Payment"
