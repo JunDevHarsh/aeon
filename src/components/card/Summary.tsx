@@ -118,7 +118,7 @@ const SummaryInfoCard = () => {
 
   const selectedAddOns = addOns.filter((addOn) => addOn.isSelected);
 
-  const signatureHash = SHA256(`3jeL1HvYCEM16391${accountId}100MYR`);
+  const signatureHash = SHA256(`3jeL1HvYCEM16391${inquiryId}100MYR`);
 
   async function updateQuotePremium() {
     try {
@@ -754,7 +754,7 @@ const SummaryInfoCard = () => {
               >
                 <input type="hidden" name="MerchantCode" value="M16391" />
                 <input type="hidden" name="PaymentId" value="" />
-                <input type="hidden" name="RefNo" value={accountId} />
+                <input type="hidden" name="RefNo" value={inquiryId} />
                 <input type="hidden" name="Amount" value="1.00" />
                 <input type="hidden" name="Currency" value="MYR" />
                 <input
