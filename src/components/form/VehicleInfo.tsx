@@ -95,6 +95,10 @@ const VehicleInfoForm = ({
             type: CredentialTypes.ToggleTokenHasExpired,
             payload: true,
           });
+          loaderDispatch({
+            type: LoaderActionTypes.ToggleLoading,
+            payload: false,
+          });
           return;
         }
 

@@ -1,13 +1,13 @@
 import { Outlet, useLocation } from "react-router-dom";
 import StepperNavbar from "../navbar/Stepper";
 import NotFoundPage from "../../pages/NotFound";
-import { Suspense, lazy } from "react";
+// import { lazy } from "react";
 import SummaryInfoCard from "../card/Summary";
 import MarketAndAgreedContainer from "../container/MarketAndAgreed";
 
-const VehicleCoverageContainer = lazy(
-  () => import("../container/VehicleCoverage")
-);
+// const VehicleCoverageContainer = lazy(
+//   () => import("../container/VehicleCoverage")
+// );
 
 const InsuranceRootLayout = () => {
   const { pathname } = useLocation();
@@ -21,15 +21,15 @@ const InsuranceRootLayout = () => {
     pathname === "/insurance/market-agreed-value/"
   ) {
     return (
-      <Suspense fallback={<div>Loading...</div>}>
-        <VehicleCoverageContainer />
-      </Suspense>
+      // <Suspense fallback={<div>Loading...</div>}>
+      <MarketAndAgreedContainer />
+      // </Suspense>
     );
   }
 
-  if (pathname === "/insurance/test") {
-    return <MarketAndAgreedContainer />;
-  }
+  // if (pathname === "/insurance/test") {
+  //   return <MarketAndAgreedContainer />;
+  // }
 
   return (
     <div className="relative mx-auto py-10 px-4 w-full">

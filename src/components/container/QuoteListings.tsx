@@ -7,9 +7,13 @@ import DefaultPopup, { WarningPopupType } from "../popup/Default";
 import { QuoteListingContext, QuotesTypes } from "../../context/QuoteListing";
 import { InsurerQuoteStateType, QuotesFilterType } from "../../context/types";
 // import QuoteComparisonPopup from "../popup/QuoteComparison";
-import axios from "axios";
 import { MarketAndAgreedContext } from "../../context/MarketAndAgreedContext";
-import { CredentialContext } from "../../context/Credential";
+import { CredentialContext, CredentialTypes } from "../../context/Credential";
+import {
+  checkTokenIsExpired,
+  generateQuotation,
+} from "../../services/apiServices";
+import { LoaderActionTypes, LoaderContext } from "../../context/Loader";
 
 export interface PlanType {
   value: string;
@@ -71,8 +75,10 @@ const QuoteListingsContainer = () => {
   // state for managing the list of quote plans
   // fetched from the agiliux backend system
   // const [quotePlans, updateQuotePlans] = useState<QuotePlansType[]>(quotes);
+  const { dispatch: loaderDispatch } = useContext(LoaderContext);
   const {
-    state: { session, requestId },
+    state: { token, session, requestId },
+    dispatch: credentialDispatch,
   } = useContext(CredentialContext);
 
   const {
@@ -147,102 +153,113 @@ const QuoteListingsContainer = () => {
     }
   }, [insurerQuotes]);
 
-  useEffect(() => {
-    async function fetchQuotes() {
-      try {
-        const quoteResponse = await axios.post(
-          "https://app.agiliux.com/aeon/webservice.php",
-          {
-            sessionName: session ? session.sessionName : "",
-            operation: "getQuoteInfo",
-            element: JSON.stringify({
-              requestId: requestId,
-              tenant_id: "67b61490-fec2-11ed-a640-e19d1712c006",
-              class: "Private Vehicle",
-              suminsured:
-                type === "market"
-                  ? market?.vehicleMarketValue.toString()
-                  : agreed?.sumInsured.toString(),
-            }),
-          },
-          {
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded",
-            },
-          }
-        );
-        if (quoteResponse.status === 200 && quoteResponse.data) {
-          if (quoteResponse.data.error || !quoteResponse.data.success) {
-            throw new Error("INTERVAL_SERVER_ERROR");
-          }
-          if (quoteResponse.data) {
-            if (quoteResponse.data.result.quoteinfo.length === 0) {
-              throw new Error("NO_QUOTE_FOUND");
-            }
-            const data = quoteResponse.data.result;
-            const quoteList = data.quoteinfo.map(
-              ({
-                productid,
-                insurer,
-                logoname,
-                displaypremium,
-                doclink,
-                benefits,
-                additionalCover,
-                premium,
-              }: any) => ({
-                productId: productid,
-                insurerId: insurer,
-                insurerName: logoname,
-                docLink: doclink,
-                planType: "comprehensive",
-                logoName: logoname.toLowerCase(),
-                displayPremium: displaypremium || 672.8,
-                popular: true,
-                benefits: benefits,
-                additionalCover: additionalCover,
-                premium: premium,
-              })
-            );
-            dispatch({
-              type: QuotesTypes.AddQuotes,
-              payload: { quotes: quoteList },
-            });
-            updateQuotePlans(
-              quoteList.map((quote: any) => ({ ...quote, isSelected: false }))
-            );
-            return;
-          }
-          throw new Error("INTERVAL_SERVER_ERROR");
+  async function fetchQuotes() {
+    try {
+      if (token && session) {
+        loaderDispatch({
+          type: LoaderActionTypes.ToggleLoading,
+          payload: true,
+        });
+
+        const isTokenExpired = checkTokenIsExpired(token);
+
+        if (isTokenExpired) {
+          credentialDispatch({
+            type: CredentialTypes.ToggleTokenHasExpired,
+            payload: true,
+          });
+
+          loaderDispatch({
+            type: LoaderActionTypes.ToggleLoading,
+            payload: false,
+          });
+          return;
         }
-        throw new Error("INTERVAL_SERVER_ERROR");
-      } catch (err) {
-        if (err instanceof Error) {
-          console.log(err);
-          switch (err.message) {
-            case "NO_QUOTE_FOUND": {
-              setError({
-                code: "404",
-                message: "No Quote Found",
-                description: "No quote found for the given request.",
-              });
-              return;
-            }
-            default: {
-              setError({
-                code: "500",
-                message: "Internal Server Error",
-                description: "Something went wrong. Please try again later.",
-              });
-            }
-          }
+
+        const quoteResponse = await generateQuotation(
+          session.sessionName,
+          type === "market"
+            ? market.vehicleMarketValue.toString()
+            : agreed?.sumInsured || "",
+          requestId
+        );
+
+        const quoteList = quoteResponse.quoteinfo.map(
+          ({
+            productid,
+            insurer,
+            logoname,
+            displaypremium,
+            doclink,
+            benefits,
+            additionalCover,
+            premium,
+          }: any) => ({
+            productId: productid,
+            insurerId: insurer,
+            insurerName: logoname,
+            docLink: doclink,
+            planType: "comprehensive",
+            logoName: logoname.toLowerCase(),
+            displayPremium: displaypremium || 672.8,
+            popular: true,
+            benefits: benefits,
+            additionalCover: additionalCover,
+            premium: premium,
+          })
+        );
+
+        dispatch({
+          type: QuotesTypes.AddQuotes,
+          payload: { quotes: quoteList },
+        });
+
+        updateQuotePlans(
+          quoteList.map((quote: any) => ({ ...quote, isSelected: false }))
+        );
+
+        loaderDispatch({
+          type: LoaderActionTypes.ToggleLoading,
+          payload: false,
+        });
+
+        return;
+      }
+      credentialDispatch({
+        type: CredentialTypes.ToggleTokenHasExpired,
+        payload: true,
+      });
+    } catch (err: any) {
+      loaderDispatch({
+        type: LoaderActionTypes.ToggleLoading,
+        payload: false,
+      });
+      console.log(err);
+      switch (err.message) {
+        case "NO_QUOTE_FOUND": {
+          setError({
+            code: "404",
+            message: "No Quote Found",
+            description: "No quote found for the given request.",
+          });
+          return;
+        }
+        default: {
+          setError({
+            code: "500",
+            message: "Internal Server Error",
+            description: "Something went wrong. Please try again later.",
+          });
         }
       }
     }
+  }
+
+  useEffect(() => {
     if (insurerQuotes.length === 0) {
       fetchQuotes();
     }
-  }, []);
+  }, [token, session]);
 
   // filter quotes based on user search selection i.e.
   // if user has searching for third-party or comprehensive plans
