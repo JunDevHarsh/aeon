@@ -24,6 +24,7 @@ import {
   TermsAndConditionsTypes,
 } from "./MultiFormContext";
 import { QuotesAction, QuotesTypes } from "./QuoteListing";
+import { nanoid } from "@reduxjs/toolkit";
 /*---------------Insurance Reducer---------------*/
 export const insuranceProviderReducer = (
   state: ProviderState,
@@ -101,7 +102,7 @@ export const addDriverDetailsReducer = (
   switch (type) {
     case AddDriverTypes.AddNewDriverDetails: {
       const newDetails: AdditionalDriverDetails = {
-        id: payload.id,
+        id: nanoid(),
         idNo: "",
         idType: "NRIC",
         name: "",
@@ -116,11 +117,16 @@ export const addDriverDetailsReducer = (
       };
     }
     case AddDriverTypes.UpdateDriverDetails: {
+      // console.log(payload.updatedValue.);
       const updatedProp = state.driverDetails.map((detail) =>
         detail.id === payload.id
-          ? { ...detail, ...payload.updatedValue }
+          ? {
+              ...detail,
+              ...payload.updatedValue,
+            }
           : detail
       );
+      // console.log(updatedProp);
       return {
         ...state,
         hasUpdated: true,
@@ -132,6 +138,15 @@ export const addDriverDetailsReducer = (
       const updatedDrivderDetails = state.driverDetails.filter(
         (detail) => detail.id !== payload.id
       );
+      if (updatedDrivderDetails.length === 0) {
+        return {
+          ...state,
+          selectedDriverType: "",
+          isSelected: false,
+          hasUpdated: state.hasSubmitted,
+          shouldUpdate: state.hasSubmitted,
+        };
+      }
       return {
         ...state,
         hasUpdated: true,
@@ -141,6 +156,25 @@ export const addDriverDetailsReducer = (
     }
     case AddDriverTypes.SelectAdditionalDriver: {
       const { val } = payload;
+      if (val === "named") {
+        return {
+          ...state,
+          selectedDriverType: val,
+          isSelected: true,
+          hasUpdated: true,
+          shouldUpdate: true,
+          driverDetails: [
+            {
+              id: nanoid(),
+              idNo: "",
+              idType: "NRIC",
+              name: "",
+              nationality: "Malaysia",
+              relationship: "Insured",
+            },
+          ],
+        };
+      }
       return {
         ...state,
         selectedDriverType: val,
@@ -169,6 +203,13 @@ export const addDriverDetailsReducer = (
         hasSubmitted: true,
       };
     }
+    case AddDriverTypes.AddErrors: {
+      const { updatedDrivers } = payload;
+      return {
+        ...state,
+        driverDetails: updatedDrivers,
+      };
+    }
     default:
       return state;
   }
@@ -190,6 +231,14 @@ export const driverDetailsReducer = (
       const updatedDriverDetails = {
         ...state,
         ...payload.updatedValues,
+      };
+      return updatedDriverDetails;
+    }
+    case DriverTypes.AddDriverInfoErrors: {
+      const { updatedValues } = payload;
+      const updatedDriverDetails = {
+        ...state,
+        errors: updatedValues,
       };
       return updatedDriverDetails;
     }

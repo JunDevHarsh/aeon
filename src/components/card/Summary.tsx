@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import Code from "../button/Code";
 import { numberWithCommas } from "../container/VehicleCoverage";
@@ -16,23 +16,20 @@ import AllianzImg from "../../assets/images/logo-allianz.png";
 import { QuoteListingContext, QuotesTypes } from "../../context/QuoteListing";
 import { NewAddOnsContext } from "../../context/AddOnsContext";
 import {
+  SHA256,
   checkTokenIsExpired,
-  generateSessionName,
-  generateToken,
 } from "../../utils/helpers";
 import {
-  SessionType,
-  TokenType,
-  addSessionName,
-  addToken,
-} from "../../store/slices/credentials";
-import axios from "axios";
-import {
   AddDriverTypes,
+  DriverTypes,
   MultiStepFormContext,
 } from "../../context/MultiFormContext";
-import { CredentialContext } from "../../context/Credential";
+import { CredentialContext, CredentialTypes } from "../../context/Credential";
 import { LoaderActionTypes, LoaderContext } from "../../context/Loader";
+import {
+  updateInsured,
+  updateQuotationPremium,
+} from "../../services/apiServices";
 
 export interface AddBenefitsType {
   id: string;
@@ -52,14 +49,8 @@ const SummaryInfoCard = () => {
   } = useContext(NewAddOnsContext);
 
   const {
-    state: {
-      session: sessionInStore,
-      token: tokenInStore,
-      requestId,
-      inquiryId,
-      accountId,
-      vehicleId,
-    },
+    state: { session, token, requestId, inquiryId, accountId, vehicleId },
+    dispatch: credentialDispatch,
   } = useContext(CredentialContext);
 
   const {
@@ -82,6 +73,8 @@ const SummaryInfoCard = () => {
     store: {
       driverDetails: {
         name,
+        email,
+        mobileNumber,
         nationality,
         address1,
         postalCode,
@@ -98,7 +91,7 @@ const SummaryInfoCard = () => {
     dispatch: updateMultiFormState,
   } = useContext(MultiStepFormContext);
 
-  const updateStore = useDispatch();
+  // const updateStore = useDispatch();
 
   const {
     state: { quotes },
@@ -125,185 +118,23 @@ const SummaryInfoCard = () => {
 
   const selectedAddOns = addOns.filter((addOn) => addOn.isSelected);
 
+  const signatureHash = SHA256(`3jeL1HvYCEM16391${inquiryId}100MYR`);
+
   async function updateQuotePremium() {
     try {
-      loaderDispatch({
-        type: LoaderActionTypes.ToggleLoading,
-        payload: true,
-      });
+      if (token && session) {
+        loaderDispatch({
+          type: LoaderActionTypes.ToggleLoading,
+          payload: true,
+        });
 
-      let tokenInfo = tokenInStore;
-      let sessionInfo = sessionInStore;
-      if (!tokenInStore || checkTokenIsExpired(tokenInStore)) {
-        // get new token
-        const getToken: TokenType = await generateToken(
-          "https://app.agiliux.com/aeon/webservice.php?operation=getchallenge&username=admin",
-          5000
-        );
-        tokenInfo = getToken;
-        // add token to store
-        updateStore(addToken({ ...getToken }));
-        const sessionApiResponse: SessionType = await generateSessionName(
-          "https://app.agiliux.com/aeon/webservice.php",
-          5000,
-          tokenInfo.token,
-          "bwJrIhxPdfsdialE"
-        );
-        sessionInfo = sessionApiResponse;
-        // add session name to store state
-        updateStore(
-          addSessionName({
-            userId: sessionApiResponse.userId,
-            sessionName: sessionApiResponse.sessionName,
-          })
-        );
-      }
+        const isTokenExpired = checkTokenIsExpired(token);
 
-      const addOnsRequest = selectedAddOns.map((addOn: any) => {
-        let request: any = {};
-        request.coverCode = addOn.coverCode;
-        request.coverSumInsured = addOn.coverSumInsured;
-        if (addOn.coverCode === "PAB-ERW") {
-          if (addOn.moredetail?.options instanceof Array) {
-            request.planCode = addOn.moredetail?.options.find(
-              (option: any) => option.value === addOn.coverSumInsured.toString()
-            )?.code;
-          }
-        }
-        return request;
-      });
-
-      const quoteResponse = await axios.post(
-        "https://app.agiliux.com/aeon/webservice.php",
-        {
-          element: JSON.stringify({
-            requestId: requestId,
-            tenant_id: "67b61490-fec2-11ed-a640-e19d1712c006",
-            class: "Private Vehicle",
-            additionalCover: addOnsRequest || [],
-            unlimitedDriverInd:
-              selectedDriverType === "unlimited" ? "true" : "false",
-            driverDetails:
-              selectedDriverType === "unlimited" || driverDetails.length === 0
-                ? []
-                : driverDetails.map(({ idNo, name }) => ({
-                    fullName: name,
-                    identityNumber: idNo,
-                  })),
-            sitype:
-              valuationType === "market"
-                ? "MV - Market Value"
-                : "AV - Agreed Value",
-            avCode: valuationType === "market" ? "" : valuationAgreed?.avCode,
-            sumInsured:
-              valuationType === "market"
-                ? valuationMarket.vehicleMarketValue.toString()
-                : valuationAgreed?.sumInsured,
-            nvicCode:
-              valuationType === "market"
-                ? valuationMarket.nvic
-                : valuationAgreed?.nvic,
-            accountid: accountId,
-            inquiryId: inquiryId,
-            insurer: "7x250468",
-            productid: productId,
-            quoteId: quoteId,
-            vehicleId: vehicleId,
-            roadtax: roadTax ? "1" : "0",
-            promoid: promoId,
-            promocode: promoCode,
-            percent_off: percentOff,
-          }),
-          operation: "updateQuote",
-          sessionName: sessionInfo?.sessionName,
-        },
-        {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-        }
-      );
-      if (quoteResponse.status === 200 && quoteResponse.data) {
-        if (quoteResponse.data.error || !quoteResponse.data.success) {
-          throw {
-            status: 301,
-            message: "Error updating quote premium, please try again later",
-          };
-        }
-        // const data = quoteResponse.data.result;
-        if (quoteResponse.data) {
-          // if (quoteResponse.data.result.quoteinfo.length === 0) {
-          //   throw new Error("NO_QUOTE_FOUND");
-          // }
-          const data = quoteResponse.data;
-          updateInsuranceDispatch({
-            type: InsuranceProviderTypes.UpdateQuoteId,
-            payload: {
-              quoteId: data.result.quoteId,
-            },
+        if (isTokenExpired) {
+          credentialDispatch({
+            type: CredentialTypes.ToggleTokenHasExpired,
+            payload: true,
           });
-
-          const {
-            premium,
-            displaypremium,
-            additionalCover,
-            unlimitedDriverInfo,
-          } = data.result.quoteinfo;
-
-          const updatedAdditionalCover = selectedQuoteAddOns.map(
-            (selectedQuoteAddOn: any) => {
-              const matched = additionalCover.find(
-                (additional: any) =>
-                  additional.coverCode === selectedQuoteAddOn.coverCode
-              );
-              return matched ? matched : selectedQuoteAddOn;
-            }
-          );
-
-          const newAddOnsList = updatedAdditionalCover.map(
-            (updatedAddOn: any) => {
-              const matched = addOns.find(
-                (addOn: any) => addOn.coverCode === updatedAddOn.coverCode
-              );
-              return matched
-                ? {
-                    ...matched,
-                    displayPremium: updatedAddOn.displayPremium,
-                    selectedIndicator: updatedAddOn.selectedIndicator,
-                  }
-                : updatedAddOn;
-            }
-          );
-
-          updateInsuranceDispatch({
-            type: InsuranceProviderTypes.UpdateInsuranceProvider,
-            payload: {
-              companyId: productId,
-              companyName: "Allianz",
-              price: displaypremium,
-            },
-          });
-
-          updateQuote({
-            type: QuotesTypes.UpdateQuoteById,
-            payload: {
-              productId: productId,
-              data: {
-                premium,
-                displayPremium: displaypremium,
-                unlimitedDriverInfo: unlimitedDriverInfo,
-                // additionalCover: updatedAdditionalCover,
-              },
-            },
-          });
-          dispatch({ addOns: newAddOnsList, isEdited: false });
-
-          if (shouldUpdate) {
-            updateMultiFormState({
-              type: AddDriverTypes.SubmitAddDriverDetails,
-              payload: {},
-            });
-          }
 
           loaderDispatch({
             type: LoaderActionTypes.ToggleLoading,
@@ -312,14 +143,224 @@ const SummaryInfoCard = () => {
 
           return;
         }
-        throw {
-          status: 302,
-          message: "Receiving some error, please try again later",
-        };
+
+        let foundErrors = false;
+
+        const updated = driverDetails.map((driver) => {
+          const errors: any = {};
+          if (!driver.idNo || driver.idNo === "") {
+            foundErrors = true;
+            errors.idNo = "Enter a valid Id number";
+          }
+          if (!driver.idType || driver.idType === null) {
+            foundErrors = true;
+            errors.idType = "Select ID type";
+          }
+          if (driver.name === "") {
+            foundErrors = true;
+            errors.name = "Please enter your name";
+          }
+          if (!driver.nationality || driver.nationality === null) {
+            foundErrors = true;
+            errors.nationality = "Please select nationality";
+          }
+          return {
+            ...driver,
+            errors: errors,
+          };
+        });
+
+        if (foundErrors) {
+          updateMultiFormState({
+            type: AddDriverTypes.AddErrors,
+            payload: {
+              updatedDrivers: updated,
+            },
+          });
+          loaderDispatch({
+            type: LoaderActionTypes.ToggleLoading,
+            payload: false,
+          });
+          return;
+        }
+
+        const addOnsRequest = selectedAddOns.map((addOn: any) => {
+          let request: any = {};
+          request.coverCode = addOn.coverCode;
+          request.coverSumInsured = addOn.coverSumInsured;
+          if (addOn.coverCode === "PAB-ERW") {
+            if (addOn.moredetail?.options instanceof Array) {
+              request.planCode = addOn.moredetail?.options.find(
+                (option: any) =>
+                  option.value === addOn.coverSumInsured.toString()
+              )?.code;
+            }
+          }
+          return request;
+        });
+
+        // const quoteResponse = await axios.post(
+        //   "https://app.agiliux.com/aeon/webservice.php",
+        //   {
+        //     element: JSON.stringify({
+        //       requestId: requestId,
+        //       tenant_id: "67b61490-fec2-11ed-a640-e19d1712c006",
+        //       class: "Private Vehicle",
+        //       additionalCover: addOnsRequest || [],
+        //       unlimitedDriverInd:
+        //         selectedDriverType === "unlimited" ? "true" : "false",
+        //       driverDetails:
+        //         selectedDriverType === "unlimited" || driverDetails.length === 0
+        //           ? []
+        //           : driverDetails.map(({ idNo, name }) => ({
+        //               fullName: name,
+        //               identityNumber: idNo,
+        //             })),
+        //       sitype:
+        //         valuationType === "market"
+        //           ? "MV - Market Value"
+        //           : "AV - Agreed Value",
+        //       avCode: valuationType === "market" ? "" : valuationAgreed?.avCode,
+        //       sumInsured:
+        //         valuationType === "market"
+        //           ? valuationMarket.vehicleMarketValue.toString()
+        //           : valuationAgreed?.sumInsured,
+        //       nvicCode:
+        //         valuationType === "market"
+        //           ? valuationMarket.nvic
+        //           : valuationAgreed?.nvic,
+        //       accountid: accountId,
+        //       inquiryId: inquiryId,
+        //       insurer: "7x250468",
+        //       productid: productId,
+        //       quoteId: quoteId,
+        //       vehicleId: vehicleId,
+        //       roadtax: roadTax ? "1" : "0",
+        //       promoid: promoId,
+        //       promocode: promoCode,
+        //       percent_off: percentOff,
+        //     }),
+        //     operation: "updateQuote",
+        //     sessionName: session.sessionName,
+        //   },
+        //   {
+        //     headers: {
+        //       "Content-Type": "application/x-www-form-urlencoded",
+        //     },
+        //   }
+        // );
+
+        const response = await updateQuotationPremium(
+          session.sessionName,
+          requestId,
+          addOnsRequest,
+          selectedDriverType === "unlimited" ? "true" : "false",
+          selectedDriverType === "unlimited" || driverDetails.length === 0
+            ? []
+            : driverDetails.map(({ idNo, name }) => ({
+                fullName: name,
+                identityNumber: idNo,
+              })),
+          valuationType === "market"
+            ? "MV - Market Value"
+            : "AV - Agreed Value",
+          valuationType === "market" ? "" : valuationAgreed?.avCode || "",
+          valuationType === "market"
+            ? valuationMarket.vehicleMarketValue.toString()
+            : valuationAgreed?.sumInsured || "",
+          valuationType === "market"
+            ? valuationMarket.nvic
+            : valuationAgreed?.nvic || "",
+          accountId,
+          inquiryId,
+          productId,
+          quoteId,
+          vehicleId,
+          roadTax ? "1" : "0",
+          promoId,
+          promoCode,
+          percentOff
+        );
+
+        updateInsuranceDispatch({
+          type: InsuranceProviderTypes.UpdateQuoteId,
+          payload: {
+            quoteId: response.quoteId,
+          },
+        });
+
+        const {
+          premium,
+          displaypremium,
+          additionalCover,
+          unlimitedDriverInfo,
+        } = response.quoteinfo;
+
+        const updatedAdditionalCover = selectedQuoteAddOns.map(
+          (selectedQuoteAddOn: any) => {
+            const matched = additionalCover.find(
+              (additional: any) =>
+                additional.coverCode === selectedQuoteAddOn.coverCode
+            );
+            return matched ? matched : selectedQuoteAddOn;
+          }
+        );
+
+        const newAddOnsList = updatedAdditionalCover.map(
+          (updatedAddOn: any) => {
+            const matched = addOns.find(
+              (addOn: any) => addOn.coverCode === updatedAddOn.coverCode
+            );
+            return matched
+              ? {
+                  ...matched,
+                  displayPremium: updatedAddOn.displayPremium,
+                  selectedIndicator: updatedAddOn.selectedIndicator,
+                }
+              : updatedAddOn;
+          }
+        );
+
+        updateInsuranceDispatch({
+          type: InsuranceProviderTypes.UpdateInsuranceProvider,
+          payload: {
+            companyId: productId,
+            companyName: "Allianz",
+            price: displaypremium,
+          },
+        });
+
+        updateQuote({
+          type: QuotesTypes.UpdateQuoteById,
+          payload: {
+            productId: productId,
+            data: {
+              premium,
+              displayPremium: displaypremium,
+              unlimitedDriverInfo: unlimitedDriverInfo,
+              // additionalCover: updatedAdditionalCover,
+            },
+          },
+        });
+
+        dispatch({ addOns: newAddOnsList, isEdited: false });
+
+        if (shouldUpdate) {
+          updateMultiFormState({
+            type: AddDriverTypes.SubmitAddDriverDetails,
+            payload: {},
+          });
+        }
+
+        loaderDispatch({
+          type: LoaderActionTypes.ToggleLoading,
+          payload: false,
+        });
+        return;
       }
-      loaderDispatch({
-        type: LoaderActionTypes.ToggleLoading,
-        payload: false,
+      credentialDispatch({
+        type: CredentialTypes.ToggleTokenHasExpired,
+        payload: true,
       });
     } catch (err) {
       loaderDispatch({
@@ -332,67 +373,113 @@ const SummaryInfoCard = () => {
 
   async function updateClient() {
     try {
-      loaderDispatch({
-        type: LoaderActionTypes.ToggleLoading,
-        payload: true,
-      });
-      let tokenInfo = tokenInStore;
-      let sessionInfo = sessionInStore;
-      if (!tokenInStore || checkTokenIsExpired(tokenInStore)) {
-        // get new token
-        const getToken: TokenType = await generateToken(
-          "https://app.agiliux.com/aeon/webservice.php?operation=getchallenge&username=admin",
-          5000
-        );
-        tokenInfo = getToken;
-        // add token to store
-        updateStore(addToken({ ...getToken }));
-        const sessionApiResponse: SessionType = await generateSessionName(
-          "https://app.agiliux.com/aeon/webservice.php",
-          5000,
-          tokenInfo.token,
-          "bwJrIhxPdfsdialE"
-        );
-        sessionInfo = sessionApiResponse;
-        // add session name to store state
-        updateStore(
-          addSessionName({
-            userId: sessionInfo.userId,
-            sessionName: sessionInfo.sessionName,
-          })
-        );
-      }
-      const updateClientResponse = await axios.post(
-        "https://app.agiliux.com/aeon/webservice.php",
-        {
-          element: JSON.stringify({
-            requestId: requestId,
-            tenant_id: "67b61490-fec2-11ed-a640-e19d1712c006",
-            name: name,
-            nationality: nationality,
-            race: race,
-            occupation: occupation,
-            driving_exp: drivingExp,
-            address_1: address1,
-            address_3: postalCode,
-            state: state,
-            city: city,
-            accountid: accountId,
-          }),
-          operation: "updateInsured",
-          sessionName: sessionInfo?.sessionName,
-        },
-        {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
+      if (token && session) {
+
+        loaderDispatch({
+          type: LoaderActionTypes.ToggleLoading,
+          payload: true,
+        });
+
+        const isTokenExpired = checkTokenIsExpired(token);
+
+        if (isTokenExpired) {
+          credentialDispatch({
+            type: CredentialTypes.ToggleTokenHasExpired,
+            payload: true,
+          });
+
+          loaderDispatch({
+            type: LoaderActionTypes.ToggleLoading,
+            payload: false,
+          });
+
+          return;
         }
-      );
-      console.log(updateClientResponse);
-      loaderDispatch({
-        type: LoaderActionTypes.ToggleLoading,
-        payload: false,
-      });
+
+        let hasErrors = false;
+        let errors: any = {};
+
+        if (!name || name === "") {
+          hasErrors = true;
+          errors.name = "Field can't be empty";
+        }
+        if (!nationality || nationality === "") {
+          hasErrors = true;
+          errors.nationality = "Select your nationality";
+        }
+        if (!race || race === "") {
+          hasErrors = true;
+          errors.race = "Select your race";
+        }
+
+        if (!occupation || occupation === "") {
+          hasErrors = true;
+          errors.occupation = "Select your occupation";
+        }
+
+        if (!drivingExp || drivingExp === "") {
+          hasErrors = true;
+          errors.drivingExp = "Field can't be empty";
+        }
+
+        if (address1 === "") {
+          hasErrors = true;
+          errors.address1 = "Field can't be empty";
+        }
+
+        if (state === "") {
+          hasErrors = true;
+          errors.state = "Field can't be empty";
+        }
+
+        if (city === "") {
+          hasErrors = true;
+          errors.city = "Field can't be empty";
+        }
+
+        if (hasErrors) {
+          updateMultiFormState({
+            type: DriverTypes.AddDriverInfoErrors,
+            payload: {
+              updatedValues: errors,
+            },
+          });
+
+          loaderDispatch({
+            type: LoaderActionTypes.ToggleLoading,
+            payload: false,
+          });
+          return;
+        }
+
+        const updateClientResponse = await updateInsured(
+          session.sessionName,
+          requestId,
+          name,
+          nationality,
+          race,
+          occupation,
+          drivingExp,
+          address1,
+          postalCode,
+          state,
+          city,
+          accountId
+        );
+
+        console.log(updateClientResponse.message);
+
+        navigate("/insurance/review-pay");
+        loaderDispatch({
+          type: LoaderActionTypes.ToggleLoading,
+          payload: false,
+        });
+      }else{
+        credentialDispatch({
+          type: CredentialTypes.ToggleTokenHasExpired,
+          payload: true,
+        });
+      }
     } catch (err) {
       loaderDispatch({
         type: LoaderActionTypes.ToggleLoading,
@@ -468,7 +555,7 @@ const SummaryInfoCard = () => {
                 )}
               </span>
               {pathname !== "/insurance/review-pay" && (
-                <Link to="/insurance/test" className="ml-1">
+                <Link to="/insurance/market-agreed-value" className="ml-1">
                   <svg
                     width="13"
                     height="13"
@@ -667,25 +754,21 @@ const SummaryInfoCard = () => {
               >
                 <input type="hidden" name="MerchantCode" value="M16391" />
                 <input type="hidden" name="PaymentId" value="" />
-                <input type="hidden" name="RefNo" value="AEON0001" />
+                <input type="hidden" name="RefNo" value={inquiryId} />
                 <input type="hidden" name="Amount" value="1.00" />
                 <input type="hidden" name="Currency" value="MYR" />
-                <input type="hidden" name="ProdDesc" value="MotorCar Policy Purchase" />
-                <input type="hidden" name="UserName" value="Aisyah" />
                 <input
                   type="hidden"
-                  name="UserEmail"
-                  value="aisyah@softsolvers.com"
+                  name="ProdDesc"
+                  value="MotorCar Policy Purchase"
                 />
-                <input type="hidden" name="UserContact" value="0135246440" />
+                <input type="hidden" name="UserName" value={name} />
+                <input type="hidden" name="UserEmail" value={email} />
+                <input type="hidden" name="UserContact" value={mobileNumber} />
                 <input type="hidden" name="Remark" value="" />
                 <input type="hidden" name="Lang" value="UTF-8" />
                 <input type="hidden" name="SignatureType" value="SHA256" />
-                <input
-                  type="hidden"
-                  name="Signature"
-                  value="00e6e467f1456388fed165158db4f2db25ba847a97b9f02b5a5d15124df58051"
-                />
+                <input type="hidden" name="Signature" value={signatureHash} />
                 <input
                   type="hidden"
                   name="ResponseURL"
@@ -702,7 +785,7 @@ const SummaryInfoCard = () => {
                   value="Pay Now"
                   className="relative py-2 px-6 min-w-[120px] text-base text-center font-medium text-white w-full mobile-xl:w-auto bg-primary-blue rounded mobile-xl:rounded-full cursor-pointer shadow-[0_1px_2px_0_#C6E4F60D]"
                 />
-                  {/* <span className="text-base text-center font-medium text-white">
+                {/* <span className="text-base text-center font-medium text-white">
                     Pay Now
                   </span> */}
                 {/* </input> */}
@@ -720,7 +803,7 @@ const SummaryInfoCard = () => {
                   navigate("/insurance/application-details");
                 } else if (pathname === "/insurance/application-details") {
                   updateClient();
-                  navigate("/insurance/review-pay");
+                  // navigate("/insurance/review-pay");
                 } else {
                   navigate("/insurance/payment");
                 }

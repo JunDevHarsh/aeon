@@ -57,7 +57,7 @@
         "code": "110",
         "error": "INVALID_VEHICLE_DETAILS",
         "displayMessage": "Make sure vehicle registration no. or Identity no. are entered correctly.",
-        "logError": "Vehicle not found"
+        "logError": "Invalid vehicle details"
     },
     "111": {
         "code": "111",
@@ -76,5 +76,53 @@
         "error": "TOKEN_EXPIRED",
         "displayMessage": "You session has expired due to inactivity. You will be redirect to homepage",
         "logError": "Token expired"
+    },
+    "113": {
+        "code": "113",
+        "error": "INTERNAL_SERVER_ERROR",
+        "displayMessage": "Sorry, we're having  too many request at the moment. Please try again later.",
+        "logError": "Server is down to generate referral code"
+    },
+    "114": {
+        "code": "114",
+        "error": "REFERRAL_CODE_NOT_GENERATED",
+        "displayMessage": "Sorry, we're having  too many request at the moment. Please try again later.",
+        "logError": "Referral code not generated"
+    },
+    "115": {
+        "code": "115",
+        "error": "GENERATE_QUOTATION_FAILED",
+        "displayMessage": "Sorry, we're having  too many request at the moment. Please try again later.",
+        "logError": "Generate quotation failed"
+    },
+    "116": {
+        "code": "116",
+        "error": "NO_QUOTE_FOUND",
+        "displayMessage": "Sorry, we're having  too many request at the moment. Please try again later.",
+        "logError": "Not quotes found"
+    },
+    "118": {
+        "code": "118",
+        "error": "QUOTE_NOT_UPDATED",
+        "displayMessage": "Sorry, we're having  too many request at the moment. Please try again later.",
+        "logError": "Quote not getting updated"
+    },
+    "119": {
+        "code": "119",
+        "error": "PROMOCODE_NOT_VALIDATE",
+        "displayMessage": "Sorry, we're having  too many request at the moment. Please try again later.",
+        "logError": "Server is not validating the promo code"
+    },
+    "120": {
+        "code": "120",
+        "error": "INSURED_DETAILS_NOT_UPDATED",
+        "displayMessage": "Sorry, we're having  too many request at the moment. Please try again later.",
+        "logError": "Insured details not updated at the backend"
+    },
+    "404": {
+        "code": "404",
+        "error": "INTERNAL_SERVER_ERROR",
+        "displayMessage": "Sorry, we're having  too many request at the moment. Please try again later.",
+        "logError": "SERVER IS NOT REPONDING"
     }
 }

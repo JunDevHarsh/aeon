@@ -68,6 +68,7 @@ export type AdditionalDriverDetails = {
   idNo: string;
   relationship: string | null;
   nationality: string | null;
+  errors?: any,
 };
 
 // Driver Details
@@ -86,6 +87,7 @@ export type DriverDetails = {
   state: string;
   country: string | null;
   postalCode: string;
+  errors?: any;
 };
 
 export type ActionMap<M extends { [index: string]: any }> = {

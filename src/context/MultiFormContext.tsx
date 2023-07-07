@@ -60,10 +60,12 @@ export enum AddDriverTypes {
   SelectAdditionalDriver = "SELECT_ADDITIONAL_DRIVER",
   UnSelectAdditionalDriver = "UNSELECT_ADDITIONAL_DRIVER",
   SubmitAddDriverDetails = "SUBMIT_ADD_DRIVER_DETAILS",
+  AddErrors = "ADD_ERRORS",
 }
 
 export enum DriverTypes {
   UpdateDriverInfo = "UPDATE_DRIVER_INFO",
+  AddDriverInfoErrors = "ADD_DRIVER_INFO_ERRORS",
 }
 
 export enum RoadTaxTypes {
@@ -89,9 +91,7 @@ export type AddOnsPayload = {
 };
 
 export type AddDriverDetailsPayload = {
-  [AddDriverTypes.AddNewDriverDetails]: {
-    id: string;
-  };
+  [AddDriverTypes.AddNewDriverDetails]: {};
   [AddDriverTypes.UpdateDriverDetails]: {
     id: string;
     updatedValue: Partial<AdditionalDriverDetails>;
@@ -106,10 +106,16 @@ export type AddDriverDetailsPayload = {
     val: string;
   };
   [AddDriverTypes.SubmitAddDriverDetails]: {};
+  [AddDriverTypes.AddErrors]: {
+    updatedDrivers: AdditionalDriverDetails[];
+  };
 };
 
 export type DriverDetailsPayload = {
   [DriverTypes.UpdateDriverInfo]: {
+    updatedValues: Partial<DriverDetails>;
+  };
+  [DriverTypes.AddDriverInfoErrors]: {
     updatedValues: Partial<DriverDetails>;
   };
 };
@@ -158,7 +164,13 @@ export const MultiStepFormContext = createContext<{
 
 /*---------------Multiple Reducers---------------*/
 const mainReducer = (
-  { addOns, addDriverDetails, driverDetails, roadTax, termsAndConditions}: MultiStepFormState,
+  {
+    addOns,
+    addDriverDetails,
+    driverDetails,
+    roadTax,
+    termsAndConditions,
+  }: MultiStepFormState,
   action:
     | AddOnsActions
     | AddDriverActions
@@ -192,6 +204,7 @@ const MultiFormContextProvider = ({
       drivingExp: drivingExp,
       city: city,
       state: state,
+      errors: {}
     },
   });
 

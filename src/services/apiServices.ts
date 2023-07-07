@@ -240,7 +240,7 @@ export async function createInquiry(
   phone: string,
   email: string,
   idValue: string,
-  dob: Date | null,
+  dob: string,
   idType: string | null,
   gender: string | null,
   maritalStatus: string | null,
@@ -313,10 +313,263 @@ export async function createInquiry(
       const responseData = response.data;
       return responseData.result;
     }
-    error.code = "112";
+    error.code = "404";
     error.message =
       "Sorry, we're having  too many request at the moment. Please try again later.";
     throw error;
+  } catch (err: any) {
+    throw err;
+  }
+}
+
+export async function checkReferralCode(
+  sessionName: string,
+  referralCode: string
+) {
+  try {
+    let error: any = {};
+    const response = await apiInstance({
+      method: Apis.checkReferralCode.method,
+      url: Apis.checkReferralCode.url,
+      headers: Apis.checkReferralCode.headers,
+      data: {
+        ...Apis.checkReferralCode.body,
+        sessionName: sessionName,
+        element: JSON.stringify({
+          ...Apis.checkReferralCode.body.element,
+          tenant_id: TENANT_ID,
+          referalcode: referralCode,
+        }),
+      },
+    });
+    if (response.status === 200) {
+      if (response.data.success) {
+        return response.data.result;
+      }
+      error.code = "114";
+      error.message =
+        "Sorry, we're unable to process your request at the moment. Please try again later.";
+    }
+    error.code = "113";
+    error.message =
+      "Sorry, we're having  too many request at the moment. Please try again later.";
+    throw error;
+  } catch (err: any) {
+    throw err;
+  }
+}
+
+export async function generateQuotation(
+  sessionName: string,
+  sumInsured: string,
+  requestId: string
+) {
+  try {
+    let error: any = {};
+    const response = await apiInstance({
+      method: Apis.generateQuotation.method,
+      url: Apis.generateQuotation.url,
+      headers: Apis.generateQuotation.headers,
+      data: {
+        ...Apis.generateQuotation.body,
+        sessionName: sessionName,
+        element: JSON.stringify({
+          ...Apis.generateQuotation.body.element,
+          tenant_id: TENANT_ID,
+          requestId: requestId,
+          suminsured: sumInsured,
+        }),
+      },
+    });
+    if (response.status === 200) {
+      const responseData = response.data;
+      if (responseData.success) {
+        if (responseData.result.quoteinfo.length !== 0) {
+          return responseData.result;
+        }
+        error.code = "116";
+        error.message = "NO_QUOTE_FOUND";
+        throw error;
+      }
+      error.code = "115";
+      error.message =
+        "Sorry, we're unable to process your request at the moment. Please try again later.";
+      throw error;
+    }
+    error.code = "404";
+    error.message =
+      "Sorry, we're unable to process your request at the moment. Please try again later.";
+    throw error;
+  } catch (err: any) {
+    throw err;
+  }
+}
+
+export async function updateQuotationPremium(
+  sessionName: string,
+  requestId: string,
+  additionalCover: any[],
+  unlimitedDriverInd: "true" | "false",
+  driverDetails: any[],
+  siType: "MV - Market Value" | "AV - Agreed Value",
+  avCode: string,
+  sumInsured: string,
+  nvicCode: string,
+  accountId: string,
+  inquiryId: string,
+  productId: string,
+  quoteId: string,
+  vehicleId: string,
+  roadTax: string,
+  promoId: string,
+  promoCode: string,
+  percentOff: string
+) {
+  try {
+    let error: any = {};
+    const response = await apiInstance({
+      method: Apis.updateQuotationPremium.method,
+      url: Apis.updateQuotationPremium.url,
+      headers: Apis.updateQuotationPremium.headers,
+      data: {
+        ...Apis.updateQuotationPremium.body,
+        sessionName: sessionName,
+        element: JSON.stringify({
+          ...Apis.updateQuotationPremium.body.element,
+          tenant_id: TENANT_ID,
+          requestId: requestId,
+          additionalCover: additionalCover,
+          unlimitedDriverInd: unlimitedDriverInd,
+          driverDetails: driverDetails,
+          sitype: siType,
+          avCode: avCode,
+          sumInsured: sumInsured,
+          nvicCode: nvicCode,
+          accountid: accountId,
+          inquiryId: inquiryId,
+          insurer: "7x250468",
+          productid: productId,
+          quoteId: quoteId,
+          vehicleId: vehicleId,
+          roadtax: roadTax ? "1" : "0",
+          promoid: promoId,
+          promocode: promoCode,
+          percent_off: percentOff,
+        }),
+      },
+    });
+    if (response.status === 200) {
+      if (response.data.success) {
+        return response.data.result;
+      }
+      error.code = "118";
+      error.message =
+        "Sorry, we're unable to process your request at the moment. Please try again later.";
+      throw error;
+    } else {
+      error.code = "404";
+      error.message =
+        "Sorry, we're unable to process your request at the moment. Please try again later.";
+      throw error;
+    }
+  } catch (err: any) {
+    throw err;
+  }
+}
+
+export async function validatePromoCode(
+  sessionName: string,
+  requestId: string,
+  promoCode: string
+) {
+  try {
+    let error: any = {};
+    const response = await apiInstance({
+      method: Apis.validatePromoCode.method,
+      url: Apis.validatePromoCode.url,
+      headers: Apis.validatePromoCode.headers,
+      data: {
+        ...Apis.validatePromoCode.body,
+        sessionName: sessionName,
+        element: JSON.stringify({
+          ...Apis.validatePromoCode.body.element,
+          tenant_id: TENANT_ID,
+          requestId: requestId,
+          promocode: promoCode,
+        }),
+      },
+    });
+
+    if (response.status === 200) {
+      if (response.data.success) {
+        return response.data.result;
+      }
+      error.code = "119";
+      error.message =
+        "Sorry, we're unable to process your request at the moment. Please try again later.";
+      throw error;
+    }
+    error.code = "404";
+    error.message =
+      "Sorry, we're unable to process your request at the moment. Please try again later.";
+  } catch (err: any) {
+    throw err;
+  }
+}
+
+export async function updateInsured(
+  sessionName: string,
+  requestId: string,
+  name: string,
+  nationality: any,
+  race: any,
+  occupation: any,
+  drivingExp: any,
+  address1: any,
+  address3: any,
+  state: any,
+  city: any,
+  accountId: any
+) {
+  try {
+    let error: any = {};
+    const response = await apiInstance({
+      method: Apis.updateInsured.method,
+      url: Apis.updateInsured.url,
+      headers: Apis.updateInsured.headers,
+      data: {
+        ...Apis.updateInsured.body,
+        sessionName: sessionName,
+        element: JSON.stringify({
+          ...Apis.updateInsured.body.element,
+          tenant_id: TENANT_ID,
+          requestId: requestId,
+          name: name,
+          nationality: nationality,
+          race: race,
+          occupation: occupation,
+          driving_exp: drivingExp,
+          address_1: address1,
+          address_3: address3,
+          state: state,
+          city: city,
+          accountid: accountId,
+        }),
+      },
+    });
+
+    if (response.status === 200) {
+      if (response.data.success) {
+        return response.data.result;
+      }
+      error.code = "120";
+      error.message =
+        "Sorry, we're unable to process your request at the moment. Please try again later.";
+      throw error;
+    }
+    error.code = "404";
+    error.message =
+      "Sorry, we're unable to process your request at the moment. Please try again later.";
   } catch (err: any) {
     throw err;
   }

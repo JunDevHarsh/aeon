@@ -1,21 +1,8 @@
 import React, { ChangeEvent, useContext, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
-import {
-  checkPromoCode,
-  checkTokenIsExpired,
-  generateSessionName,
-  generateToken,
-} from "../../utils/helpers";
-import {
-  SessionType,
-  TokenType,
-  addSessionName,
-  addToken,
-} from "../../store/slices/credentials";
 import { addPromoCode } from "../../store/slices/user";
 import { MarketAndAgreedContext } from "../../context/MarketAndAgreedContext";
-import axios from "axios";
 import {
   InsuranceContext,
   InsuranceProviderTypes,
@@ -23,8 +10,12 @@ import {
 import { QuoteListingContext, QuotesTypes } from "../../context/QuoteListing";
 import { NewAddOnsContext } from "../../context/AddOnsContext";
 import { MultiStepFormContext } from "../../context/MultiFormContext";
-import { CredentialContext } from "../../context/Credential";
+import { CredentialContext, CredentialTypes } from "../../context/Credential";
 import { LoaderActionTypes, LoaderContext } from "../../context/Loader";
+import {
+  updateQuotationPremium,
+  validatePromoCode,
+} from "../../services/apiServices";
 
 type CodeProps = {
   title: string;
@@ -43,6 +34,7 @@ const Code: React.FC<CodeProps> = ({ title, placeholder = "Placeholder" }) => {
 
   const {
     state: { accountId, inquiryId, vehicleId, requestId, token, session },
+    dispatch: credentialDispatch,
   } = useContext(CredentialContext);
 
   const [state, setState] = useState<{
@@ -64,7 +56,10 @@ const Code: React.FC<CodeProps> = ({ title, placeholder = "Placeholder" }) => {
   } = useContext(NewAddOnsContext);
 
   const {
-    store: { roadTax },
+    store: {
+      roadTax,
+      addDriverDetails: { selectedDriverType, driverDetails },
+    },
   } = useContext(MultiStepFormContext);
 
   const {
@@ -93,185 +88,130 @@ const Code: React.FC<CodeProps> = ({ title, placeholder = "Placeholder" }) => {
         setState((prev) => ({ ...prev, error: "Enter a code" }));
         return;
       }
-      loaderDispatch({
-        type: LoaderActionTypes.ToggleLoading,
-        payload: true,
-      });
+      if (token && session) {
+        loaderDispatch({
+          type: LoaderActionTypes.ToggleLoading,
+          payload: true,
+        });
 
-      let tokenInfo = token;
-      let sessionInfo = session;
-
-      if (
-        tokenInfo === null ||
-        sessionInfo === null ||
-        checkTokenIsExpired(tokenInfo)
-      ) {
-        const getToken: TokenType = await generateToken(
-          "https://app.agiliux.com/aeon/webservice.php?operation=getchallenge&username=admin",
-          10000
-        );
-        tokenInfo = getToken;
-        updateStore(addToken({ ...getToken }));
-        const sessionApiResponse: SessionType = await generateSessionName(
-          "https://app.agiliux.com/aeon/webservice.php",
-          10000,
-          tokenInfo.token,
-          "bwJrIhxPdfsdialE"
-        );
-        sessionInfo = sessionApiResponse;
-        // update credentials context with new token and session
-        updateStore(
-          addSessionName({
-            userId: sessionApiResponse.userId,
-            sessionName: sessionApiResponse.sessionName,
-          })
-        );
-      }
-
-      const apiResponse = await checkPromoCode(
-        "https://app.agiliux.com/aeon/webservice.php",
-        10000,
-        sessionInfo.sessionName,
-        requestId,
-        code
-      );
-      if (apiResponse.isValid === 1) {
-        const { promoid, percent_off } = apiResponse;
-
-        updateStore(
-          addPromoCode({
-            promoCode: code,
-            promoId: promoid,
-            percentOff: percent_off,
-          })
+        const response = await validatePromoCode(
+          session.sessionName,
+          requestId,
+          code
         );
 
-        const addOnsRequest = addOns
-          .filter((addOn) => addOn.selectedIndicator)
-          .map((addOn) => {
-            let request: any = {};
-            request.coverCode = addOn.coverCode;
-            request.coverSumInsured = addOn.coverSumInsured;
-            if (addOn.coverCode === "PAB-ERW") {
-              if (addOn.moredetail?.options instanceof Array) {
-                request.planCode = addOn.moredetail?.options.find(
-                  (option: any) =>
-                    option.value === addOn.coverSumInsured.toString()
-                )?.code;
+        if (response.isValid === 1) {
+          const { promoid, percent_off } = response;
+
+          updateStore(
+            addPromoCode({
+              promoCode: code,
+              promoId: promoid,
+              percentOff: percent_off,
+            })
+          );
+
+          const addOnsRequest = addOns
+            .filter((addOn) => addOn.selectedIndicator)
+            .map((addOn) => {
+              let request: any = {};
+              request.coverCode = addOn.coverCode;
+              request.coverSumInsured = addOn.coverSumInsured;
+              if (addOn.coverCode === "PAB-ERW") {
+                if (addOn.moredetail?.options instanceof Array) {
+                  request.planCode = addOn.moredetail?.options.find(
+                    (option: any) =>
+                      option.value === addOn.coverSumInsured.toString()
+                  )?.code;
+                }
               }
-            }
-            return request;
+              return request;
+            });
+
+          const quoteResponse = await updateQuotationPremium(
+            session.sessionName,
+            requestId,
+            addOnsRequest,
+            selectedDriverType === "unlimited" ? "true" : "false",
+            selectedDriverType === "unlimited" || driverDetails.length === 0
+              ? []
+              : driverDetails.map(({ idNo, name }) => ({
+                  fullName: name,
+                  identityNumber: idNo,
+                })),
+            type === "market" ? "MV - Market Value" : "AV - Agreed Value",
+            type === "market" ? "" : agreed?.avCode || "",
+            type === "market"
+              ? market.vehicleMarketValue.toString()
+              : agreed?.sumInsured || "",
+            type === "market" ? market.nvic : agreed?.nvic || "",
+            accountId,
+            inquiryId,
+            productId,
+            quoteId,
+            vehicleId,
+            roadTax ? "1" : "0",
+            promoid,
+            code,
+            percent_off
+          );
+          updateInsuranceDispatch({
+            type: InsuranceProviderTypes.UpdateQuoteId,
+            payload: {
+              quoteId: quoteResponse.quoteId,
+            },
           });
 
-        const quoteResponse = await axios.post(
-          "https://app.agiliux.com/aeon/webservice.php",
-          {
-            element: JSON.stringify({
-              requestId: requestId,
-              tenant_id: "67b61490-fec2-11ed-a640-e19d1712c006",
-              class: "Private Vehicle",
-              additionalCover: addOnsRequest,
-              unlimitedDriverInd: "false",
-              driverDetails: [],
-              sitype:
-                type === "market" ? "MV - Market Value" : "AV - Agreed Value",
-              avCode: type === "market" ? "" : agreed?.avCode,
-              sumInsured:
-                type === "market"
-                  ? market.vehicleMarketValue.toString()
-                  : agreed?.sumInsured,
-              nvicCode: type === "market" ? market.nvic : agreed?.nvic,
-              accountid: accountId,
-              inquiryId: inquiryId,
-              insurer: "7x250468",
-              productid: productId,
-              quoteId: quoteId,
-              vehicleId: vehicleId,
-              roadtax: roadTax ? "1" : "0",
-              promoid: promoid,
-              promocode: code,
-              percent_off: percent_off,
-            }),
-            operation: "updateQuote",
-            sessionName: sessionInfo?.sessionName,
-          },
-          {
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded",
+          const { displaypremium, premium } = quoteResponse.quoteinfo;
+          updateQuote({
+            type: QuotesTypes.UpdateQuoteById,
+            payload: {
+              productId: productId,
+              data: {
+                premium,
+                displayPremium: displaypremium,
+              },
             },
-          }
-        );
+          });
+          updateInsuranceDispatch({
+            type: InsuranceProviderTypes.UpdateInsuranceProvider,
+            payload: {
+              companyId: productId,
+              companyName: "Allianz",
+              price: displaypremium,
+            },
+          });
 
-        if (quoteResponse.status === 200 && quoteResponse.data) {
-          if (quoteResponse.data.error || !quoteResponse.data.success) {
-            throw {
-              status: 301,
-              message: "Error updating quote premium, please try again later",
-            };
-          }
-          // const data = quoteResponse.data.result;
-          if (quoteResponse.data) {
-            // if (quoteResponse.data.result.quoteinfo.length === 0) {
-            //   throw new Error("NO_QUOTE_FOUND");
-            // }
-            const data = quoteResponse.data.result;
-            updateInsuranceDispatch({
-              type: InsuranceProviderTypes.UpdateQuoteId,
-              payload: {
-                quoteId: data.quoteId,
-              },
-            });
+          setState((prev) => ({
+            ...prev,
+            error: null,
+            isValid: true,
+          }));
 
-            const { displaypremium, premium } = data.quoteinfo;
-            updateQuote({
-              type: QuotesTypes.UpdateQuoteById,
-              payload: {
-                productId: productId,
-                data: {
-                  premium,
-                  displaypremium,
-                },
-              },
-            });
-            updateInsuranceDispatch({
-              type: InsuranceProviderTypes.UpdateInsuranceProvider,
-              payload: {
-                companyId: productId,
-                companyName: "Allianz",
-                price: displaypremium,
-              },
-            });
+          loaderDispatch({
+            type: LoaderActionTypes.ToggleLoading,
+            payload: false,
+          });
 
-            setState((prev) => ({
-              ...prev,
-              error: null,
-              isValid: true,
-            }));
+          return;
 
-            loaderDispatch({
-              type: LoaderActionTypes.ToggleLoading,
-              payload: false,
-            });
-
-            return;
-          }
-          throw {
-            status: 302,
-            message: "Receiving some error, please try again later",
-          };
+          return;
         }
+        setState((prev) => ({
+          ...prev,
+          error: "Promo Code is invalid!",
+          isValid: false,
+        }));
 
+        loaderDispatch({
+          type: LoaderActionTypes.ToggleLoading,
+          payload: false,
+        });
         return;
       }
-      setState((prev) => ({
-        ...prev,
-        error: "Promo Code is invalid!",
-        isValid: false,
-      }));
-
-      loaderDispatch({
-        type: LoaderActionTypes.ToggleLoading,
-        payload: false,
+      credentialDispatch({
+        type: CredentialTypes.ToggleTokenHasExpired,
+        payload: true,
       });
     } catch (error) {
       setState((prev) => ({

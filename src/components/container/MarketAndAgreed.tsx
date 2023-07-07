@@ -33,8 +33,9 @@ import { useNavigate } from "react-router-dom";
 import { QuoteListingContext, QuotesTypes } from "../../context/QuoteListing";
 import { NewAddOnsContext } from "../../context/AddOnsContext";
 import { MultiStepFormContext } from "../../context/MultiFormContext";
-import { CredentialContext } from "../../context/Credential";
+import { CredentialContext, CredentialTypes } from "../../context/Credential";
 import { LoaderActionTypes, LoaderContext } from "../../context/Loader";
+import { updateQuotationPremium } from "../../services/apiServices";
 
 function createUniqueValues(types: AgreedVariantType[]) {
   const regEx = /(-HIGH|-LOW|-HI|-LO)\s*-?\s*/;
@@ -93,14 +94,8 @@ function MarketAndAgreedContainer() {
   } = useContext(NewAddOnsContext);
 
   const {
-    state: {
-      token: tokenInStore,
-      session: sessionInStore,
-      requestId,
-      inquiryId,
-      accountId,
-      vehicleId,
-    },
+    state: { token, session, requestId, inquiryId, accountId, vehicleId },
+    dispatch: credentialDispatch,
   } = useContext(CredentialContext);
 
   const {
@@ -123,7 +118,7 @@ function MarketAndAgreedContainer() {
   const {
     store: {
       roadTax,
-      addDriverDetails: { driverDetails, selectedDriverType },
+      addDriverDetails: { driverDetails, selectedDriverType, hasUpdated },
     },
   } = useContext(MultiStepFormContext);
 
@@ -194,9 +189,9 @@ function MarketAndAgreedContainer() {
         payload: true,
       });
 
-      let tokenInfo = tokenInStore;
-      let sessionInfo = sessionInStore;
-      if (!tokenInStore || checkTokenIsExpired(tokenInStore)) {
+      let tokenInfo = token;
+      let sessionInfo = session;
+      if (!token || checkTokenIsExpired(token)) {
         // get new token
         const getToken: TokenType = await generateToken(
           "https://app.agiliux.com/aeon/webservice.php?operation=getchallenge&username=admin",
@@ -277,135 +272,18 @@ function MarketAndAgreedContainer() {
 
   async function updateQuotePremium() {
     try {
-      loaderDispatch({
-        type: LoaderActionTypes.ToggleLoading,
-        payload: true,
-      });
-
-      let tokenInfo = tokenInStore;
-      let sessionInfo = sessionInStore;
-      if (!tokenInStore || checkTokenIsExpired(tokenInStore)) {
-        // get new token
-        const getToken: TokenType = await generateToken(
-          "https://app.agiliux.com/aeon/webservice.php?operation=getchallenge&username=admin",
-          5000
-        );
-        tokenInfo = getToken;
-        // add token to store
-        updateStore(addToken({ ...getToken }));
-        const sessionApiResponse: SessionType = await generateSessionName(
-          "https://app.agiliux.com/aeon/webservice.php",
-          5000,
-          tokenInfo.token,
-          "bwJrIhxPdfsdialE"
-        );
-        sessionInfo = sessionApiResponse;
-        // add session name to store state
-        updateStore(
-          addSessionName({
-            userId: sessionApiResponse.userId,
-            sessionName: sessionApiResponse.sessionName,
-          })
-        );
-      }
-
-      const addOnsRequest = addOns
-        .filter((addOn) => addOn.selectedIndicator)
-        .map((addOn) => {
-          let request: any = {};
-          request.coverCode = addOn.coverCode;
-          request.coverSumInsured = addOn.coverSumInsured;
-          if (addOn.coverCode === "PAB-ERW") {
-            if (addOn.moredetail?.options instanceof Array) {
-              request.planCode = addOn.moredetail?.options.find(
-                (option: any) =>
-                  option.value === addOn.coverSumInsured.toString()
-              )?.code;
-            }
-          }
-          return request;
+      if (token && session) {
+        loaderDispatch({
+          type: LoaderActionTypes.ToggleLoading,
+          payload: true,
         });
 
-      const quoteResponse = await axios.post(
-        "https://app.agiliux.com/aeon/webservice.php",
-        {
-          element: JSON.stringify({
-            requestId: requestId,
-            tenant_id: "67b61490-fec2-11ed-a640-e19d1712c006",
-            class: "Private Vehicle",
-            additionalCover: addOnsRequest,
-            unlimitedDriverInd:
-              selectedDriverType === "unlimited" ? "true" : "false",
-            driverDetails: driverDetails.map(({ idNo, name }) => ({
-              fullName: name,
-              identityNumber: idNo,
-            })),
-            sitype:
-              type === "market" ? "MV - Market Value" : "AV - Agreed Value",
-            avCode: type === "market" ? "" : agreed?.avCode,
-            sumInsured:
-              type === "market"
-                ? market.vehicleMarketValue.toString()
-                : agreed?.sumInsured,
-            nvicCode: type === "market" ? market.nvic : agreed?.nvic,
-            accountid: accountId,
-            inquiryId: inquiryId,
-            insurer: "7x250468",
-            productid: productId,
-            quoteId: quoteId,
-            vehicleId: vehicleId,
-            roadtax: roadTax ? "1" : "0",
-            promoid: promoId,
-            promocode: promoCode,
-            percent_off: percentOff,
-          }),
-          operation: "updateQuote",
-          sessionName: sessionInfo?.sessionName,
-        },
-        {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-        }
-      );
-      if (quoteResponse.status === 200 && quoteResponse.data) {
-        if (quoteResponse.data.error || !quoteResponse.data.success) {
-          throw {
-            status: 301,
-            message: "Error updating quote premium, please try again later",
-          };
-        }
-        // const data = quoteResponse.data.result;
-        if (quoteResponse.data) {
-          // if (quoteResponse.data.result.quoteinfo.length === 0) {
-          //   throw new Error("NO_QUOTE_FOUND");
-          // }
-          const data = quoteResponse.data.result;
-          updateInsuranceDispatch({
-            type: InsuranceProviderTypes.UpdateQuoteId,
-            payload: {
-              quoteId: data.quoteId,
-            },
-          });
+        const isTokenExpired = checkTokenIsExpired(token);
 
-          const { displaypremium, premium } = data.quoteinfo;
-          updateQuote({
-            type: QuotesTypes.UpdateQuoteById,
-            payload: {
-              productId: productId,
-              data: {
-                premium,
-                displayPremium: displaypremium,
-              },
-            },
-          });
-          updateInsuranceDispatch({
-            type: InsuranceProviderTypes.UpdateInsuranceProvider,
-            payload: {
-              companyId: productId,
-              companyName: "Allianz",
-              price: displaypremium,
-            },
+        if (isTokenExpired) {
+          credentialDispatch({
+            type: CredentialTypes.ToggleTokenHasExpired,
+            payload: true,
           });
 
           loaderDispatch({
@@ -413,19 +291,134 @@ function MarketAndAgreedContainer() {
             payload: false,
           });
 
-          navigate("/insurance/plan-add-ons");
           return;
         }
+
+        const addOnsRequest = addOns
+          .filter((addOn) => addOn.selectedIndicator)
+          .map((addOn) => {
+            let request: any = {};
+            request.coverCode = addOn.coverCode;
+            request.coverSumInsured = addOn.coverSumInsured;
+            if (addOn.coverCode === "PAB-ERW") {
+              if (addOn.moredetail?.options instanceof Array) {
+                request.planCode = addOn.moredetail?.options.find(
+                  (option: any) =>
+                    option.value === addOn.coverSumInsured.toString()
+                )?.code;
+              }
+            }
+            return request;
+          });
+
+        const driversRequest =
+          selectedDriverType === "unlimited"
+            ? []
+            : hasUpdated
+            ? driverDetails
+                .filter(({ name, idNo, errors }) => {
+                  if (name === "" || idNo === "" || errors) {
+                    return false;
+                  }
+                  return true;
+                })
+                .map((idNo, name) => ({
+                  fullName: name,
+                  identityNumber: idNo,
+                }))
+            : driverDetails.map(({ idNo, name }) => ({
+                fullName: name,
+                identityNumber: idNo,
+              }));
+
+              console.log(driversRequest);
+
+        const response = await updateQuotationPremium(
+          session.sessionName,
+          requestId,
+          addOnsRequest,
+          selectedDriverType === "unlimited" ? "true" : "false",
+          selectedDriverType === "unlimited"
+            ? []
+            : hasUpdated
+            ? driverDetails
+                .filter(({ name, idNo, errors }) => {
+                  if (name === "" || idNo === "" || errors) {
+                    return false;
+                  }
+                  return true;
+                })
+                .map((idNo, name) => ({
+                  fullName: name,
+                  identityNumber: idNo,
+                }))
+            : driverDetails.map(({ idNo, name }) => ({
+                fullName: name,
+                identityNumber: idNo,
+              })),
+          type === "market" ? "MV - Market Value" : "AV - Agreed Value",
+          type === "market" ? "" : agreed?.avCode || "",
+          type === "market"
+            ? market.vehicleMarketValue.toString()
+            : agreed?.sumInsured || "",
+          type === "market" ? market.nvic : agreed?.nvic || "",
+          accountId,
+          inquiryId,
+          productId,
+          quoteId,
+          vehicleId,
+          roadTax ? "1" : "0",
+          promoId,
+          promoCode,
+          percentOff
+        );
+
+        // console.log(response);
+
+        updateInsuranceDispatch({
+          type: InsuranceProviderTypes.UpdateQuoteId,
+          payload: {
+            quoteId: response.quoteId,
+          },
+        });
+
+        const { displaypremium, premium } = response.quoteinfo;
+        updateQuote({
+          type: QuotesTypes.UpdateQuoteById,
+          payload: {
+            productId: productId,
+            data: {
+              premium,
+              displayPremium: displaypremium,
+            },
+          },
+        });
+        updateInsuranceDispatch({
+          type: InsuranceProviderTypes.UpdateInsuranceProvider,
+          payload: {
+            companyId: productId,
+            companyName: "Allianz",
+            price: displaypremium,
+          },
+        });
+
         loaderDispatch({
           type: LoaderActionTypes.ToggleLoading,
           payload: false,
         });
-        throw {
-          status: 302,
-          message: "Receiving some error, please try again later",
-        };
+
+        navigate("/insurance/plan-add-ons");
+        return;
+      } else {
+        credentialDispatch({
+          type: CredentialTypes.ToggleTokenHasExpired,
+          payload: true,
+        });
       }
-      console.log(quoteResponse);
+      // loaderDispatch({
+      //   type: LoaderActionTypes.ToggleLoading,
+      //   payload: true,
+      // });
     } catch (err) {
       loaderDispatch({
         type: LoaderActionTypes.ToggleLoading,

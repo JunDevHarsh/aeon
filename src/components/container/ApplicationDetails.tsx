@@ -1,24 +1,13 @@
 import { useContext, useEffect, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import {
   MultiStepFormContext,
   RoadTaxTypes,
   TermsAndConditionsTypes,
 } from "../../context/MultiFormContext";
-import {
-  checkTokenIsExpired,
-  generateSessionName,
-  generateToken,
-} from "../../utils/helpers";
-import {
-  SessionType,
-  TokenType,
-  addSessionName,
-  addToken,
-} from "../../store/slices/credentials";
+import { checkTokenIsExpired } from "../../utils/helpers";
 import { NewAddOnsContext } from "../../context/AddOnsContext";
-import axios from "axios";
 import {
   InsuranceContext,
   InsuranceProviderTypes,
@@ -26,6 +15,8 @@ import {
 import { MarketAndAgreedContext } from "../../context/MarketAndAgreedContext";
 import { QuoteListingContext, QuotesTypes } from "../../context/QuoteListing";
 import { LoaderActionTypes, LoaderContext } from "../../context/Loader";
+import { CredentialContext, CredentialTypes } from "../../context/Credential";
+import { updateQuotationPremium } from "../../services/apiServices";
 
 const ApplicationDetailsContainer = () => {
   const {
@@ -46,19 +37,14 @@ const ApplicationDetailsContainer = () => {
       vehicleEngine: engineNo,
       vehicleChassis: chasisNo,
     },
-    credentials: {
-      token: tokenInStore,
-      session: sessionInStore,
-      requestId,
-      inquiryId,
-      accountId,
-      vehicleId,
-    },
   } = useSelector((state: RootState) => state);
 
-  const { dispatch: loaderDispatch } = useContext(LoaderContext);
+  const {
+    state: { token, session, requestId, inquiryId, accountId, vehicleId },
+    dispatch: credentialDispatch,
+  } = useContext(CredentialContext);
 
-  const updateStore = useDispatch();
+  const { dispatch: loaderDispatch } = useContext(LoaderContext);
 
   const {
     store: {
@@ -122,187 +108,142 @@ const ApplicationDetailsContainer = () => {
 
   async function updateQuotePremium() {
     try {
-      loaderDispatch({
-        type: LoaderActionTypes.ToggleLoading,
-        payload: true,
-      });
-      let tokenInfo = tokenInStore;
-      let sessionInfo = sessionInStore;
-      if (!tokenInStore || checkTokenIsExpired(tokenInStore)) {
-        // get new token
-        const getToken: TokenType = await generateToken(
-          "https://app.agiliux.com/aeon/webservice.php?operation=getchallenge&username=admin",
-          5000
-        );
-        tokenInfo = getToken;
-        // add token to store
-        updateStore(addToken({ ...getToken }));
-        const sessionApiResponse: SessionType = await generateSessionName(
-          "https://app.agiliux.com/aeon/webservice.php",
-          5000,
-          tokenInfo.token,
-          "bwJrIhxPdfsdialE"
-        );
-        sessionInfo = sessionApiResponse;
-        // add session name to store state
-        updateStore(
-          addSessionName({
-            userId: sessionApiResponse.userId,
-            sessionName: sessionApiResponse.sessionName,
-          })
-        );
-      }
+      if (session && token) {
+        loaderDispatch({
+          type: LoaderActionTypes.ToggleLoading,
+          payload: true,
+        });
 
-      const addOnsRequest = selectedAddOns.map((addOn: any) => {
-        let request: any = {};
-        request.coverCode = addOn.coverCode;
-        request.coverSumInsured = addOn.coverSumInsured;
-        if (addOn.coverCode === "PAB-ERW") {
-          if (addOn.moredetail?.options instanceof Array) {
-            request.planCode = addOn.moredetail?.options.find(
-              (option: any) => option.value === addOn.coverSumInsured.toString()
-            )?.code;
-          }
-        }
-        return request;
-      });
+        const isTokenExpired = checkTokenIsExpired(token);
 
-      const quoteResponse = await axios.post(
-        "https://app.agiliux.com/aeon/webservice.php",
-        {
-          element: JSON.stringify({
-            requestId: requestId,
-            tenant_id: "67b61490-fec2-11ed-a640-e19d1712c006",
-            class: "Private Vehicle",
-            additionalCover: addOnsRequest || [],
-            unlimitedDriverInd:
-              selectedDriverType === "unlimited" ? "true" : "false",
-            driverDetails:
-              selectedDriverType === "unlimited" ||
-              addDriverDetails.length === 0
-                ? []
-                : addDriverDetails.map(({ idNo, name }) => ({
-                    fullName: name,
-                    identityNumber: idNo,
-                  })),
-            sitype:
-              valuationType === "market"
-                ? "MV - Market Value"
-                : "AV - Agreed Value",
-            avCode: valuationType === "market" ? "" : valuationAgreed?.avCode,
-            sumInsured:
-              valuationType === "market"
-                ? valuationMarket.vehicleMarketValue.toString()
-                : valuationAgreed?.sumInsured,
-            nvicCode:
-              valuationType === "market"
-                ? valuationMarket.nvic
-                : valuationAgreed?.nvic,
-            accountid: accountId,
-            inquiryId: inquiryId,
-            insurer: "7x250468",
-            productid: productId,
-            quoteId: quoteId,
-            vehicleId: vehicleId,
-            roadtax: roadTax ? "1" : "0",
-            promoid: promoId,
-            promocode: promoCode,
-            percent_off: percentOff,
-          }),
-          operation: "updateQuote",
-          sessionName: sessionInfo?.sessionName,
-        },
-        {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-        }
-      );
-      if (quoteResponse.status === 200 && quoteResponse.data) {
-        if (quoteResponse.data.error || !quoteResponse.data.success) {
-          throw {
-            status: 301,
-            message: "Error updating quote premium, please try again later",
-          };
-        }
-        // const data = quoteResponse.data.result;
-        if (quoteResponse.data) {
-          // if (quoteResponse.data.result.quoteinfo.length === 0) {
-          //   throw new Error("NO_QUOTE_FOUND");
-          // }
-          const data = quoteResponse.data;
-          updateInsuranceDispatch({
-            type: InsuranceProviderTypes.UpdateQuoteId,
-            payload: {
-              quoteId: data.result.quoteId,
-            },
+        if (isTokenExpired) {
+          credentialDispatch({
+            type: CredentialTypes.ToggleTokenHasExpired,
+            payload: true,
           });
-
-          const { premium, displaypremium, additionalCover } =
-            data.result.quoteinfo;
-
-          const updatedAdditionalCover = selectedQuoteAddOns.map(
-            (selectedQuoteAddOn: any) => {
-              const matched = additionalCover.find(
-                (additional: any) =>
-                  additional.coverCode === selectedQuoteAddOn.coverCode
-              );
-              return matched ? matched : selectedQuoteAddOn;
-            }
-          );
-
-          const newAddOnsList = updatedAdditionalCover.map(
-            (updatedAddOn: any) => {
-              const matched = addOns.find(
-                (addOn: any) => addOn.coverCode === updatedAddOn.coverCode
-              );
-              return matched
-                ? {
-                    ...matched,
-                    displayPremium: updatedAddOn.displayPremium,
-                    selectedIndicator: updatedAddOn.selectedIndicator,
-                  }
-                : updatedAddOn;
-            }
-          );
-
-          updateInsuranceDispatch({
-            type: InsuranceProviderTypes.UpdateInsuranceProvider,
-            payload: {
-              companyId: productId,
-              companyName: "Allianz",
-              price: displaypremium,
-            },
-          });
-
-          updateQuote({
-            type: QuotesTypes.UpdateQuoteById,
-            payload: {
-              productId: productId,
-              data: {
-                premium,
-                displaypremium,
-                // additionalCover: updatedAdditionalCover,
-              },
-            },
-          });
-          dispatch({ addOns: newAddOnsList, isEdited: false });
 
           loaderDispatch({
             type: LoaderActionTypes.ToggleLoading,
             payload: false,
           });
+
           return;
         }
-        throw {
-          status: 302,
-          message: "Receiving some error, please try again later",
-        };
+
+        const addOnsRequest = selectedAddOns.map((addOn: any) => {
+          let request: any = {};
+          request.coverCode = addOn.coverCode;
+          request.coverSumInsured = addOn.coverSumInsured;
+          if (addOn.coverCode === "PAB-ERW") {
+            if (addOn.moredetail?.options instanceof Array) {
+              request.planCode = addOn.moredetail?.options.find(
+                (option: any) =>
+                  option.value === addOn.coverSumInsured.toString()
+              )?.code;
+            }
+          }
+          return request;
+        });
+
+        const response = await updateQuotationPremium(
+          session.sessionName,
+          requestId,
+          addOnsRequest,
+          selectedDriverType === "unlimited" ? "true" : "false",
+          selectedDriverType === "unlimited"
+            ? []
+            : addDriverDetails.map(({ idNo, name }) => ({
+                fullName: name,
+                identityNumber: idNo,
+              })),
+          valuationType === "market"
+            ? "MV - Market Value"
+            : "AV - Agreed Value",
+          valuationType === "market" ? "" : valuationAgreed?.avCode || "",
+          valuationType === "market"
+            ? valuationMarket.vehicleMarketValue.toString()
+            : valuationAgreed?.sumInsured || "",
+          valuationType === "market"
+            ? valuationMarket.nvic
+            : valuationAgreed?.nvic || "",
+          accountId,
+          inquiryId,
+          productId,
+          quoteId,
+          vehicleId,
+          roadTax ? "1" : "0",
+          promoId,
+          promoCode,
+          percentOff
+        );
+
+        updateInsuranceDispatch({
+          type: InsuranceProviderTypes.UpdateQuoteId,
+          payload: {
+            quoteId: response.quoteId,
+          },
+        });
+
+        const { premium, displaypremium, additionalCover } = response.quoteinfo;
+
+        const updatedAdditionalCover = selectedQuoteAddOns.map(
+          (selectedQuoteAddOn: any) => {
+            const matched = additionalCover.find(
+              (additional: any) =>
+                additional.coverCode === selectedQuoteAddOn.coverCode
+            );
+            return matched ? matched : selectedQuoteAddOn;
+          }
+        );
+
+        const newAddOnsList = updatedAdditionalCover.map(
+          (updatedAddOn: any) => {
+            const matched = addOns.find(
+              (addOn: any) => addOn.coverCode === updatedAddOn.coverCode
+            );
+            return matched
+              ? {
+                  ...matched,
+                  displayPremium: updatedAddOn.displayPremium,
+                  selectedIndicator: updatedAddOn.selectedIndicator,
+                }
+              : updatedAddOn;
+          }
+        );
+
+        updateInsuranceDispatch({
+          type: InsuranceProviderTypes.UpdateInsuranceProvider,
+          payload: {
+            companyId: productId,
+            companyName: "Allianz",
+            price: displaypremium,
+          },
+        });
+
+        updateQuote({
+          type: QuotesTypes.UpdateQuoteById,
+          payload: {
+            productId: productId,
+            data: {
+              premium,
+              displaypremium,
+              // additionalCover: updatedAdditionalCover,
+            },
+          },
+        });
+        dispatch({ addOns: newAddOnsList, isEdited: false });
+
+        loaderDispatch({
+          type: LoaderActionTypes.ToggleLoading,
+          payload: false,
+        });
+        return;
+      } else {
+        credentialDispatch({
+          type: CredentialTypes.ToggleTokenHasExpired,
+          payload: true,
+        });
       }
-      loaderDispatch({
-        type: LoaderActionTypes.ToggleLoading,
-        payload: false,
-      });
     } catch (err) {
       loaderDispatch({
         type: LoaderActionTypes.ToggleLoading,

@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { nanoid } from "@reduxjs/toolkit";
+// import { nanoid } from "@reduxjs/toolkit";
 import AddOnsCard from "../card/AddOns";
 import SelectDropdown from "../fields/SelectDropdown";
 import {
@@ -9,86 +9,13 @@ import {
 } from "../../context/MultiFormContext";
 import { AdditionalDriverDetails } from "../../context/types";
 // import AddOnPopup from "../popup/AddOn";
-import { AddOnType, AddOnsContext } from "../../context/AddOnContext";
+// import { AddOnType, AddOnsContext } from "../../context/AddOnContext";
 import { NewAddOnsContext } from "../../context/AddOnsContext";
 import { QuoteListingContext } from "../../context/QuoteListing";
 import { InsuranceContext } from "../../context/InsuranceContext";
 import AddOnDriver from "../card/AddOnDriver";
 import { OptionContext } from "../../context/OptionContext";
 import AddOnDriverWarning from "../popup/AddOnDriverWarning";
-
-const defaultAddOnsState: AddOnType[] = [
-  {
-    id: "addon-1",
-    title: "Cover for Windscreens",
-    description:
-      "Cover for Windscreens, Windows and Sunroof covers the cost to repair or replace any glass in the windscreen, window or sunroof (including the cost of lamination/tinting film, if any) of your car that is accidentally damaged. ",
-    isSelected: false,
-    isEditable: true,
-    price: 30,
-    sumInsured: 14000,
-    localImgName: "WindScreenIcon",
-    customImgName: "windscreen",
-  },
-  {
-    id: "addon-2",
-    title: "Towing and Cleaning",
-    description: "Towing and Cleaning due to Water Damage",
-    isSelected: false,
-    isEditable: false,
-    price: 40,
-    localImgName: "TowingIcon",
-    customImgName: "unlimited_towing",
-    sumInsured: 0,
-  },
-  {
-    id: "addon-3",
-    title: "Driver's Personal Accident",
-    description:
-      "Driver and Passengers' Personal Accident covers you and your passengers while travelling  in your car.",
-    isSelected: false,
-    isEditable: false,
-    price: 34,
-    localImgName: "CarAccidentIcon",
-    customImgName: "driver_personal_accident",
-    sumInsured: 0,
-  },
-  {
-    id: "addon-4",
-    title: "Strike, Riot & Civil Commotion",
-    description:
-      "Strike, Riot and Civil Commotion covers for loss or damage to your car caused by various kinds of strikes, riots and civil commotions.",
-    isSelected: false,
-    isEditable: false,
-    price: 23,
-    localImgName: "CarOilIcon",
-    customImgName: "riot",
-    sumInsured: 0,
-  },
-  {
-    id: "addon-5",
-    title: "Inclusion of Special Perils",
-    description:
-      "Inclusion of Special Perils covers loss or damage to your car caused by flood, typhoon, hurricane, storm, tempest, volcanic eruption, earthquake, landslide, landslip, subsidence or sinking of the soil / earth or other convulsions of nature.",
-    isSelected: false,
-    isEditable: false,
-    price: 53,
-    localImgName: "CarRainIcon",
-    customImgName: "riot",
-    sumInsured: 0,
-  },
-  {
-    id: "addon-6",
-    title: "Accident Repair Allowance",
-    description: "Accident Repair Allowance",
-    isSelected: false,
-    isEditable: false,
-    price: 28,
-    localImgName: "CarProperty1Icon",
-    customImgName: "accident_repair_allowance",
-    sumInsured: 0,
-  },
-];
 
 const AddOnsContainer = () => {
   const {
@@ -114,10 +41,10 @@ const AddOnsContainer = () => {
   } = useContext(NewAddOnsContext);
 
   // addons context
-  const {
-    state: { addOns: addOnState },
-    dispatch: updateAddOnsState,
-  } = useContext(AddOnsContext);
+  // const {
+  //   state: { addOns: addOnState },
+  //   dispatch: updateAddOnsState,
+  // } = useContext(AddOnsContext);
 
   const [open, setOpen] = useState<boolean>(false);
 
@@ -127,7 +54,7 @@ const AddOnsContainer = () => {
 
   const nationalityOption = nationality.map((item: any) => ({
     label: item.Description,
-    value: item.Description
+    value: item.Description,
   }));
   // const relationshipOption = relationShip.map((item: any) => ({
   //   label: item.Description,
@@ -244,15 +171,6 @@ const AddOnsContainer = () => {
     }
   }, []);
 
-  useEffect(() => {
-    if (addOnState.length === 0) {
-      const timeout = setTimeout(() => {
-        updateAddOnsState((prev) => ({ ...prev, addOns: defaultAddOnsState }));
-      }, 1000);
-      return () => clearTimeout(timeout);
-    }
-  }, []);
-
   return (
     <>
       {open && (
@@ -268,7 +186,7 @@ const AddOnsContainer = () => {
             Additional Add Ons
           </h2>
           <div className="mt-4 grid grid-cols-1 min-[475px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 place-items-center gap-4 w-full">
-            {addOnState.length === 0 ? (
+            {newAddOns.length === 0 ? (
               [...Array(6)].map((_, index) => (
                 <div
                   className="animate-pulse m-auto relative w-[200px] h-[184px] bg-gray-300 rounded-lg"
@@ -280,6 +198,7 @@ const AddOnsContainer = () => {
                 {newAddOns.map((addOn) =>
                   addOn.coverCode === "07" ? (
                     <AddOnDriver
+                      key={addOn.coverCode}
                       isSelected={isSelected}
                       description={addOn.coverDescription}
                       selectedValue={selectedDriverType}
@@ -352,10 +271,26 @@ const AddOnsContainer = () => {
                     onChange={(e) =>
                       updateDriverDetails(driverDetails.id, {
                         name: e.target.value.toUpperCase(),
+                        errors: {
+                          ...driverDetails.errors,
+                          name: "",
+                        },
                       })
                     }
-                    className="py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium border border-solid rounded outline outline-1 outline-transparent focus-visible:outline-primary-pink border-[#CFD0D7] focus-visible:border-primary-pink"
+                    className={`py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium border border-solid rounded outline outline-1 outline-transparent focus-visible:outline-primary-pink ${
+                      driverDetails.errors && driverDetails.errors.name
+                        ? "border-red-600 placeholder:text-red-600"
+                        : "border-[#CFD0D7] focus-visible:border-primary-pink"
+                    }`}
                   />
+                  {driverDetails.errors && driverDetails.errors.name && (
+                    <span
+                      role="alert"
+                      className="absolute bottom-0 left-0 text-sm text-left font-medium text-red-600"
+                    >
+                      {driverDetails.errors.name}
+                    </span>
+                  )}
                 </div>
                 <div className="relative flex flex-row items-center justify-center w-full">
                   {/* ID Type Field */}
@@ -370,6 +305,10 @@ const AddOnsContainer = () => {
                         updateDriverDetails(driverDetails.id, {
                           idType: val,
                           idNo: "",
+                          errors: {
+                            ...driverDetails.errors,
+                            idType: "",
+                          },
                         })
                       }
                       selected={driverDetails.idType}
@@ -426,10 +365,26 @@ const AddOnsContainer = () => {
                         event.target.value = value;
                         updateDriverDetails(driverDetails.id, {
                           idNo: value,
+                          errors: {
+                            ...driverDetails.errors,
+                            idNo: "",
+                          },
                         });
                       }}
-                      className="py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium border border-solid rounded outline outline-1 outline-transparent focus-visible:outline-primary-pink border-[#CFD0D7] focus-visible:border-primary-pink"
+                      className={`py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium border border-solid rounded outline outline-1 outline-transparent focus-visible:outline-primary-pink border-[#CFD0D7] focus-visible:border-primary-pink ${
+                        driverDetails.errors && driverDetails.errors.idNo
+                          ? "border-red-600 placeholder:text-red-600"
+                          : "border-[#CFD0D7] focus-visible:border-primary-pink"
+                      }`}
                     />
+                    {driverDetails.errors && driverDetails.errors.idNo && (
+                      <span
+                        role="alert"
+                        className="absolute bottom-0 left-0 text-sm text-left font-medium text-red-600"
+                      >
+                        {driverDetails.errors.idNo}
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -461,6 +416,10 @@ const AddOnsContainer = () => {
                     onChange={(val: string) =>
                       updateDriverDetails(driverDetails.id, {
                         nationality: val,
+                        errors: {
+                          ...driverDetails.errors,
+                          nationality: "",
+                        },
                       })
                     }
                     disabled={driverDetails.idType === "nric"}
@@ -481,9 +440,7 @@ const AddOnsContainer = () => {
                   }
                   dispatch({
                     type: AddDriverTypes.AddNewDriverDetails,
-                    payload: {
-                      id: nanoid(),
-                    },
+                    payload: {},
                   });
                 }}
               >

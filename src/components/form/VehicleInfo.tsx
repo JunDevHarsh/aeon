@@ -6,7 +6,6 @@ import { useSelector, useDispatch } from "react-redux";
 import SelectDropdown from "../fields/SelectDropdown";
 // import CheckboxWithTextField from "../fields/CheckboxWithText";
 import FixedInputTextField from "../fields/FixedInputText";
-import { VehicleStateType } from "../../store/slices/types";
 import { useContext, useState } from "react";
 import DefaultPopup from "../popup/Default";
 import RadioFieldWithRFH from "../rhfFields/RadioField";
@@ -14,6 +13,18 @@ import { addUserBasicInfo } from "../../store/slices/user";
 import { CredentialContext, CredentialTypes } from "../../context/Credential";
 import { LoaderActionTypes, LoaderContext } from "../../context/Loader";
 import { checkTokenIsExpired, createInquiry } from "../../services/apiServices";
+
+type VehicleState = {
+  variant: NvicList | null;
+  region: string;
+  reconIndicator: "yes" | "no";
+};
+
+type NvicList = {
+  nvic: string;
+  vehicleMarketValue: number;
+  vehicleVariant: string;
+};
 
 const VehicleInfoForm = ({
   setShowLoading,
@@ -57,9 +68,10 @@ const VehicleInfoForm = ({
     setValue,
     clearErrors,
     // formState: { errors },
-  } = useForm<VehicleStateType>({
+  } = useForm<VehicleState>({
     defaultValues: {
-      ...vehicleState,
+      variant: vehicleState.variant,
+      reconIndicator: vehicleState.reconIndicator,
       region:
         vehicleState.region === "" ? "West Malaysia" : vehicleState.region,
     },
@@ -67,9 +79,7 @@ const VehicleInfoForm = ({
 
   const dispatch = useDispatch();
 
-  const onSubmit: SubmitHandler<VehicleStateType> = async (
-    val: VehicleStateType
-  ) => {
+  const onSubmit: SubmitHandler<VehicleState> = async (val: VehicleState) => {
     // make api call to agiliux backend
     try {
       if (token) {
@@ -84,6 +94,10 @@ const VehicleInfoForm = ({
           credentialDispatch({
             type: CredentialTypes.ToggleTokenHasExpired,
             payload: true,
+          });
+          loaderDispatch({
+            type: LoaderActionTypes.ToggleLoading,
+            payload: false,
           });
           return;
         }
@@ -137,9 +151,9 @@ const VehicleInfoForm = ({
               accountId: createInquiryResponse.accountid,
               inquiryId: createInquiryResponse.inquiryId,
               vehicleId: createInquiryResponse.vehicleId,
-            }
-          }
-        })
+            },
+          },
+        });
 
         dispatch(updateVehicleState(val));
 
@@ -156,10 +170,9 @@ const VehicleInfoForm = ({
 
         setShowLoading(true);
       } else {
-        setError({
-          isVisible: true,
-          title: "Error",
-          description: "Something went wrong, please try again later",
+        credentialDispatch({
+          type: CredentialTypes.ToggleTokenHasExpired,
+          payload: true,
         });
       }
     } catch (err: any) {
@@ -208,12 +221,11 @@ const VehicleInfoForm = ({
           />
           {/* Vehicle Variant Field  */}
           <div className="relative pb-5 flex flex-col items-start gap-y-1 w-auto h-auto">
-            <label
-              htmlFor="vehicleVariant"
+            <div
               className="text-base text-center text-primary-black font-semibold"
             >
               Vehicle Variant*
-            </label>
+            </div>
             {variantOptionList.length === 1 ? (
               <span className="py-1.5 px-2 w-full text-sm text-left text-primary-black font-medium cursor-default border border-solid border-[#CFD0D7] rounded">
                 {variantOptionList[0].value}

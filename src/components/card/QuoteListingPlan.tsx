@@ -79,7 +79,7 @@ const QuoteListingPlanCard = ({
         price: price.toString(),
       },
     });
-    navigate("/insurance/test");
+    navigate("/insurance/market-agreed-value");
   }
 
   return (

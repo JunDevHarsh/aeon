@@ -17,7 +17,7 @@ import NotFoundPage from "../pages/NotFound";
 // import QuoteListingsContainer from "../components/container/QuoteListings";
 import PaymentPage from "../pages/Payment";
 import InsuranceContextProvider from "../context/InsuranceContext";
-import VehicleCoverageContainer from "../components/container/VehicleCoverage";
+// import VehicleCoverageContainer from "../components/container/VehicleCoverage";
 import VehicleCoverageProvider from "../context/VehicleCoverage";
 import AddOnContextProvider from "../context/AddOnContext";
 import MultiFormContextProvider from "../context/MultiFormContext";
@@ -136,11 +136,14 @@ const router = createBrowserRouter(
         <Route path="plan-add-ons" element={<AddOnsContainer />} />
         <Route path="application-details" element={<DriverDetailsForm />} />
         <Route path="review-pay" element={<ApplicationDetailsContainer />} />
-        <Route
+        {/* <Route
           path="market-agreed-value"
           element={<VehicleCoverageContainer />}
+        /> */}
+        <Route
+          path="market-agreed-value"
+          element={<MarketAndAgreedContainer />}
         />
-        <Route path="test" element={<MarketAndAgreedContainer />} />
       </Route>
       <Route path="/payment" element={<PaymentPage />} />
       <Route path="*" element={<NotFoundPage />} />

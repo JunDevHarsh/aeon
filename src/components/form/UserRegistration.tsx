@@ -93,6 +93,15 @@ const UserRegistrationForm = () => {
     dispatch: loaderDispatch,
   } = useContext(LoaderContext);
 
+  // function to format a date to string
+  function formatDateToString(date: Date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  }
+
   // function to handle form on submit
   const handleOnFormSubmit: SubmitHandler<UserInsuranceInputs> = async (
     inputUserData: UserInsuranceInputs
@@ -126,12 +135,19 @@ const UserRegistrationForm = () => {
         idNumber,
         idType,
         maritalStatus,
+        dateOfBirth,
         mobileNumber,
         postalCode,
         vehicleRegNo,
       } = inputUserData;
 
       let region: string = "";
+
+      let date = "";
+
+      if (dateOfBirth !== null) {
+        date = formatDateToString(dateOfBirth as Date);
+      }
 
       const postalApiResponse = await checkPostCode(
         postalCode,
@@ -230,6 +246,7 @@ const UserRegistrationForm = () => {
           maritalStatus,
           mobileNumber,
           postalCode,
+          dateOfBirth: date,
         })
       );
 
@@ -243,6 +260,8 @@ const UserRegistrationForm = () => {
         type: LoaderActionTypes.ToggleLoading,
         payload: false,
       });
+
+      console.log(err);
 
       if (err instanceof Error) {
         setError({
@@ -353,6 +372,10 @@ const UserRegistrationForm = () => {
                       setValue("idType", val);
                       if (value !== val) {
                         setValue("idNumber", "");
+                      }
+                      if (val !== "Passport") {
+                        setValue("dateOfBirth", null);
+                        clearErrors("dateOfBirth");
                       }
                       clearErrors("idNumber");
                       clearErrors("idType");
@@ -502,11 +525,17 @@ const UserRegistrationForm = () => {
               <Controller
                 control={control}
                 name="dateOfBirth"
-                render={({ field }) => (
-                  <DateOfBirthField
-                    onChange={(date: Date | null) => field.onChange(date)}
-                    selected={field.value}
-                  />
+                rules={{
+                  validate: (val) => val !== null || "Select Date Of Birth",
+                }}
+                render={({ field, formState: { errors } }) => (
+                  <>
+                    <DateOfBirthField
+                      onChange={(date: Date | null) => field.onChange(date)}
+                      selected={field.value}
+                      error={errors.dateOfBirth}
+                    />
+                  </>
                 )}
               />
             </>
@@ -586,8 +615,20 @@ const UserRegistrationForm = () => {
           </div>
           {isLoading ? (
             <div className="relative py-3 px-4 flex items-center justify-center gap-x-2 max-w-[250px] w-full h-auto bg-primary-blue rounded-full">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M8.525 14.55L15.6 7.475L14.45 6.35L8.525 12.275L5.525 9.275L4.4 10.4L8.525 14.55ZM10 20C8.63333 20 7.34167 19.7375 6.125 19.2125C4.90833 18.6875 3.84583 17.9708 2.9375 17.0625C2.02917 16.1542 1.3125 15.0917 0.7875 13.875C0.2625 12.6583 0 11.3667 0 10C0 8.61667 0.2625 7.31667 0.7875 6.1C1.3125 4.88333 2.02917 3.825 2.9375 2.925C3.84583 2.025 4.90833 1.3125 6.125 0.7875C7.34167 0.2625 8.63333 0 10 0C11.3833 0 12.6833 0.2625 13.9 0.7875C15.1167 1.3125 16.175 2.025 17.075 2.925C17.975 3.825 18.6875 4.88333 19.2125 6.1C19.7375 7.31667 20 8.61667 20 10C20 11.3667 19.7375 12.6583 19.2125 13.875C18.6875 15.0917 17.975 16.1542 17.075 17.0625C16.175 17.9708 15.1167 18.6875 13.9 19.2125C12.6833 19.7375 11.3833 20 10 20Z"
+                  fill="#fff"
+                />
+              </svg>
               <span className="text-base text-center text-white font-medium">
-                Loading...
+                Submit
               </span>
             </div>
           ) : (

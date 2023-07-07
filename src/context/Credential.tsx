@@ -203,6 +203,8 @@ function TokenExpiredWarningPopup({
 
     if (timer <= 0) {
       clearInterval(interval);
+      // redirect the user to home page after 10 seconds
+      window.location.href = "/";
       setOpen(false);
     }
 
