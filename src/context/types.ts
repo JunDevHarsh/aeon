@@ -80,6 +80,7 @@ export type DriverDetails = {
   race: string | null;
   drivingExp: string;
   occupation: string | null;
+  occupationOthers: string;
   address1: string;
   address2: string;
   address3: string;

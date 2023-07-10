@@ -524,12 +524,15 @@ export async function updateInsured(
   nationality: any,
   race: any,
   occupation: any,
+  occupationOthers: any,
   drivingExp: any,
   address1: any,
+  address2: any,
   address3: any,
   state: any,
   city: any,
-  accountId: any
+  accountId: any,
+  postalCode: any
 ) {
   try {
     let error: any = {};
@@ -548,11 +551,14 @@ export async function updateInsured(
           nationality: nationality,
           race: race,
           occupation: occupation,
+          occupation_others: occupationOthers,
           driving_exp: drivingExp,
           address_1: address1,
+          address_2: address2,
           address_3: address3,
           state: state,
           city: city,
+          postalcode: postalCode,
           accountid: accountId,
         }),
       },

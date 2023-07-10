@@ -152,9 +152,10 @@ const ApplicationDetailsContainer = () => {
           selectedDriverType === "unlimited" ? "true" : "false",
           selectedDriverType === "unlimited"
             ? []
-            : addDriverDetails.map(({ idNo, name }) => ({
+            : addDriverDetails.map(({ idNo, name, nationality }) => ({
                 fullName: name,
                 identityNumber: idNo,
+                nationality: nationality
               })),
           valuationType === "market"
             ? "MV - Market Value"
