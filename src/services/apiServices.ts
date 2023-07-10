@@ -275,7 +275,7 @@ export async function createInquiry(
           tenant_id: TENANT_ID,
           contractNumber: contractNumber,
           requestId: requestId,
-          phone: phone,
+          phone: "+60" + phone,
           email: email,
           idvalue: idValue,
           dob: dob,
