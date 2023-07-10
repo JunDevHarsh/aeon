@@ -451,7 +451,7 @@ export async function updateQuotationPremium(
           productid: productId,
           quoteId: quoteId,
           vehicleId: vehicleId,
-          roadtax: roadTax ? "1" : "0",
+          roadtax: roadTax,
           promoid: promoId,
           promocode: promoCode,
           percent_off: percentOff,
