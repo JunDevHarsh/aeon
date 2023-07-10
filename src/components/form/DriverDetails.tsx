@@ -19,6 +19,7 @@ type Inputs = {
   race: string | null;
   postalCode: string;
   occupation: string | null;
+  occupationOthers: string;
   drivingExp: string;
   address1: string;
   address2: string;
@@ -44,6 +45,7 @@ const DriverDetailsForm = () => {
         drivingExp,
         email,
         mobileNumber,
+        occupationOthers,
         nationality,
         occupation,
         postalCode,
@@ -74,6 +76,7 @@ const DriverDetailsForm = () => {
     register,
     handleSubmit,
     setValue,
+    watch,
     // formState: { errors },
   } = useForm<Inputs>({
     defaultValues: {
@@ -89,6 +92,7 @@ const DriverDetailsForm = () => {
       country: nationality,
       occupation: occupation,
       nationality: nationality,
+      occupationOthers: occupationOthers,
       race: race,
       state: state,
     },
@@ -104,6 +108,8 @@ const DriverDetailsForm = () => {
       },
     });
   }
+
+  const occupationValue = watch("occupation");
 
   return (
     <div className="relative max-w-xl w-full">
@@ -262,12 +268,11 @@ const DriverDetailsForm = () => {
           </div>
           {/* Nationality Field */}
           <div className="relative pb-5 flex flex-col items-start gap-y-1 w-auto h-auto">
-            <label
-              htmlFor="nationalityType"
+            <div
               className="text-base text-center text-primary-black font-semibold"
             >
-              Nationality
-            </label>
+              Nationality*
+            </div>
             <Controller
               control={control}
               name="nationality"
@@ -291,12 +296,11 @@ const DriverDetailsForm = () => {
           </div>
           {/* Race Field */}
           <div className="relative pb-5 flex flex-col items-start gap-y-1 w-auto h-auto">
-            <label
-              htmlFor="raceType"
+            <div
               className="text-base text-center text-primary-black font-semibold"
             >
-              Race
-            </label>
+              Race*
+            </div>
             <Controller
               control={control}
               name="race"
@@ -326,12 +330,11 @@ const DriverDetailsForm = () => {
           </div>
           {/* Occupation Field */}
           <div className="relative pb-5 flex flex-col items-start gap-y-1 w-auto h-auto">
-            <label
-              htmlFor="occupationType"
+            <div
               className="text-base text-center text-primary-black font-semibold"
             >
-              Occupation
-            </label>
+              Occupation*
+            </div>
             <Controller
               control={control}
               name="occupation"
@@ -359,6 +362,48 @@ const DriverDetailsForm = () => {
               )}
             />
           </div>
+          {/* Others Occupation Field */}
+          {occupationValue === "Others" && (
+            <div className="relative">
+              <InputTextField
+                label="Other Occupation"
+                name="occupationOthers"
+                placeholder="Peon"
+                register={register}
+                errors={errors.occupationOthers}
+                options={{
+                  maxLength: {
+                    value: 250,
+                    message: "Maximum 250 characters allowed.",
+                  },
+                  required: {
+                    value: true,
+                    message: "Field can't be empty",
+                  },
+                  onChange(event: React.ChangeEvent<HTMLInputElement>) {
+                    let { value } = event.currentTarget;
+                    // const updatedValue = value.replace(/\D/g, "");
+                    // event.currentTarget.value = updatedValue;
+                    updateStoreValue({
+                      occupationOthers: value,
+                      errors: {
+                        ...errors,
+                        occupationOthers: value === "" ? "Field can't be empty" : "",
+                      },
+                    });
+                  },
+                }}
+              />
+              {errors.occupationOthers && (
+                <span
+                  role="alert"
+                  className="absolute bottom-0 left-0 text-sm text-left font-medium text-red-600"
+                >
+                  {errors.occupationOthers}
+                </span>
+              )}
+            </div>
+          )}
           {/* Driving Experience Field */}
           <div className="relative">
             <InputTextField
@@ -470,12 +515,11 @@ const DriverDetailsForm = () => {
           />
           {/* Country Field */}
           <div className="relative pb-5 flex flex-col items-start gap-y-1 w-auto h-auto">
-            <label
-              htmlFor="country"
+            <div
               className="text-base text-center text-primary-black font-semibold"
             >
-              Country
-            </label>
+              Country*
+            </div>
             <Controller
               control={control}
               name="country"

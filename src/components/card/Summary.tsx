@@ -15,10 +15,7 @@ import { MarketAndAgreedContext } from "../../context/MarketAndAgreedContext";
 import AllianzImg from "../../assets/images/logo-allianz.png";
 import { QuoteListingContext, QuotesTypes } from "../../context/QuoteListing";
 import { NewAddOnsContext } from "../../context/AddOnsContext";
-import {
-  SHA256,
-  checkTokenIsExpired,
-} from "../../utils/helpers";
+import { SHA256, checkTokenIsExpired } from "../../utils/helpers";
 import {
   AddDriverTypes,
   DriverTypes,
@@ -77,9 +74,12 @@ const SummaryInfoCard = () => {
         mobileNumber,
         nationality,
         address1,
+        address2,
+        address3,
         postalCode,
         race,
         occupation,
+        occupationOthers,
         drivingExp,
         state,
         city,
@@ -257,9 +257,10 @@ const SummaryInfoCard = () => {
           selectedDriverType === "unlimited" ? "true" : "false",
           selectedDriverType === "unlimited" || driverDetails.length === 0
             ? []
-            : driverDetails.map(({ idNo, name }) => ({
+            : driverDetails.map(({ idNo, name, nationality }) => ({
                 fullName: name,
                 identityNumber: idNo,
+                nationality: nationality,
               })),
           valuationType === "market"
             ? "MV - Market Value"
@@ -374,7 +375,6 @@ const SummaryInfoCard = () => {
   async function updateClient() {
     try {
       if (token && session) {
-
         loaderDispatch({
           type: LoaderActionTypes.ToggleLoading,
           payload: true,
@@ -415,6 +415,13 @@ const SummaryInfoCard = () => {
         if (!occupation || occupation === "") {
           hasErrors = true;
           errors.occupation = "Select your occupation";
+        }
+
+        if (occupation === "Others") {
+          if (!occupationOthers || occupationOthers === "") {
+            hasErrors = true;
+            errors.occupationOthers = "Field can't be empty";
+          }
         }
 
         if (!drivingExp || drivingExp === "") {
@@ -459,12 +466,15 @@ const SummaryInfoCard = () => {
           nationality,
           race,
           occupation,
+          occupationOthers,
           drivingExp,
           address1,
-          postalCode,
+          address2,
+          address3,
           state,
           city,
-          accountId
+          accountId,
+          postalCode
         );
 
         console.log(updateClientResponse.message);
@@ -474,7 +484,7 @@ const SummaryInfoCard = () => {
           type: LoaderActionTypes.ToggleLoading,
           payload: false,
         });
-      }else{
+      } else {
         credentialDispatch({
           type: CredentialTypes.ToggleTokenHasExpired,
           payload: true,
