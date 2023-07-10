@@ -463,6 +463,8 @@ const SummaryInfoCard = () => {
           session.sessionName,
           requestId,
           name,
+          email,
+          mobileNumber,
           nationality,
           race,
           occupation,
