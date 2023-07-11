@@ -204,7 +204,12 @@ export async function getVehicleDetails(
             );
             throw error;
           }
-          if (responseData.result.errors[0] === "Data not found.") {
+          if(responseData.result.errors[0] === "We are sorry. You are not eligible to purchase this product due to invalid age."){
+            error.code = "121";
+            error.message =
+              "We are sorry. You are not eligible to purchase this product due to invalid age.";
+            throw error;
+          }else if (responseData.result.errors[0] === "Data not found.") {
             error.code = "109";
             error.message =
               "No vehicle is found with the given request. Make sure vehicle registration no is entered correctly.";

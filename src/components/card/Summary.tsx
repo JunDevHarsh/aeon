@@ -766,6 +766,7 @@ const SummaryInfoCard = () => {
               >
                 <input type="hidden" name="MerchantCode" value="M16391" />
                 <input type="hidden" name="PaymentId" value="" />
+                <input type="hidden" name="TenantId" value="67b61490-fec2-11ed-a640-e19d1712c006" />
                 <input type="hidden" name="RefNo" value={inquiryId} />
                 <input type="hidden" name="Amount" value="1.00" />
                 <input type="hidden" name="Currency" value="MYR" />
