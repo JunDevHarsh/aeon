@@ -20,7 +20,7 @@ const PaymentFailedContainer = () => {
             Sorry, We couldn't process your payment. Please try again
           </p>
           <Link
-            to="/payment"
+            to="/insurance/review-pay"
             title="Goto Payment"
             aria-label="Go to Payment page"
             className="relative mt-4 py-4 px-6 flex items-center justify-center w-auto h-auto bg-primary-blue rounded-full"
