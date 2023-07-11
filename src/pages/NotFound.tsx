@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import AEONLogo from "../assets/images/aeon_insurance_brokers_dark.png";
+import AEONLogo from "../assets/images/AEON_LOGO.png";
 
 const NotFoundPage = () => {
   return (
@@ -8,7 +8,7 @@ const NotFoundPage = () => {
         <img
           src={AEONLogo}
           alt="aeon-insurance-brokers-img"
-          className="w-auto h-auto"
+          className="max-w-xs w-full h-auto"
         />
         <h2 className="text-4xl text-center text-primary-black font-bold">
           404 - Page Not Found

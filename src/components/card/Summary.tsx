@@ -785,12 +785,12 @@ const SummaryInfoCard = () => {
                 <input
                   type="hidden"
                   name="ResponseURL"
-                  value="https://portal.agiliux.com/payment"
+                  value="https://app.agiliux.com/aeon/iPay88Response.php"
                 />
                 <input
                   type="hidden"
                   name="BackendURL"
-                  value="https://app.agiliux.com/aeon"
+                  value="https://app.agiliux.com/aeon/iPay88Backend.php"
                 />
                 <input
                   type="submit"
