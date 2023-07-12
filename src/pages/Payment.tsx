@@ -3,8 +3,7 @@ import GuyImg from "../assets/images/guy_holding_stick.png";
 import PaymentSuccessfulContainer from "../components/container/PaymentSuccess";
 import PaymentFailedContainer from "../components/container/PaymentFailed";
 import { useNavigate, useSearchParams } from "react-router-dom";
-// import { checkSession, getPaymentConfig } from "../services/apiServices";
-// import { SHA256 } from "../utils/helpers";
+import base64 from "base-64";
 
 interface PaymentStatusType {
   price: string;
@@ -69,9 +68,24 @@ const PaymentPage = () => {
     const amount = searchParams.get("amount");
     const status = searchParams.get("status");
     const transId = searchParams.get("trans_id");
+    const hash = searchParams.get("hash");
     // const hashString = searchParams.get("hashstring");
     // const refNo = searchParams.get("refno");
-    if (amount && status && transId) {
+    if (amount && status && transId && hash) {
+      let decryptDate = base64.decode(hash);
+      decryptDate = decryptDate + "000";
+      let newDecryptDate = Number(decryptDate);
+      if (
+        isNaN(newDecryptDate) ||
+        isNaN(Date.parse(new Date(newDecryptDate).toString()))
+      ) {
+        navigate("/");
+        return;
+      }
+      if (new Date() > new Date(newDecryptDate)) {
+        navigate("/");
+        return;
+      }
       updatePaymentStatus(amount, transId, status);
     } else {
       navigate("/");
