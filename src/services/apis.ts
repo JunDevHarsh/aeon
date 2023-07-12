@@ -199,4 +199,37 @@ export const Apis = {
       operation: "updateInsured",
     },
   },
+  getAgreedVariantList: {
+    method: "POST",
+    url: "",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: {
+      sessionName: "",
+      element: {
+        requestId: "",
+        tenant_id: "",
+        region: "",
+        makeCode: "",
+        modelCode: "",
+        makeYear: ""
+      },
+      operation: "getVariant",
+    },
+  },
+  getPaymentConfig: {
+    method: "POST",
+    url: "",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: {
+      sessionName: "",
+      element: {
+        tenant_id: "",
+      },
+      operation: "paymentConfig",
+    },
+  }
 };

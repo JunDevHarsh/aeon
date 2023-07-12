@@ -76,7 +76,7 @@ const PaymentSuccessfulContainer = ({
             </Link>
             <Link
               to="/"
-              title="Goto Homepage"
+              title="Go to Homepage"
               aria-label="Go to Home"
               className="relative mt-4 sm:mt-0 ml-0 sm:ml-4 py-4 px-6 flex items-center justify-center w-auto h-auto bg-primary-blue rounded-full"
             >

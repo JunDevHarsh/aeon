@@ -3,8 +3,7 @@ import GuyImg from "../assets/images/guy_holding_stick.png";
 import PaymentSuccessfulContainer from "../components/container/PaymentSuccess";
 import PaymentFailedContainer from "../components/container/PaymentFailed";
 import { useNavigate, useSearchParams } from "react-router-dom";
-// import { checkSession, getPaymentConfig } from "../services/apiServices";
-// import { SHA256 } from "../utils/helpers";
+import base64 from "base-64";
 
 interface PaymentStatusType {
   price: string;
@@ -28,9 +27,24 @@ const PaymentPage = () => {
   function updatePaymentStatus(
     amount: string,
     transId: string,
-    status: string
+    status: string,
+    hash: string
   ) {
     try {
+      let decryptDate = base64.decode(hash);
+      decryptDate = decryptDate + "000";
+      let newDecryptDate = Number(decryptDate);
+      if (
+        isNaN(newDecryptDate) ||
+        isNaN(Date.parse(new Date(newDecryptDate).toString()))
+      ) {
+        navigate("/");
+        return;
+      }
+      if (new Date() > new Date(newDecryptDate)) {
+        navigate("/");
+        return;
+      }
       if (status === "1") {
         setPaymentStatus((prev) => ({
           ...prev,
@@ -62,6 +76,7 @@ const PaymentPage = () => {
       // );
     } catch (err) {
       console.log(err);
+      throw err;
     }
   }
 
@@ -69,11 +84,18 @@ const PaymentPage = () => {
     const amount = searchParams.get("amount");
     const status = searchParams.get("status");
     const transId = searchParams.get("trans_id");
-    // const hashString = searchParams.get("hashstring");
-    // const refNo = searchParams.get("refno");
-    if (amount && status && transId) {
-      updatePaymentStatus(amount, transId, status);
-    } else {
+    const hash = searchParams.get("hashstring");
+    try {
+      if (amount && status && transId && hash) {
+        if (status !== "0" && status !== "1") {
+          navigate("/");
+          return;
+        }
+        updatePaymentStatus(amount, transId, status, hash);
+      } else {
+        navigate("/");
+      }
+    } catch (err) {
       navigate("/");
     }
   }, []);

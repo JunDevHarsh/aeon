@@ -204,12 +204,15 @@ export async function getVehicleDetails(
             );
             throw error;
           }
-          if(responseData.result.errors[0] === "We are sorry. You are not eligible to purchase this product due to invalid age."){
+          if (
+            responseData.result.errors[0] ===
+            "We are sorry. You are not eligible to purchase this product due to invalid age."
+          ) {
             error.code = "121";
             error.message =
               "We are sorry. You are not eligible to purchase this product due to invalid age.";
             throw error;
-          }else if (responseData.result.errors[0] === "Data not found.") {
+          } else if (responseData.result.errors[0] === "Data not found.") {
             error.code = "109";
             error.message =
               "No vehicle is found with the given request. Make sure vehicle registration no is entered correctly.";
@@ -482,6 +485,54 @@ export async function updateQuotationPremium(
   }
 }
 
+export async function getAgreedVariantList(
+  sessionName: string,
+  requestId: string,
+  region: string,
+  makeCode: string,
+  modelCode: string,
+  makeYear: string
+) {
+  try {
+    let error: any = {};
+    const response = await apiInstance({
+      method: Apis.getAgreedVariantList.method,
+      url: Apis.getAgreedVariantList.url,
+      headers: Apis.getAgreedVariantList.headers,
+      data: {
+        ...Apis.getAgreedVariantList.body,
+        sessionName: sessionName,
+        element: JSON.stringify({
+          ...Apis.getAgreedVariantList.body.element,
+          requestId: requestId,
+          tenant_id: TENANT_ID,
+          region: region,
+          makeCode: makeCode,
+          modelCode: modelCode,
+          makeYear: makeYear,
+        }),
+      },
+    });
+    if (response.status === 200) {
+      if (response.data.success) {
+        if (response.data.result.message) {
+          error.code = "122";
+          error.message =
+            "Sorry, we're unable to process your request at the moment. Please try again later.";
+          throw error;
+        }
+        return response.data.result;
+      }
+    }
+    error.code = "404";
+    error.message =
+      "Sorry, we're unable to process your request at the moment. Please try again later.";
+    throw error;
+  } catch (err) {
+    throw err;
+  }
+}
+
 export async function validatePromoCode(
   sessionName: string,
   requestId: string,
@@ -517,6 +568,7 @@ export async function validatePromoCode(
     error.code = "404";
     error.message =
       "Sorry, we're unable to process your request at the moment. Please try again later.";
+    throw error;
   } catch (err: any) {
     throw err;
   }
@@ -586,6 +638,40 @@ export async function updateInsured(
     error.message =
       "Sorry, we're unable to process your request at the moment. Please try again later.";
   } catch (err: any) {
+    throw err;
+  }
+}
+
+export async function getPaymentConfig(sessionName: string) {
+  try {
+    let error: any = {};
+    const response = await apiInstance({
+      method: Apis.getPaymentConfig.method,
+      url: Apis.getPaymentConfig.url,
+      headers: Apis.getPaymentConfig.headers,
+      data: {
+        ...Apis.getPaymentConfig.body,
+        sessionName: sessionName,
+        element: JSON.stringify({
+          ...Apis.getPaymentConfig.body.element,
+          tenant_id: TENANT_ID,
+        }),
+      },
+    });
+    if (response.status === 200) {
+      if (response.data.success) {
+        return response.data.result;
+      }
+      error.code = "123";
+      error.message =
+        "Sorry, we're unable to process your request at the moment. Please try again later.";
+      throw error;
+    }
+    error.code = "404";
+    error.message =
+      "Sorry, we're unable to process your request at the moment. Please try again later.";
+    throw error;
+  } catch (err) {
     throw err;
   }
 }

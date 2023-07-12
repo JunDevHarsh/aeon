@@ -7,20 +7,9 @@ import {
 } from "../../context/MarketAndAgreedContext";
 import SelectDropdown from "../fields/SelectDropdown";
 import InputRange from "../fields/InputRange";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
-import axios from "axios";
-import {
-  checkTokenIsExpired,
-  generateSessionName,
-  generateToken,
-} from "../../utils/helpers";
-import {
-  SessionType,
-  TokenType,
-  addSessionName,
-  addToken,
-} from "../../store/slices/credentials";
+import { checkTokenIsExpired } from "../../utils/helpers";
 import {
   InsuranceContext,
   InsuranceProviderTypes,
@@ -35,7 +24,10 @@ import { NewAddOnsContext } from "../../context/AddOnsContext";
 import { MultiStepFormContext } from "../../context/MultiFormContext";
 import { CredentialContext, CredentialTypes } from "../../context/Credential";
 import { LoaderActionTypes, LoaderContext } from "../../context/Loader";
-import { updateQuotationPremium } from "../../services/apiServices";
+import {
+  getAgreedVariantList,
+  updateQuotationPremium,
+} from "../../services/apiServices";
 
 function createUniqueValues(types: AgreedVariantType[]) {
   const regEx = /(-HIGH|-LOW|-HI|-LO)\s*-?\s*/;
@@ -103,7 +95,6 @@ function MarketAndAgreedContainer() {
     dispatch: loaderDispatch,
   } = useContext(LoaderContext);
 
-  const updateStore = useDispatch();
   const {
     vehicle: {
       reconIndicator,
@@ -184,77 +175,57 @@ function MarketAndAgreedContainer() {
 
   async function getAgreedVariantsList() {
     try {
-      loaderDispatch({
-        type: LoaderActionTypes.ToggleLoading,
-        payload: true,
-      });
+      if (token && session) {
+        // update loader state and start loading
+        loaderDispatch({
+          type: LoaderActionTypes.ToggleLoading,
+          payload: true,
+        });
 
-      let tokenInfo = token;
-      let sessionInfo = session;
-      if (!token || checkTokenIsExpired(token)) {
-        // get new token
-        const getToken: TokenType = await generateToken(
-          "https://app.agiliux.com/aeon/webservice.php?operation=getchallenge&username=admin",
-          5000
-        );
-        tokenInfo = getToken;
-        // add token to store
-        updateStore(addToken({ ...getToken }));
-        const sessionApiResponse: SessionType = await generateSessionName(
-          "https://app.agiliux.com/aeon/webservice.php",
-          5000,
-          tokenInfo.token,
-          "bwJrIhxPdfsdialE"
-        );
-        sessionInfo = sessionApiResponse;
-        // add session name to store state
-        updateStore(
-          addSessionName({
-            userId: sessionApiResponse.userId,
-            sessionName: sessionApiResponse.sessionName,
-          })
-        );
-      }
-      const apiResponse = await axios.post(
-        "https://app.agiliux.com/aeon/webservice.php",
-        {
-          element: JSON.stringify({
-            requestId: requestId,
-            tenant_id: "67b61490-fec2-11ed-a640-e19d1712c006",
-            region: region === "West Malaysia" ? "W" : "E",
-            makeCode: vehicleMake,
-            modelCode: vehicleModel,
-            makeYear: yearOfManufacture,
-          }),
-          operation: "getVariant",
-          sessionName: sessionInfo?.sessionName,
-        },
-        {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
+        const isTokenExpired = checkTokenIsExpired(token);
+
+        if (isTokenExpired) {
+          credentialDispatch({
+            type: CredentialTypes.ToggleTokenHasExpired,
+            payload: true,
+          });
+
+          loaderDispatch({
+            type: LoaderActionTypes.ToggleLoading,
+            payload: false,
+          });
+
+          return;
         }
-      );
-      if (apiResponse.status !== 200 || !apiResponse.data) {
-        throw {
-          status: 104,
-          message: "Error getting agreed variant",
-        };
-      }
-      const { result } = apiResponse.data;
-      if (result.length !== 0 || result.VariantGrp) {
-        dispatch({
-          type: UpdateValuation.AddTypes,
-          payload: {
-            updatedTypes: result.VariantGrp,
-          },
+
+        const result = await getAgreedVariantList(
+          session.sessionName,
+          requestId,
+          region,
+          vehicleMake,
+          vehicleModel,
+          yearOfManufacture
+        );
+
+        if (result.VariantGrp) {
+          dispatch({
+            type: UpdateValuation.AddTypes,
+            payload: {
+              updatedTypes: result.VariantGrp,
+            },
+          });
+        }
+
+        loaderDispatch({
+          type: LoaderActionTypes.ToggleLoading,
+          payload: false,
+        });
+      } else {
+        credentialDispatch({
+          type: CredentialTypes.ToggleTokenHasExpired,
+          payload: true,
         });
       }
-
-      loaderDispatch({
-        type: LoaderActionTypes.ToggleLoading,
-        payload: false,
-      });
     } catch (err) {
       loaderDispatch({
         type: LoaderActionTypes.ToggleLoading,
@@ -265,10 +236,10 @@ function MarketAndAgreedContainer() {
   }
 
   useEffect(() => {
-    if (reconIndicator !== "yes" && !agreed) {
+    if (reconIndicator !== "yes" && types.length === 0) {
       getAgreedVariantsList();
     }
-  }, []);
+  }, [token, session]);
 
   async function updateQuotePremium() {
     try {
@@ -331,7 +302,7 @@ function MarketAndAgreedContainer() {
                 identityNumber: idNo,
               }));
 
-              console.log(driversRequest);
+        console.log(driversRequest);
 
         const response = await updateQuotationPremium(
           session.sessionName,
@@ -478,7 +449,7 @@ function MarketAndAgreedContainer() {
                 price={market?.vehicleMarketValue.toString() || ""}
                 updateValue={handleTypeChange}
               />
-              {reconIndicator === "yes" || agreed === null ? (
+              {reconIndicator === "yes" || types.length === 0 ? (
                 <div className="relative even:mt-4 mobile-l:even:mt-0 even:ml-0 mobile-l:even:ml-4 inline-block w-full mobile-l:w-auto">
                   <div className="relative px-4 py-4 flex flex-col items-center justify-center w-full mobile-l:w-[157px] h-auto border border-solid border-[#d3d3d3] opacity-70 cursor-no-drop rounded-xl text-primary-black shadow-[0_8px_10px_0_#00000024]">
                     <span className="text-sm text-center text-current font-bold">
