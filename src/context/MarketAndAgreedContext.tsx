@@ -149,6 +149,16 @@ function MarketAndAgreedProvider({ children }: { children: React.ReactNode }) {
     previousValue: variant ? variant.vehicleMarketValue.toString() : "",
     variants: nvicList,
     market: variant ? variant : initialState.market,
+    agreed: variant
+      ? {
+          nvic: variant.nvic,
+          sumInsured: "",
+          marketValue: variant.vehicleMarketValue,
+          variant: variant.vehicleVariant,
+          avCode: "",
+          type: "",
+        }
+      : null,
   });
   return (
     <MarketAndAgreedContext.Provider value={{ state, dispatch }}>

@@ -119,6 +119,18 @@
         "displayMessage": "We are sorry. You are not eligible to purchase this product due to invalid age.",
         "logError": "Invalid user dob"
     },
+    "122": {
+        "code": "122",
+        "error": "AGREED_VARIANT_NOT_FETCHED",
+        "displayMessage": "We are sorry. You are not eligible to purchase this product due to invalid age.",
+        "logError": "Agreed variant list not fetched from the server"
+    },
+    "123": {
+        "code": "123",
+        "error": "PAYMENT_CONFIG_FAILED",
+        "displayMessage": "We are sorry. You are not eligible to purchase this product due to invalid age.",
+        "logError": "Payment config api not worked"
+    },
     "201": {
         "code": "201",
         "error": "TOKEN_EXPIRED",
