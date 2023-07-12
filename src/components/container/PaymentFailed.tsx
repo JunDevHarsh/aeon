@@ -17,16 +17,19 @@ const PaymentFailedContainer = () => {
             Transaction Failed
           </h2>
           <p className="mt-2 text-base text-center text-primary-black font-medium">
-            Sorry, We couldn't process your payment. Please try again
+            Sorry, we could not process your payment. Our representative officer
+            will contact you for further assistance. For any other inquiries
+            related to your insurance needs, feel free to call us at 03-2772
+            6988 or email us at ai_customercare@aeoninsurance.com.my
           </p>
           <Link
-            to="/insurance/review-pay"
-            title="Goto Payment"
-            aria-label="Go to Payment page"
+            to="/"
+            title="Go to Homepage"
+            aria-label="Go to Home page"
             className="relative mt-4 py-4 px-6 flex items-center justify-center w-auto h-auto bg-primary-blue rounded-full"
           >
             <span className="text-base text-center text-white font-medium">
-              Retry Payment
+              Back to Homepage
             </span>
           </Link>
         </div>

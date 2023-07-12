@@ -27,9 +27,24 @@ const PaymentPage = () => {
   function updatePaymentStatus(
     amount: string,
     transId: string,
-    status: string
+    status: string,
+    hash: string
   ) {
     try {
+      let decryptDate = base64.decode(hash);
+      decryptDate = decryptDate + "000";
+      let newDecryptDate = Number(decryptDate);
+      if (
+        isNaN(newDecryptDate) ||
+        isNaN(Date.parse(new Date(newDecryptDate).toString()))
+      ) {
+        navigate("/");
+        return;
+      }
+      if (new Date() > new Date(newDecryptDate)) {
+        navigate("/");
+        return;
+      }
       if (status === "1") {
         setPaymentStatus((prev) => ({
           ...prev,
@@ -61,6 +76,7 @@ const PaymentPage = () => {
       // );
     } catch (err) {
       console.log(err);
+      throw err;
     }
   }
 
@@ -68,26 +84,18 @@ const PaymentPage = () => {
     const amount = searchParams.get("amount");
     const status = searchParams.get("status");
     const transId = searchParams.get("trans_id");
-    const hash = searchParams.get("hash");
-    // const hashString = searchParams.get("hashstring");
-    // const refNo = searchParams.get("refno");
-    if (amount && status && transId && hash) {
-      let decryptDate = base64.decode(hash);
-      decryptDate = decryptDate + "000";
-      let newDecryptDate = Number(decryptDate);
-      if (
-        isNaN(newDecryptDate) ||
-        isNaN(Date.parse(new Date(newDecryptDate).toString()))
-      ) {
+    const hash = searchParams.get("hashstring");
+    try {
+      if (amount && status && transId && hash) {
+        if (status !== "0" && status !== "1") {
+          navigate("/");
+          return;
+        }
+        updatePaymentStatus(amount, transId, status, hash);
+      } else {
         navigate("/");
-        return;
       }
-      if (new Date() > new Date(newDecryptDate)) {
-        navigate("/");
-        return;
-      }
-      updatePaymentStatus(amount, transId, status);
-    } else {
+    } catch (err) {
       navigate("/");
     }
   }, []);
