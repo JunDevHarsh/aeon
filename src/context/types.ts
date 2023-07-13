@@ -38,17 +38,47 @@ export type MultiStepFormState = {
   driverDetails: DriverDetails;
   roadTax: boolean;
   termsAndConditions: boolean;
+  isEdited: boolean;
 };
 
 // AddOns types
+// export type AddOns = {
+//   id: string;
+//   title: string;
+//   isSelected: boolean;
+//   isEditable: boolean;
+//   description: string;
+//   price: number;
+//   imgName: string;
+// };
+
 export type AddOns = {
-  id: string;
   title: string;
+  coverCode: string;
+  coverName: string;
+  coverDescription: string;
+  coverNarration: string;
+  displayPremium: number;
+  coverSumInsured: number;
+  selectedIndicator: boolean;
   isSelected: boolean;
-  isEditable: boolean;
-  description: string;
-  price: number;
-  imgName: string;
+  addDisplayInd: boolean;
+  sequence: number;
+  addonimage: string;
+  requiredinfo: "0" | "1";
+  moredetail?: MoreDetail;
+};
+
+export type MoreDetail = {
+  question: string;
+  fieldtype: "Dropdown" | "Text Box";
+  options: Option[] | string;
+}
+
+export type Option = {
+  code: string;
+  label: string;
+  value: string;
 };
 
 export type AdditionalDriverState = {

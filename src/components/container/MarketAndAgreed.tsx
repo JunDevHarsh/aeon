@@ -20,8 +20,7 @@ import {
 // } from "../../context/QuoteListing";
 import { useNavigate } from "react-router-dom";
 import { QuoteListingContext, QuotesTypes } from "../../context/QuoteListing";
-import { NewAddOnsContext } from "../../context/AddOnsContext";
-import { MultiStepFormContext } from "../../context/MultiFormContext";
+import { AddOnsTypes, MultiStepFormContext } from "../../context/MultiFormContext";
 import { CredentialContext, CredentialTypes } from "../../context/Credential";
 import { LoaderActionTypes, LoaderContext } from "../../context/Loader";
 import {
@@ -82,10 +81,6 @@ function MarketAndAgreedContainer() {
   const { dispatch: updateQuote } = useContext(QuoteListingContext);
 
   const {
-    state: { addOns },
-  } = useContext(NewAddOnsContext);
-
-  const {
     state: { token, session, requestId, inquiryId, accountId, vehicleId },
     dispatch: credentialDispatch,
   } = useContext(CredentialContext);
@@ -110,7 +105,9 @@ function MarketAndAgreedContainer() {
     store: {
       roadTax,
       addDriverDetails: { driverDetails, selectedDriverType, hasUpdated },
+      addOns,
     },
+    dispatch: updateMultiFormState
   } = useContext(MultiStepFormContext);
 
   const marketVariantOptionList = variants.map(({ nvic, vehicleVariant }) => ({
@@ -353,7 +350,13 @@ function MarketAndAgreedContainer() {
           },
         });
 
-        const { displaypremium, premium } = response.quoteinfo;
+        const {
+          displaypremium,
+          premium,
+          additionalCover,
+          unlimitedDriverInfo,
+        } = response.quoteinfo;
+
         updateQuote({
           type: QuotesTypes.UpdateQuoteById,
           payload: {
@@ -361,6 +364,8 @@ function MarketAndAgreedContainer() {
             data: {
               premium,
               displayPremium: displaypremium,
+              unlimitedDriverInfo: unlimitedDriverInfo,
+              additionalCover: additionalCover,
             },
           },
         });
@@ -370,6 +375,18 @@ function MarketAndAgreedContainer() {
             companyId: productId,
             companyName: "Allianz",
             price: displaypremium,
+          },
+        });
+
+        const updatedAdditionalCover = additionalCover.map((addOn: any) => ({
+          ...addOn,
+          isSelected: addOn.selectedIndicator,
+        }));
+
+        updateMultiFormState({
+          type: AddOnsTypes.UpdateAddOnList,
+          payload: {
+            updatedAddOns: updatedAdditionalCover,
           },
         });
 

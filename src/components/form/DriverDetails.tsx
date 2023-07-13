@@ -222,28 +222,8 @@ const DriverDetailsForm = () => {
             }}
           />
           {/* Marital Status Field */}
-          <div className="relative pb-5 w-full">
-            <div className="relative">
-              <span className="inline-block mb-1 text-base text-left text-primary-black font-semibold">
-                Marital Status
-              </span>
-              <div className="py-1.5 px-2 w-full text-sm text-left text-[#9ca3af] bg-[#fafafa] border border-solid border-[#CFD0D7] rounded cursor-default">
-                {maritalStatus ?? "Single"}
-              </div>
-            </div>
-          </div>
           <FixedInputText title="Marital Status" value={maritalStatus || ""} />
           {/* Gender Field */}
-          <div className="relative pb-5 w-full">
-            <div className="relative">
-              <span className="inline-block mb-1 text-base text-left text-primary-black font-semibold">
-                Gender
-              </span>
-              <div className="py-1.5 px-2 w-full text-sm text-left text-[#9ca3af] bg-[#fafafa] border border-solid border-[#CFD0D7] rounded cursor-default">
-                {gender ?? "Male"}
-              </div>
-            </div>
-          </div>
           <FixedInputText title="Gender" value={gender || ""} />
           {/* Nationality Field */}
           <div className="relative pb-5 flex flex-col items-start gap-y-1 w-auto h-auto">
@@ -383,7 +363,7 @@ const DriverDetailsForm = () => {
             <InputTextField
               label="Driving Experience"
               name="drivingExp"
-              placeholder="5"
+              placeholder="Enter experience"
               register={register}
               errors={errors.drivingExp}
               options={{

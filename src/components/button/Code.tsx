@@ -8,7 +8,6 @@ import {
   InsuranceProviderTypes,
 } from "../../context/InsuranceContext";
 import { QuoteListingContext, QuotesTypes } from "../../context/QuoteListing";
-import { NewAddOnsContext } from "../../context/AddOnsContext";
 import { MultiStepFormContext } from "../../context/MultiFormContext";
 import { CredentialContext, CredentialTypes } from "../../context/Credential";
 import { LoaderActionTypes, LoaderContext } from "../../context/Loader";
@@ -52,12 +51,9 @@ const Code: React.FC<CodeProps> = ({ title, placeholder = "Placeholder" }) => {
   } = useContext(MarketAndAgreedContext);
 
   const {
-    state: { addOns },
-  } = useContext(NewAddOnsContext);
-
-  const {
     store: {
       roadTax,
+      addOns,
       addDriverDetails: { selectedDriverType, driverDetails },
     },
   } = useContext(MultiStepFormContext);
@@ -192,8 +188,6 @@ const Code: React.FC<CodeProps> = ({ title, placeholder = "Placeholder" }) => {
             type: LoaderActionTypes.ToggleLoading,
             payload: false,
           });
-
-          return;
 
           return;
         }

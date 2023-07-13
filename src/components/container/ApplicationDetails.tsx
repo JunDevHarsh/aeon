@@ -2,12 +2,12 @@ import { useContext, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import {
+  AddOnsTypes,
   MultiStepFormContext,
   RoadTaxTypes,
   TermsAndConditionsTypes,
 } from "../../context/MultiFormContext";
 import { checkTokenIsExpired } from "../../utils/helpers";
-import { NewAddOnsContext } from "../../context/AddOnsContext";
 import {
   InsuranceContext,
   InsuranceProviderTypes,
@@ -49,6 +49,7 @@ const ApplicationDetailsContainer = () => {
   const {
     store: {
       addDriverDetails: { driverDetails: addDriverDetails, selectedDriverType },
+      addOns,
       driverDetails,
       roadTax,
       termsAndConditions,
@@ -74,27 +75,13 @@ const ApplicationDetailsContainer = () => {
   } = useContext(MarketAndAgreedContext);
 
   const {
-    state: { addOns },
-    dispatch,
-  } = useContext(NewAddOnsContext);
-
-  const {
     state: { id: productId, quoteId },
     dispatch: updateInsuranceDispatch,
   } = useContext(InsuranceContext);
 
   const selectedAddOns = addOns.filter((addOn) => addOn.isSelected);
 
-  const {
-    state: { quotes },
-    dispatch: updateQuote,
-  } = useContext(QuoteListingContext);
-
-  const selectedQuotePlan: any = quotes.find(
-    (quote) => quote.productId === productId
-  );
-
-  const selectedQuoteAddOns = selectedQuotePlan?.additionalCover;
+  const { dispatch: updateQuote } = useContext(QuoteListingContext);
 
   function updateRoadTaxOnChange() {
     renderRef.current = true;
@@ -155,7 +142,7 @@ const ApplicationDetailsContainer = () => {
             : addDriverDetails.map(({ idNo, name, nationality }) => ({
                 fullName: name,
                 identityNumber: idNo,
-                nationality: nationality
+                nationality: nationality,
               })),
           valuationType === "market"
             ? "MV - Market Value"
@@ -185,32 +172,12 @@ const ApplicationDetailsContainer = () => {
           },
         });
 
-        const { premium, displaypremium, additionalCover } = response.quoteinfo;
-
-        const updatedAdditionalCover = selectedQuoteAddOns.map(
-          (selectedQuoteAddOn: any) => {
-            const matched = additionalCover.find(
-              (additional: any) =>
-                additional.coverCode === selectedQuoteAddOn.coverCode
-            );
-            return matched ? matched : selectedQuoteAddOn;
-          }
-        );
-
-        const newAddOnsList = updatedAdditionalCover.map(
-          (updatedAddOn: any) => {
-            const matched = addOns.find(
-              (addOn: any) => addOn.coverCode === updatedAddOn.coverCode
-            );
-            return matched
-              ? {
-                  ...matched,
-                  displayPremium: updatedAddOn.displayPremium,
-                  selectedIndicator: updatedAddOn.selectedIndicator,
-                }
-              : updatedAddOn;
-          }
-        );
+        const {
+          premium,
+          displaypremium,
+          additionalCover,
+          unlimitedDriverInfo,
+        } = response.quoteinfo;
 
         updateInsuranceDispatch({
           type: InsuranceProviderTypes.UpdateInsuranceProvider,
@@ -228,11 +195,23 @@ const ApplicationDetailsContainer = () => {
             data: {
               premium,
               displaypremium,
-              // additionalCover: updatedAdditionalCover,
+              unlimitedDriverInfo: unlimitedDriverInfo,
+              additionalCover: additionalCover,
             },
           },
         });
-        dispatch({ addOns: newAddOnsList, isEdited: false });
+
+        const updatedAdditionalCover = additionalCover.map((addOn: any) => ({
+          ...addOn,
+          isSelected: addOn.selectedIndicator,
+        }));
+
+        updateMultiStepFormDispatch({
+          type: AddOnsTypes.UpdateAddOnList,
+          payload: {
+            updatedAddOns: updatedAdditionalCover,
+          },
+        });
 
         loaderDispatch({
           type: LoaderActionTypes.ToggleLoading,

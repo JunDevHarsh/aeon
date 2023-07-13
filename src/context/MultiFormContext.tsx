@@ -10,6 +10,7 @@ import {
   addDriverDetailsReducer,
   addOnsReducer,
   driverDetailsReducer,
+  isEditedReducer,
   roadTaxReducer,
   termsAndConditionsReducer,
 } from "./reducers";
@@ -45,13 +46,13 @@ const initialMultiStepFormState: MultiStepFormState = {
   },
   roadTax: false,
   termsAndConditions: false,
+  isEdited: false,
 };
 
 /*---------------ENum types---------------*/
 export enum AddOnsTypes {
-  SelectionToggleById = "SELECTION_TOGGLE_BY_ID",
-  IncludeAddOns = "INCLUDE_ADD_ONS",
-  UpdateAddOnPrice = "UPDATE_ADD_ON_PRICE",
+  UpdateAddOnById = "UPDATE_ADD_ON_BY_ID",
+  UpdateAddOnList = "UPDATE_ADD_ON_LIST",
 }
 
 export enum AddDriverTypes {
@@ -77,17 +78,19 @@ export enum TermsAndConditionsTypes {
   UpdateTermsAndConditions = "UPDATE_TERMS_AND_CONDITIONS",
 }
 
+export enum IsEditedTypes {
+  ToggleIsEdited = "TOGGLE_IS_EDITED",
+}
+
 /*---------------Payload---------------*/
 export type AddOnsPayload = {
-  [AddOnsTypes.SelectionToggleById]: {
-    id: string;
+  [AddOnsTypes.UpdateAddOnById]: {
+    coverCode: string;
+    sumInsured: number;
+    isSelected: boolean;
   };
-  [AddOnsTypes.IncludeAddOns]: {
-    addOns: AddOns[];
-  };
-  [AddOnsTypes.UpdateAddOnPrice]: {
-    id: string;
-    price: number;
+  [AddOnsTypes.UpdateAddOnList]: {
+    updatedAddOns: AddOns[];
   };
 };
 
@@ -133,6 +136,12 @@ export type TermsAndConditionsPayload = {
   };
 };
 
+export type IsEditedPayload = {
+  [IsEditedTypes.ToggleIsEdited]: {
+    isEdited: boolean;
+  };
+};
+
 export type AddOnsActions =
   ActionMap<AddOnsPayload>[keyof ActionMap<AddOnsPayload>];
 
@@ -148,6 +157,9 @@ export type RoadTaxActions =
 export type TermsAndConditionActions =
   ActionMap<TermsAndConditionsPayload>[keyof ActionMap<TermsAndConditionsPayload>];
 
+export type IsEditedActions =
+  ActionMap<IsEditedPayload>[keyof ActionMap<IsEditedPayload>];
+
 /*---------------MultiForm Context---------------*/
 export const MultiStepFormContext = createContext<{
   store: MultiStepFormState;
@@ -157,6 +169,7 @@ export const MultiStepFormContext = createContext<{
     | DriverDetailsActions
     | RoadTaxActions
     | TermsAndConditionActions
+    | IsEditedActions
   >;
 }>({
   store: initialMultiStepFormState,
@@ -171,6 +184,7 @@ const mainReducer = (
     driverDetails,
     roadTax,
     termsAndConditions,
+    isEdited,
   }: MultiStepFormState,
   action:
     | AddOnsActions
@@ -178,12 +192,14 @@ const mainReducer = (
     | DriverDetailsActions
     | RoadTaxActions
     | TermsAndConditionActions
+    | IsEditedActions
 ) => ({
   addOns: addOnsReducer(addOns, action),
   addDriverDetails: addDriverDetailsReducer(addDriverDetails, action),
   driverDetails: driverDetailsReducer(driverDetails, action),
   roadTax: roadTaxReducer(roadTax, action),
   termsAndConditions: termsAndConditionsReducer(termsAndConditions, action),
+  isEdited: isEditedReducer(isEdited, action),
 });
 
 const MultiFormContextProvider = ({
@@ -205,7 +221,7 @@ const MultiFormContextProvider = ({
       drivingExp: drivingExp,
       city: city,
       state: state,
-      errors: {}
+      errors: {},
     },
   });
 

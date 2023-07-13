@@ -14,11 +14,13 @@ import { Link } from "react-router-dom";
 import { MarketAndAgreedContext } from "../../context/MarketAndAgreedContext";
 import AllianzImg from "../../assets/images/logo-allianz.png";
 import { QuoteListingContext, QuotesTypes } from "../../context/QuoteListing";
-import { NewAddOnsContext } from "../../context/AddOnsContext";
+// import { NewAddOnsContext } from "../../context/AddOnsContext";
 import { SHA256, checkTokenIsExpired } from "../../utils/helpers";
 import {
   AddDriverTypes,
+  AddOnsTypes,
   DriverTypes,
+  IsEditedTypes,
   MultiStepFormContext,
 } from "../../context/MultiFormContext";
 import { CredentialContext, CredentialTypes } from "../../context/Credential";
@@ -40,10 +42,6 @@ export interface AddBenefitsType {
 const SummaryInfoCard = () => {
   //   const [promoCode, setPromoCode] = useState<string>("");
   // const { provider } = useSelector((state: RootState) => state.insurance);
-  const {
-    state: { addOns, isEdited },
-    dispatch,
-  } = useContext(NewAddOnsContext);
 
   const {
     state: { session, token, requestId, inquiryId, accountId, vehicleId },
@@ -85,6 +83,8 @@ const SummaryInfoCard = () => {
         city,
       },
       addDriverDetails: { shouldUpdate, selectedDriverType, driverDetails },
+      addOns,
+      isEdited,
       roadTax,
       termsAndConditions,
     },
@@ -103,7 +103,7 @@ const SummaryInfoCard = () => {
   );
 
   const premium = selectedQuotePlan?.premium;
-  const selectedQuoteAddOns = selectedQuotePlan?.additionalCover;
+  // const selectedQuoteAddOns = selectedQuotePlan?.additionalCover;
   const unlimitedDriverInfo = selectedQuotePlan?.unlimitedDriverInfo;
 
   const {
@@ -297,31 +297,6 @@ const SummaryInfoCard = () => {
           unlimitedDriverInfo,
         } = response.quoteinfo;
 
-        const updatedAdditionalCover = selectedQuoteAddOns.map(
-          (selectedQuoteAddOn: any) => {
-            const matched = additionalCover.find(
-              (additional: any) =>
-                additional.coverCode === selectedQuoteAddOn.coverCode
-            );
-            return matched ? matched : selectedQuoteAddOn;
-          }
-        );
-
-        const newAddOnsList = updatedAdditionalCover.map(
-          (updatedAddOn: any) => {
-            const matched = addOns.find(
-              (addOn: any) => addOn.coverCode === updatedAddOn.coverCode
-            );
-            return matched
-              ? {
-                  ...matched,
-                  displayPremium: updatedAddOn.displayPremium,
-                  selectedIndicator: updatedAddOn.selectedIndicator,
-                }
-              : updatedAddOn;
-          }
-        );
-
         updateInsuranceDispatch({
           type: InsuranceProviderTypes.UpdateInsuranceProvider,
           payload: {
@@ -339,12 +314,29 @@ const SummaryInfoCard = () => {
               premium,
               displayPremium: displaypremium,
               unlimitedDriverInfo: unlimitedDriverInfo,
-              // additionalCover: updatedAdditionalCover,
+              additionalCover: additionalCover,
             },
           },
         });
 
-        dispatch({ addOns: newAddOnsList, isEdited: false });
+        const updatedAdditionalCover = additionalCover.map((addOn: any) => ({
+          ...addOn,
+          isSelected: addOn.selectedIndicator,
+        }));
+
+        updateMultiFormState({
+          type: AddOnsTypes.UpdateAddOnList,
+          payload: {
+            updatedAddOns: updatedAdditionalCover,
+          },
+        });
+
+        updateMultiFormState({
+          type: IsEditedTypes.ToggleIsEdited,
+          payload: {
+            isEdited: false,
+          },
+        });
 
         if (shouldUpdate) {
           updateMultiFormState({
@@ -625,19 +617,21 @@ const SummaryInfoCard = () => {
             </div>
           ) : (
             <>
-              {selectedAddOns.map((addOn) => (
-                <div
-                  key={`add-benefit-${addOn.coverCode}`}
-                  className="flex items-start justify-between w-full"
-                >
-                  <span className="text-base text-left text-primary-black font-base w-3/4">
-                    {addOn.title}
-                  </span>
-                  <span className="text-base text-right text-primary-black font-medium w-1/4">
-                    RM {addOn.displayPremium.toFixed(2)}
-                  </span>
-                </div>
-              ))}
+              {selectedAddOns.map((addOn) =>
+                addOn.coverCode === "07" ? null : (
+                  <div
+                    key={`add-benefit-${addOn.coverCode}`}
+                    className="flex items-start justify-between w-full"
+                  >
+                    <span className="text-base text-left text-primary-black font-base w-3/4">
+                      {addOn.title}
+                    </span>
+                    <span className="text-base text-right text-primary-black font-medium w-1/4">
+                      RM {addOn.displayPremium.toFixed(2)}
+                    </span>
+                  </div>
+                )
+              )}
               {selectedDriverType !== "" && (
                 <div className="flex items-start justify-between w-full">
                   <span className="text-base text-left text-primary-black font-base w-1/2">
