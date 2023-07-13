@@ -18,6 +18,8 @@ import {
   AddOnsTypes,
   DriverDetailsActions,
   DriverTypes,
+  IsEditedActions,
+  IsEditedTypes,
   RoadTaxActions,
   RoadTaxTypes,
   TermsAndConditionActions,
@@ -62,26 +64,46 @@ export const addOnsReducer = (
     | DriverDetailsActions
     | RoadTaxActions
     | TermsAndConditionActions
+    | IsEditedActions
 ) => {
   const { type, payload } = action;
   switch (type) {
-    case AddOnsTypes.SelectionToggleById: {
+    case AddOnsTypes.UpdateAddOnById: {
+      const { coverCode, sumInsured, isSelected } = payload;
       const updatedAddOns = state.map((addOn) =>
-        addOn.id === payload.id
-          ? { ...addOn, isSelected: !addOn.isSelected }
+        addOn.coverCode === coverCode
+          ? {
+              ...addOn,
+              isSelected: isSelected,
+              coverSumInsured: sumInsured,
+            }
           : addOn
       );
       return [...updatedAddOns];
     }
-    case AddOnsTypes.IncludeAddOns: {
-      return [...payload.addOns];
-    }
-    case AddOnsTypes.UpdateAddOnPrice: {
-      const { id, price } = payload;
-      const updatedAddOns = state.map((addOn) =>
-        addOn.id === id ? { ...addOn, price: price } : addOn
-      );
+    case AddOnsTypes.UpdateAddOnList: {
+      const { updatedAddOns } = payload;
       return [...updatedAddOns];
+    }
+    default:
+      return state;
+  }
+};
+
+export const isEditedReducer = (
+  state: boolean,
+  action:
+    | AddDriverActions
+    | AddOnsActions
+    | DriverDetailsActions
+    | RoadTaxActions
+    | TermsAndConditionActions
+    | IsEditedActions
+) => {
+  const { type, payload } = action;
+  switch (type) {
+    case IsEditedTypes.ToggleIsEdited: {
+      return payload.isEdited;
     }
     default:
       return state;
@@ -97,6 +119,7 @@ export const addDriverDetailsReducer = (
     | DriverDetailsActions
     | RoadTaxActions
     | TermsAndConditionActions
+    | IsEditedActions
 ) => {
   const { type, payload } = action;
   switch (type) {
@@ -224,6 +247,7 @@ export const driverDetailsReducer = (
     | DriverDetailsActions
     | RoadTaxActions
     | TermsAndConditionActions
+    | IsEditedActions
 ) => {
   const { type, payload } = action;
   switch (type) {
@@ -278,6 +302,7 @@ export const roadTaxReducer = (
     | DriverDetailsActions
     | RoadTaxActions
     | TermsAndConditionActions
+    | IsEditedActions
 ) => {
   const { type, payload } = action;
   switch (type) {
@@ -298,6 +323,7 @@ export const termsAndConditionsReducer = (
     | DriverDetailsActions
     | RoadTaxActions
     | TermsAndConditionActions
+    | IsEditedActions
 ) => {
   const { type, payload } = action;
   switch (type) {

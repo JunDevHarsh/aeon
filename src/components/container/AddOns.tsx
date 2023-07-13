@@ -4,13 +4,15 @@ import AddOnsCard from "../card/AddOns";
 import SelectDropdown from "../fields/SelectDropdown";
 import {
   AddDriverTypes,
+  AddOnsTypes,
+  IsEditedTypes,
   // AddOnsTypes,
   MultiStepFormContext,
 } from "../../context/MultiFormContext";
-import { AdditionalDriverDetails } from "../../context/types";
+import { AddOns, AdditionalDriverDetails } from "../../context/types";
 // import AddOnPopup from "../popup/AddOn";
 // import { AddOnType, AddOnsContext } from "../../context/AddOnContext";
-import { NewAddOnsContext } from "../../context/AddOnsContext";
+// import { NewAddOnsContext } from "../../context/AddOnsContext";
 import { QuoteListingContext } from "../../context/QuoteListing";
 import { InsuranceContext } from "../../context/InsuranceContext";
 import AddOnDriver from "../card/AddOnDriver";
@@ -21,6 +23,7 @@ const AddOnsContainer = () => {
   const {
     store: {
       addDriverDetails: { selectedDriverType, isSelected, driverDetails },
+      addOns,
     },
     dispatch,
   } = useContext(MultiStepFormContext);
@@ -35,10 +38,10 @@ const AddOnsContainer = () => {
 
   const selectedQuote = quotes.find((quote) => quote.productId === id);
 
-  const {
-    state: { addOns: newAddOns },
-    dispatch: updateNewAddOnsState,
-  } = useContext(NewAddOnsContext);
+  // const {
+  //   state: { addOns: newAddOns },
+  //   dispatch: updateNewAddOnsState,
+  // } = useContext(NewAddOnsContext);
 
   // addons context
   // const {
@@ -122,10 +125,19 @@ const AddOnsContainer = () => {
     coverSumInsured: number
   ) {
     let isChanged: boolean = false;
-    const updatedAddOns = newAddOns.map((addOn) => {
+    const updatedAddOns = addOns.map((addOn) => {
       if (addOn.coverCode === id) {
-        if (addOn.coverSumInsured !== coverSumInsured) {
-          isChanged = true;
+        if (addOn.selectedIndicator) {
+          const selectedAddOn: any = selectedQuote?.additionalCover.find(
+            (addOn: any) => addOn.coverCode === id
+          );
+          if (selectedAddOn.coverSumInsured !== coverSumInsured) {
+            isChanged = true;
+          }
+        } else {
+          if (addOn.coverSumInsured !== coverSumInsured) {
+            isChanged = true;
+          }
         }
         const updatedAddOn = {
           ...addOn,
@@ -141,10 +153,26 @@ const AddOnsContainer = () => {
         (isSelected && !selectedIndicator) || (!isSelected && selectedIndicator)
     );
     if (checkIfAnyAddOnSelected || isChanged) {
-      updateNewAddOnsState({ addOns: updatedAddOns, isEdited: true });
-      return;
+      dispatch({
+        type: IsEditedTypes.ToggleIsEdited,
+        payload: {
+          isEdited: true,
+        },
+      });
+    } else {
+      dispatch({
+        type: IsEditedTypes.ToggleIsEdited,
+        payload: {
+          isEdited: false,
+        },
+      });
     }
-    updateNewAddOnsState({ addOns: updatedAddOns, isEdited: false });
+    dispatch({
+      type: AddOnsTypes.UpdateAddOnList,
+      payload: {
+        updatedAddOns: updatedAddOns,
+      },
+    });
   }
 
   function updateAddOnDriver(val: string, isSelected: boolean) {
@@ -162,12 +190,30 @@ const AddOnsContainer = () => {
   }
 
   useEffect(() => {
-    if (selectedQuote && newAddOns.length === 0) {
+    if (selectedQuote && addOns.length === 0) {
       const { additionalCover } = selectedQuote;
-      const updatedAddOns = additionalCover.map((addOn: any) => {
-        return { ...addOn, isSelected: false };
+      const updatedAddOns: AddOns[] = additionalCover.map((addOn: any) => ({
+        title: addOn.title,
+        coverCode: addOn.coverCode,
+        coverName: addOn.coverName,
+        coverNarration: addOn.coverNarration,
+        coverDescription: addOn.coverDescription,
+        coverSumInsured: addOn.coverSumInsured,
+        addDisplayInd: addOn.addDisplayInd,
+        addonimage: addOn.addonimage,
+        displayPremium: addOn.displayPremium,
+        isSelected: false,
+        requiredinfo: addOn.requiredinfo,
+        selectedIndicator: addOn.selectedIndicator,
+        sequence: addOn.sequence,
+        moredetail: addOn.moredetail,
+      }));
+      dispatch({
+        type: AddOnsTypes.UpdateAddOnList,
+        payload: {
+          updatedAddOns: updatedAddOns,
+        },
       });
-      updateNewAddOnsState({ addOns: updatedAddOns, isEdited: false });
     }
   }, []);
 
@@ -186,7 +232,7 @@ const AddOnsContainer = () => {
             Additional Add Ons
           </h2>
           <div className="mt-4 grid grid-cols-1 min-[475px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 place-items-center gap-4 w-full">
-            {newAddOns.length === 0 ? (
+            {addOns.length === 0 ? (
               [...Array(6)].map((_, index) => (
                 <div
                   className="animate-pulse m-auto relative w-[200px] h-[184px] bg-gray-300 rounded-lg"
@@ -195,7 +241,7 @@ const AddOnsContainer = () => {
               ))
             ) : (
               <>
-                {newAddOns.map((addOn) =>
+                {addOns.map((addOn) =>
                   addOn.coverCode === "07" ? (
                     <AddOnDriver
                       key={addOn.coverCode}
