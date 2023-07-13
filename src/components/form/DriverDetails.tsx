@@ -11,6 +11,7 @@ import {
 } from "../../context/MultiFormContext";
 import { DriverDetails } from "../../context/types";
 import { OptionContext } from "../../context/OptionContext";
+import FixedInputText from "../fields/FixedInputText";
 
 type Inputs = {
   name: string;
@@ -157,41 +158,17 @@ const DriverDetailsForm = () => {
             )}
           </div>
           {/* DOB Field */}
-          <div className="relative pb-5 w-full">
-            <div className="relative">
-              <span className="inline-block mb-1 text-base text-left text-primary-black font-semibold">
-                DOB
-              </span>
-              <div className="py-1.5 px-2 w-full text-sm text-left text-[#9ca3af] bg-[#fafafa] border border-solid border-[#CFD0D7] rounded cursor-default">
-                {dateOfBirth?.toString().split("-").reverse().join("-") ||
-                  "DOB"}
-              </div>
-            </div>
-          </div>
+          <FixedInputText
+            title="DOB"
+            value={
+              dateOfBirth?.toString().split("-").reverse().join("-") ||
+              "27-01-2023"
+            }
+          />
           {/* ID Type Field */}
-          <div className="relative pb-5 w-full">
-            <div className="relative">
-              <span className="inline-block mb-1 text-base text-left text-primary-black font-semibold">
-                ID Type
-              </span>
-              <div className="py-1.5 px-2 w-full text-sm text-left text-[#9ca3af] bg-[#fafafa] border border-solid border-[#CFD0D7] rounded cursor-default">
-                {id.type ?? "NRIC"}
-              </div>
-            </div>
-          </div>
+          <FixedInputText title="ID Type" value={id.type || ""} />
           {/* ID No. Field */}
-          <div className="flex items-center w-auto">
-            <div className="relative pb-5 w-full">
-              <div className="relative">
-                <span className="inline-block mb-1 text-base text-left text-primary-black font-semibold">
-                  ID/Company Reg No.
-                </span>
-                <div className="py-1.5 px-2 w-full font-medium text-sm text-left text-[#9ca3af] bg-[#fafafa] border border-solid border-[#CFD0D7] rounded cursor-default">
-                  {id.number || "92374887"}
-                </div>
-              </div>
-            </div>
-          </div>
+          <FixedInputText title="ID/Company Reg No." value={id.number} />
           {/* Mobile Number Field */}
           <MobileNumberField
             fixedValue="+60"
@@ -255,6 +232,7 @@ const DriverDetailsForm = () => {
               </div>
             </div>
           </div>
+          <FixedInputText title="Marital Status" value={maritalStatus || ""} />
           {/* Gender Field */}
           <div className="relative pb-5 w-full">
             <div className="relative">
@@ -266,11 +244,10 @@ const DriverDetailsForm = () => {
               </div>
             </div>
           </div>
+          <FixedInputText title="Gender" value={gender || ""} />
           {/* Nationality Field */}
           <div className="relative pb-5 flex flex-col items-start gap-y-1 w-auto h-auto">
-            <div
-              className="text-base text-center text-primary-black font-semibold"
-            >
+            <div className="text-base text-center text-primary-black font-semibold">
               Nationality*
             </div>
             <Controller
@@ -296,9 +273,7 @@ const DriverDetailsForm = () => {
           </div>
           {/* Race Field */}
           <div className="relative pb-5 flex flex-col items-start gap-y-1 w-auto h-auto">
-            <div
-              className="text-base text-center text-primary-black font-semibold"
-            >
+            <div className="text-base text-center text-primary-black font-semibold">
               Race*
             </div>
             <Controller
@@ -330,9 +305,7 @@ const DriverDetailsForm = () => {
           </div>
           {/* Occupation Field */}
           <div className="relative pb-5 flex flex-col items-start gap-y-1 w-auto h-auto">
-            <div
-              className="text-base text-center text-primary-black font-semibold"
-            >
+            <div className="text-base text-center text-primary-black font-semibold">
               Occupation*
             </div>
             <Controller
@@ -388,7 +361,8 @@ const DriverDetailsForm = () => {
                       occupationOthers: value,
                       errors: {
                         ...errors,
-                        occupationOthers: value === "" ? "Field can't be empty" : "",
+                        occupationOthers:
+                          value === "" ? "Field can't be empty" : "",
                       },
                     });
                   },
@@ -515,9 +489,7 @@ const DriverDetailsForm = () => {
           />
           {/* Country Field */}
           <div className="relative pb-5 flex flex-col items-start gap-y-1 w-auto h-auto">
-            <div
-              className="text-base text-center text-primary-black font-semibold"
-            >
+            <div className="text-base text-center text-primary-black font-semibold">
               Country*
             </div>
             <Controller
@@ -616,16 +588,7 @@ const DriverDetailsForm = () => {
             )}
           </div>
           {/* Postal Code Field */}
-          <div className="relative pb-5 w-full">
-            <div className="relative">
-              <span className="inline-block mb-1 text-base text-left text-primary-black font-semibold">
-                Postal Code
-              </span>
-              <div className="py-1.5 px-2 w-full text-sm text-left text-[#9ca3af] bg-[#fafafa] border border-solid border-[#CFD0D7] rounded cursor-default">
-                {postalCode || "63000"}
-              </div>
-            </div>
-          </div>
+          <FixedInputText title="Postal Code" value={postalCode} />
           {/* <InputTextField
             label="Postal Code"
             name="postalCode"
